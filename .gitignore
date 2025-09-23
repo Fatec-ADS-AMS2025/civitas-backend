@@ -1,0 +1,78 @@
+# =========================
+# Visual Studio / Rider
+# =========================
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# =========================
+# Build / Binários
+# =========================
+bin/
+obj/
+out/
+
+# =========================
+# Logs e arquivos temporários
+# =========================
+*.log
+*.tmp
+*.temp
+*.cache
+*.vsix
+TestResults/
+*.ncrunch*
+*.userprefs
+
+# =========================
+# Arquivos do Rider
+# =========================
+*.iml
+.idea/
+*.ipr
+*.iws
+
+# =========================
+# ASP.NET Core / .NET
+# =========================
+appsettings.Development.json
+appsettings.Local.json
+*.db
+*.pdb
+*.exe
+*.dll
+*.mdb
+*.class
+
+# =========================
+# NuGet
+# =========================
+*.nupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# =========================
+# Node / Front-end (se houver)
+# =========================
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# =========================
+# Rider / JetBrains Cache
+# =========================
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# =========================
+# Outros
+# =========================
+.vscode/
+.DS_Store
+Thumbs.db
