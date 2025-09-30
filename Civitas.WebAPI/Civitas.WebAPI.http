@@ -1,0 +1,6 @@
+@Civitas.WebAPI_HostAddress = http://localhost:5210
+
+GET {{Civitas.WebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
