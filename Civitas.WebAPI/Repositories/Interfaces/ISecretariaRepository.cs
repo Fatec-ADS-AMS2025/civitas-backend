@@ -1,20 +1,31 @@
 using Civitas.WebAPI.Models;
+using Civitas.WebAPI.Generic.Repositories;
 
 namespace Civitas.WebAPI.Repositories.Interfaces;
 
-public interface ISecretariaRepository
+/// <summary>
+/// Interface de repositório específica para Secretaria
+/// Herda operações CRUD básicas do repositório genérico
+/// </summary>
+public interface ISecretariaRepository : IGenericRepository<Secretaria>
 {
-    Task<IEnumerable<Secretaria>> GetAllAsync();
-    Task<IEnumerable<Secretaria>> GetActiveAsync();
-    Task<Secretaria?> GetByIdAsync(int id);
+    /// <summary>
+    /// Busca secretaria por CNPJ
+    /// </summary>
     Task<Secretaria?> GetByCnpjAsync(string cnpj);
+
+    /// <summary>
+    /// Busca secretaria por email
+    /// </summary>
     Task<Secretaria?> GetByEmailAsync(string email);
-    Task<Secretaria> CreateAsync(Secretaria secretaria);
-    Task<Secretaria> UpdateAsync(Secretaria secretaria);
-    Task<bool> DeleteAsync(int id);
-    Task<bool> ActivateAsync(int id);
-    Task<bool> DeactivateAsync(int id);
-    Task<bool> ExistsAsync(int id);
+
+    /// <summary>
+    /// Verifica se CNPJ já existe (excluindo um ID específico)
+    /// </summary>
     Task<bool> CnpjExistsAsync(string cnpj, int? excludeId = null);
+
+    /// <summary>
+    /// Verifica se email já existe (excluindo um ID específico)
+    /// </summary>
     Task<bool> EmailExistsAsync(string email, int? excludeId = null);
 }

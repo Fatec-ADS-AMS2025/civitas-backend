@@ -1,14 +1,13 @@
 using Civitas.WebAPI.DTOs;
+using Civitas.WebAPI.Generic.Services;
 
 namespace Civitas.WebAPI.Services.Interfaces;
 
-public interface ISecretariaService
+/// <summary>
+/// Interface de serviço específica para Secretaria
+/// Herda operações CRUD básicas do serviço genérico
+/// </summary>
+public interface ISecretariaService : IGenericService<SecretariaDto, SecretariaCreateDto, SecretariaUpdateDto>
 {
-    Task<IEnumerable<SecretariaDto>> GetAllAsync();
-    Task<IEnumerable<SecretariaDto>> GetActiveAsync();
-    Task<SecretariaDto?> GetByIdAsync(int id);
-    Task<SecretariaDto> CreateAsync(SecretariaCreateDto createDto);
-    Task<SecretariaDto> UpdateAsync(int id, SecretariaUpdateDto updateDto);
-    Task<bool> ActivateAsync(int id);
-    Task<bool> DeactivateAsync(int id);
+    // Adicione métodos específicos de Secretaria aqui, se necessário
 }
