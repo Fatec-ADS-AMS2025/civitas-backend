@@ -35,11 +35,11 @@ namespace Civitas.WebAPI.Data.Repositories
         public async Task Update(T entity)
         {
             // Recupera a chave primária (supondo que seja 'Id')
-            var entityId = _context.Entry(entity).Property("Id").CurrentValue;
+            var entityId = _context.Entry(entity).Property("IdFornecedor").CurrentValue;
 
             // Verifica se a entidade com o mesmo Id já está sendo rastreada
             var trackedEntity = _context.ChangeTracker.Entries<T>()
-                .FirstOrDefault(e => e.Property("Id").CurrentValue.Equals(entityId));
+                .FirstOrDefault(e => e.Property("IdFornecedor").CurrentValue.Equals(entityId));
 
             // Se a entidade já estiver sendo rastreada, desanexa
             if (trackedEntity != null)
