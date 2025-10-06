@@ -1,6 +1,7 @@
 using AutoMapper;
 using Civitas.WebAPI.Objects.Contracts;
 using Civitas.WebAPI.Objects.Dtos.Entities;
+using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -100,7 +101,6 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
-        // GET: api/Fornecedor
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -127,7 +127,6 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
-        // GET: api/Fornecedor/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -161,7 +160,6 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
-        // DELETE: api/Fornecedor/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -188,6 +186,50 @@ namespace Civitas.WebAPI.Controllers
             {
                 _response.Code = ResponseEnum.ERROR;
                 _response.Message = "Ocorreu um erro ao excluir o fornecedor";
+                _response.Data = new
+                {
+                    ErrorMessage = ex.Message,
+                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, _response);
+            }
+        }
+
+        [HttpPatch("{id}/alterar-situacao")]
+        public async Task<IActionResult> AlterarSituacao(int id)
+        {
+            try
+            {
+                var fornecedor = await _fornecedorService.GetById(id);
+                if (fornecedor == null)
+                {
+                    _response.Code = ResponseEnum.NOT_FOUND;
+                    _response.Data = null;
+                    _response.Message = "Fornecedor não encontrado";
+                    return NotFound(_response);
+                }
+
+                // Alterna o valor atual do enum
+                fornecedor.Situacao = fornecedor.Situacao == Situacao.ATIVO
+                    ? Situacao.INATIVO
+                    : Situacao.ATIVO;
+
+                await _fornecedorService.Update(fornecedor, id);
+
+                _response.Code = ResponseEnum.SUCCESS;
+                _response.Data = new
+                {
+                    fornecedor.IdFornecedor,
+                    Situacao = fornecedor.Situacao.ToString()
+                };
+                _response.Message = $"Situação alterada para {fornecedor.Situacao} com sucesso";
+
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.Code = ResponseEnum.ERROR;
+                _response.Message = "Ocorreu um erro ao alterar a situação do fornecedor";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
