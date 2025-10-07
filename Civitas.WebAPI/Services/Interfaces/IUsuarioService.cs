@@ -7,6 +7,5 @@ namespace Civitas.WebAPI.Services.Interfaces
     public interface IUsuarioService : IGenericService<Usuario, UsuarioDTO>
     {
         Task<IEnumerable<UsuarioDTO>> GetUsuarioByCpf(string cpf);
-        Task UpdateSituacao(int id, Situacao situacao);
     }
 }

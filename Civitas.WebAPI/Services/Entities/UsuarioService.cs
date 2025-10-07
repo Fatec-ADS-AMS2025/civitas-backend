@@ -24,23 +24,5 @@ namespace Civitas.WebAPI.Services.Entities
             var usuario = await _usuarioRepository.GetUsuarioByCpf(cpf);
             return _mapper.Map<IEnumerable<UsuarioDTO>>(usuario);
         }
-
-        public async Task UpdateSituacao(int id, Situacao situacao)
-        {
-            if (!Enum.IsDefined(typeof(Situacao), situacao))
-            {
-                throw new ArgumentOutOfRangeException(nameof(situacao), $"Valor inválido: {situacao} apenas é aceito 1 (ativo) e 2 (negativo)");
-            }
-
-            var usuario = await _usuarioRepository.GetById(id);
-
-            if (usuario == null)
-            {
-                throw new KeyNotFoundException($"Usuário com id {id} não foi encontrado.");
-            }
-
-            usuario.Situacao = situacao;
-            await _usuarioRepository.Update(usuario);
-        }
     }
 }

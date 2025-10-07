@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Civitas.WebAPI.Objects.Contracts;
 using Civitas.WebAPI.Objects.Dtos.Entities;
+using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -186,40 +187,41 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
-        [HttpPatch("{id}/situacao")]
-        public async Task<IActionResult> UpdateSituacao(int id, [FromBody] SituacaoDTO situacaoDto)
+        [HttpPatch("{id}/alterar-situacao")]
+        public async Task<IActionResult> AlterarSituacao(int id)
         {
-            if(situacaoDto is null)
-            {
-                _response.Code = ResponseEnum.NOT_FOUND;
-                _response.Data = null;
-                _response.Message = "Dados inválidos";
-                return BadRequest(_response);
-            }
-
             try
             {
-                var existingUsuarioDTO = await _usuarioService.GetById(id);
-                if (existingUsuarioDTO is null)
+                var fornecedor = await _usuarioService.GetById(id);
+                if (fornecedor == null)
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "O usuário informado não existe";
+                    _response.Message = "Fornecedor não encontrado";
                     return NotFound(_response);
                 }
 
-                await _usuarioService.UpdateSituacao(id, situacaoDto.Situacao);
+                // Alterna o valor atual do enum
+                fornecedor.Situacao = fornecedor.Situacao == Situacao.ATIVO
+                    ? Situacao.INATIVO
+                    : Situacao.ATIVO;
+
+                await _usuarioService.Update(fornecedor, id);
 
                 _response.Code = ResponseEnum.SUCCESS;
-                _response.Data = null;
-                _response.Message = "Situação do usuário atualizada com sucesso";
+                _response.Data = new
+                {
+                    fornecedor.Id,
+                    Situacao = fornecedor.Situacao.ToString()
+                };
+                _response.Message = $"Situação alterada para {fornecedor.Situacao} com sucesso";
 
                 return Ok(_response);
             }
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao atualizar a situação do usuário";
+                _response.Message = "Ocorreu um erro ao alterar a situação do fornecedor";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,

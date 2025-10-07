@@ -1,6 +1,7 @@
 ﻿using Civitas.WebAPI.Data.Interfaces;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Objects.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Civitas.WebAPI.Data.Repositories
@@ -19,25 +20,5 @@ namespace Civitas.WebAPI.Data.Repositories
             return await _context.Usuarios.Where(m => m.Cpf.Contains(cpf)).ToListAsync();
         }
 
-        public async Task UpdateSituacao(int id, Situacao situacao)
-        {
-            if (!Enum.IsDefined(typeof(Situacao), situacao))
-            {
-                throw new ArgumentOutOfRangeException(nameof(situacao), $"Valor inválido: {situacao} apenas é aceito 1 (ativo) e 2 (negativo)");
-            }
-
-            var usuario = await _context.Usuarios.FindAsync(id);
-
-            if (usuario == null)
-            {
-                throw new KeyNotFoundException($"Usuário com id {id} não foi encontrado.");
-            }
-
-            usuario.Situacao = situacao;
-
-            _context.Entry(usuario).Property(u => u.Situacao).IsModified = true;
-
-            await _context.SaveChangesAsync();
-        }
     }
 }
