@@ -22,7 +22,6 @@ namespace Civitas.WebAPI.Data.Builders
             modelBuilder.Entity<Usuario>().Property(u => u.Matricula).IsRequired().HasMaxLength(100);
             modelBuilder.Entity<Usuario>().Property(u => u.TipoUsuario).IsRequired();
             modelBuilder.Entity<Usuario>().Property(u => u.Bairro).IsRequired().HasMaxLength(100);
-
         }
     }
 }

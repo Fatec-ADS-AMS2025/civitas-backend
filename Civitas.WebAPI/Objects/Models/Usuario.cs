@@ -33,23 +33,22 @@ namespace Civitas.WebAPI.Objects.Models
         [Column("cep")]
         public string Cep { get; set; }
 
+        [Column("bairro")]
+        public string Bairro { get; set; }
+
         [Column("email")]
         public string Email { get; set; }
 
         [Column("senha")]
         public string Senha { get; set; }
 
-        [Column("situacao")]
-        public Situacao Situacao { get; set; }
-
         [Column("matricula")]
         public string Matricula { get; set; }
 
         [Column("tipousuario")]
         public TipoUsuario TipoUsuario { get; set; }
-
-        [Column("bairro")]
-        public string Bairro { get; set; }
+        [Column("situacao")]
+        public Situacao Situacao { get; set; }
 
         public Usuario(int id, string cpf, string nome, string rg, string logradouro, string numero, string cidade, string estado, string cep, string email, string senha
             , Situacao situacao, string matricula, TipoUsuario tipoUsuario, string bairro)

@@ -14,12 +14,12 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         public string Cidade { get; set; }
         public string Estado { get; set; }
         public string Cep { get; set; }
+        public string Bairro { get; set; }
         public string Email { get; set; }
         public string Senha { get; set; }
-        public Situacao Situacao { get; set; }
         public string Matricula { get; set; }
-
+        public Situacao Situacao { get; set; }
         public TipoUsuario TipoUsuario { get; set; }
-        public string Bairro { get; set; }
+
     }
 }
