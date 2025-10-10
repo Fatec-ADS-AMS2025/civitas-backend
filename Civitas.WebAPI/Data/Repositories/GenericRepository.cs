@@ -34,25 +34,30 @@ namespace Civitas.WebAPI.Data.Repositories
 
         public async Task Update(T entity)
         {
-            // Recupera a chave primária (supondo que seja 'Id')
-            var entityId = _context.Entry(entity).Property("Id").CurrentValue;
+          // Descobre dinamicamente o nome da chave primária
+          var keyName = _context.Model.FindEntityType(typeof(T))!
+            .FindPrimaryKey()!
+            .Properties
+            .Select(x => x.Name)
+            .First();
 
-            // Verifica se a entidade com o mesmo Id já está sendo rastreada
-            var trackedEntity = _context.ChangeTracker.Entries<T>()
-                .FirstOrDefault(e => e.Property("Id").CurrentValue.Equals(entityId));
+          // Pega o valor da chave primária da entidade atual
+           var entityId = _context.Entry(entity).Property(keyName).CurrentValue;
 
-            // Se a entidade já estiver sendo rastreada, desanexa
-            if (trackedEntity != null)
-            {
-                _context.Entry(trackedEntity.Entity).State = EntityState.Detached;
-            }
+          // Verifica se a entidade com o mesmo Id já está sendo rastreada
+          var trackedEntity = _context.ChangeTracker.Entries<T>()
+          .FirstOrDefault(e => e.Property(keyName).CurrentValue.Equals(entityId));
 
-            // Anexa a nova entidade e marca como 'Modified'
-            _context.Entry(entity).State = EntityState.Modified;
+          // Se a entidade já estiver sendo rastreada, desanexa
+          if (trackedEntity != null)
+            _context.Entry(trackedEntity.Entity).State = EntityState.Detached;
 
-            // Salva as alterações no banco de dados
-            await SaveChanges();
+          // Marca como modificada
+          _context.Entry(entity).State = EntityState.Modified;
+
+          await SaveChanges();
         }
+
 
         public async Task Remove(T entity)
         {
