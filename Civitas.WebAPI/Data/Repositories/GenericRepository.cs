@@ -34,6 +34,7 @@ namespace Civitas.WebAPI.Data.Repositories
 
         public async Task Update(T entity)
         {
+<<<<<<< HEAD
             // Descobre dinamicamente o nome da chave primária
             var keyName = _context.Model.FindEntityType(typeof(T))!
                 .FindPrimaryKey()!
@@ -56,7 +57,32 @@ namespace Civitas.WebAPI.Data.Repositories
             _context.Entry(entity).State = EntityState.Modified;
 
             await SaveChanges();
+=======
+          // Descobre dinamicamente o nome da chave primária
+          var keyName = _context.Model.FindEntityType(typeof(T))!
+            .FindPrimaryKey()!
+            .Properties
+            .Select(x => x.Name)
+            .First();
+
+          // Pega o valor da chave primária da entidade atual
+           var entityId = _context.Entry(entity).Property(keyName).CurrentValue;
+
+          // Verifica se a entidade com o mesmo Id já está sendo rastreada
+          var trackedEntity = _context.ChangeTracker.Entries<T>()
+          .FirstOrDefault(e => e.Property(keyName).CurrentValue.Equals(entityId));
+
+          // Se a entidade já estiver sendo rastreada, desanexa
+          if (trackedEntity != null)
+            _context.Entry(trackedEntity.Entity).State = EntityState.Detached;
+
+          // Marca como modificada
+          _context.Entry(entity).State = EntityState.Modified;
+
+          await SaveChanges();
+>>>>>>> 8a9f7bc6ddcb66105d5aac725e02c1a58029f95d
         }
+
 
         public async Task Remove(T entity)
         {
