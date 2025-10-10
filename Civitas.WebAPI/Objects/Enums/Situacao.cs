@@ -1,4 +1,4 @@
-﻿    namespace Civitas.WebAPI.Objects.Enums
+﻿namespace Civitas.WebAPI.Objects.Enums
 {
     public enum Situacao
     {

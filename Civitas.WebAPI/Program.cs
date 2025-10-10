@@ -16,6 +16,8 @@ builder.Services.AddAutoMapper(opt => { }, AppDomain.CurrentDomain.GetAssemblies
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IFornecedorRepository, FornecedorRepository>();
 builder.Services.AddScoped<IFornecedorService, FornecedorService>();
 

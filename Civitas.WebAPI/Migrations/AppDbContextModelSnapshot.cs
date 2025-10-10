@@ -21,6 +21,14 @@ namespace Civitas.WebAPI.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Usuario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fornecedor", b =>
                 {
                     b.Property<int>("IdFornecedor")
@@ -48,6 +56,11 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("cidade");
 
+                    b.Property<string>("Cpf")
+                        .IsRequired()
+                        .HasMaxLength(11)
+                        .HasColumnType("character varying(11)")
+                        .HasColumnName("cpf");
                     b.Property<string>("Cnpj")
                         .IsRequired()
                         .HasMaxLength(14)
@@ -62,6 +75,8 @@ namespace Civitas.WebAPI.Migrations
 
                     b.Property<string>("Estado")
                         .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
                         .HasColumnName("estado");
@@ -71,6 +86,36 @@ namespace Civitas.WebAPI.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("logradouro");
+
+                    b.Property<string>("Matricula")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("matricula");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("nome");
+
+                    b.Property<string>("Numero")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .HasColumnType("character varying(4)")
+                        .HasColumnName("numero");
+
+                    b.Property<string>("Rg")
+                        .IsRequired()
+                        .HasMaxLength(9)
+                        .HasColumnType("character varying(9)")
+                        .HasColumnName("rg");
+
+                    b.Property<string>("Senha")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("senha");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -94,6 +139,13 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("situacao");
 
+                    b.Property<int>("TipoUsuario")
+                        .HasColumnType("integer")
+                        .HasColumnName("tipousuario");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("usuario");
                     b.Property<string>("Telefone")
                         .IsRequired()
                         .HasMaxLength(15)

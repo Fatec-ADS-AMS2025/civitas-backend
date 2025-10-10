@@ -10,12 +10,14 @@ namespace Civitas.WebAPI.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
+        public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Fornecedor> Fornecedores { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            UsuarioBuilder.Build(modelBuilder);
             FornecedorBuilder.Build(modelBuilder);
         }
     }
