@@ -29,134 +29,135 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fornecedor", b =>
-                {
-                    b.Property<int>("IdFornecedor")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("idFornecedor");
+                    modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fornecedor", b =>
+                        {
+                            b.Property<int>("IdFornecedor")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer")
+                                .HasColumnName("idFornecedor");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdFornecedor"));
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdFornecedor"));
 
-                    b.Property<string>("Bairro")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("bairro");
+                            b.Property<string>("Bairro")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("bairro");
 
-                    b.Property<string>("Cep")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("character varying(8)")
-                        .HasColumnName("cep");
+                            b.Property<string>("Cep")
+                                .IsRequired()
+                                .HasMaxLength(8)
+                                .HasColumnType("character varying(8)")
+                                .HasColumnName("cep");
 
-                    b.Property<string>("Cidade")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("cidade");
+                            b.Property<string>("Cidade")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("cidade");
 
-                    b.Property<string>("Cpf")
-                        .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("character varying(11)")
-                        .HasColumnName("cpf");
-                    b.Property<string>("Cnpj")
-                        .IsRequired()
-                        .HasMaxLength(14)
-                        .HasColumnType("character varying(14)")
-                        .HasColumnName("cnpj");
+                            b.Property<string>("Cpf")
+                                .IsRequired()
+                                .HasMaxLength(11)
+                                .HasColumnType("character varying(11)")
+                                .HasColumnName("cpf");
+                            b.Property<string>("Cnpj")
+                                .IsRequired()
+                                .HasMaxLength(14)
+                                .HasColumnType("character varying(14)")
+                                .HasColumnName("cnpj");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("email");
+                            b.Property<string>("Email")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("email");
 
-                    b.Property<string>("Estado")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasMaxLength(2)
-                        .HasColumnType("character varying(2)")
-                        .HasColumnName("estado");
+                            b.Property<string>("Estado")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasMaxLength(2)
+                                .HasColumnType("character varying(2)")
+                                .HasColumnName("estado");
 
-                    b.Property<string>("Logradouro")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("logradouro");
+                            b.Property<string>("Logradouro")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)")
+                                .HasColumnName("logradouro");
 
-                    b.Property<string>("Matricula")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("matricula");
+                            b.Property<string>("Matricula")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("matricula");
 
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("nome");
+                            b.Property<string>("Nome")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("nome");
 
-                    b.Property<string>("Numero")
-                        .IsRequired()
-                        .HasMaxLength(4)
-                        .HasColumnType("character varying(4)")
-                        .HasColumnName("numero");
+                            b.Property<string>("Numero")
+                                .IsRequired()
+                                .HasMaxLength(4)
+                                .HasColumnType("character varying(4)")
+                                .HasColumnName("numero");
 
-                    b.Property<string>("Rg")
-                        .IsRequired()
-                        .HasMaxLength(9)
-                        .HasColumnType("character varying(9)")
-                        .HasColumnName("rg");
+                            b.Property<string>("Rg")
+                                .IsRequired()
+                                .HasMaxLength(9)
+                                .HasColumnType("character varying(9)")
+                                .HasColumnName("rg");
 
-                    b.Property<string>("Senha")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("senha");
+                            b.Property<string>("Senha")
+                                .IsRequired()
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)")
+                                .HasColumnName("senha");
 
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("nome");
+                            b.Property<string>("Nome")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("nome");
 
-                    b.Property<string>("NomeFantasia")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("nomeFantasia");
+                            b.Property<string>("NomeFantasia")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("nomeFantasia");
 
-                    b.Property<string>("Numero")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("numero");
+                            b.Property<string>("Numero")
+                                .IsRequired()
+                                .HasMaxLength(10)
+                                .HasColumnType("character varying(10)")
+                                .HasColumnName("numero");
 
-                    b.Property<int>("Situacao")
-                        .HasColumnType("integer")
-                        .HasColumnName("situacao");
+                            b.Property<int>("Situacao")
+                                .HasColumnType("integer")
+                                .HasColumnName("situacao");
 
-                    b.Property<int>("TipoUsuario")
-                        .HasColumnType("integer")
-                        .HasColumnName("tipousuario");
+                            b.Property<int>("TipoUsuario")
+                                .HasColumnType("integer")
+                                .HasColumnName("tipousuario");
 
-                    b.HasKey("Id");
+                            b.HasKey("Id");
 
-                    b.ToTable("usuario");
-                    b.Property<string>("Telefone")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("character varying(15)")
-                        .HasColumnName("telefone");
+                            b.ToTable("usuario");
+                            b.Property<string>("Telefone")
+                                .IsRequired()
+                                .HasMaxLength(15)
+                                .HasColumnType("character varying(15)")
+                                .HasColumnName("telefone");
 
-                    b.HasKey("IdFornecedor");
+                            b.HasKey("IdFornecedor");
 
-                    b.ToTable("fornecedor");
-                });
+                            b.ToTable("fornecedor");
+                        });
 #pragma warning restore 612, 618
+                });
         }
     }
 }
