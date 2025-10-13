@@ -20,6 +20,8 @@ builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IFornecedorRepository, FornecedorRepository>();
 builder.Services.AddScoped<IFornecedorService, FornecedorService>();
+builder.Services.AddScoped<ISecretariaRepository, SecretariaRepository>();
+builder.Services.AddScoped<ISecretariaService, SecretariaService>();
 
 var app = builder.Build();
 
