@@ -13,6 +13,7 @@ namespace Civitas.WebAPI.Data
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Fornecedor> Fornecedores { get; set; }
         public DbSet<Secretaria> Secretarias { get; set; }
+        public DbSet<Auditoria> Auditorias { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,6 +22,7 @@ namespace Civitas.WebAPI.Data
             UsuarioBuilder.Build(modelBuilder);
             FornecedorBuilder.Build(modelBuilder);
             SecretariaBuilder.Build(modelBuilder);
+            AuditoriaBuilder.Build(modelBuilder);
         }
     }
 }
