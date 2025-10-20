@@ -22,6 +22,10 @@ builder.Services.AddScoped<IFornecedorRepository, FornecedorRepository>();
 builder.Services.AddScoped<IFornecedorService, FornecedorService>();
 builder.Services.AddScoped<ISecretariaRepository, SecretariaRepository>();
 builder.Services.AddScoped<ISecretariaService, SecretariaService>();
+builder.Services.AddScoped<IInstituicaoRepository, InstituicaoRepository>();
+builder.Services.AddScoped<IInstituicaoService, InstituicaoService>();
+builder.Services.AddScoped<ITipoInstituicaoRepository, TipoInstituicaoRepository>();
+builder.Services.AddScoped<ITipoInstituicaoService, TipoInstituicaoService>();
 
 var app = builder.Build();
 
