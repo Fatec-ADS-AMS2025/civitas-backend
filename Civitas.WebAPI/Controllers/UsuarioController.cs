@@ -35,7 +35,7 @@ namespace Civitas.WebAPI.Controllers
 
 
         [HttpGet("GetUsuarioByCpf")]
-        public async Task<IActionResult> GetUsuarioByName(string cpf)
+        public async Task<IActionResult> GetUsuarioByCpf(string cpf)
         {
             var usuarioDto = await _usuarioService.GetUsuarioByCpf(cpf);
             if (usuarioDto is null || !usuarioDto.Any())

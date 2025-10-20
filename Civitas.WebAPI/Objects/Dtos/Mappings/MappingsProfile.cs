@@ -13,6 +13,8 @@ namespace Civitas.WebAPI.Objects.Dtos.Mappings
             CreateMap<Fornecedor, FornecedorDTO>().ReverseMap();
             CreateMap<Secretaria, SecretariaDTO>().ReverseMap();
             CreateMap<Auditoria, AuditoriaDTO>().ReverseMap();
+            CreateMap<TipoInstituicao, TipoInstituicaoDTO>().ReverseMap();
+            CreateMap<Instituicao, InstituicaoDTO>().ReverseMap();
         }
     }
 }
