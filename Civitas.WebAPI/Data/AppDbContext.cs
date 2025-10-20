@@ -22,7 +22,7 @@ namespace Civitas.WebAPI.Data
             UsuarioBuilder.Build(modelBuilder);
             FornecedorBuilder.Build(modelBuilder);
             SecretariaBuilder.Build(modelBuilder);
-            DocumentosBuilder.Build(modelBuilder);
+            DocumentoBuilder.Build(modelBuilder);
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Civitas.WebAPI.Data.Interfaces
 {
-    public interface IDocumentosRepository : IGenericRepository<Documentos>
+    public interface IDocumentoRepository : IGenericRepository<Documento>
     {
     }
 }

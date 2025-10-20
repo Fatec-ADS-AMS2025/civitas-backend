@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Civitas.WebAPI.Data.Repositories
 {
-    public class DocumentosRepository : GenericRepository<Documentos>, IDocumentosRepository
+    public class DocumentoRepository : GenericRepository<Documento>, IDocumentoRepository
     {
         private readonly AppDbContext _context;
 
-        public DocumentosRepository(AppDbContext context) : base(context)
+        public DocumentoRepository(AppDbContext context) : base(context)
         {
             _context = context;
         }
