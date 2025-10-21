@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Civitas.WebAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251020193406_inicial")]
+    [Migration("20251021020633_inicial")]
     partial class inicial
     {
         /// <inheritdoc />
