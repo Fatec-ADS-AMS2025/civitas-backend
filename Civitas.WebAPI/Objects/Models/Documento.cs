@@ -6,23 +6,30 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Civitas.WebAPI.Objects.Models
 {
-    [Table("documentos")]
+    [Table("documento")]
     public class Documento
     {
-        [Column("idDocumento")]
+        [Column("IdDocumento")]
         public int IdDocumento { get; set; }
 
-        [Column("digitalizacao")]
-        public Blob Digitalizacao { get; set; }
+        [Column("Digitalizacao")]
+        public Byte[] Digitalizacao { get; set; }
 
-        [Column("numeroDocumento")]
+        [Column("NumeroDocumento")]
         public int NumeroDocumento { get; set; }
 
-        public Documento(int iddocumento, Blob digitalizacao, int numeroDocumento)
+        [Column("IdFornecedor")]
+        public int IdFornecedor { get; set; }
+
+        public Fornecedor Fornecedor { get; set; }
+
+
+        public Documento(int idDocumento, byte[] digitalizacao, int numeroDocumento)
         {
-            IdDocumento = iddocumento;
+            IdDocumento = idDocumento;
             Digitalizacao = digitalizacao;
             NumeroDocumento = numeroDocumento;
         }
+
     }
 }

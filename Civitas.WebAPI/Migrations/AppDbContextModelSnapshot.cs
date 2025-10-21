@@ -21,6 +21,35 @@ namespace Civitas.WebAPI.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Documento", b =>
+                {
+                    b.Property<int>("IdDocumento")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("IdDocumento");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdDocumento"));
+
+                    b.Property<byte[]>("Digitalizacao")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("Digitalizacao");
+
+                    b.Property<int>("IdFornecedor")
+                        .HasColumnType("integer")
+                        .HasColumnName("IdFornecedor");
+
+                    b.Property<int>("NumeroDocumento")
+                        .HasColumnType("integer")
+                        .HasColumnName("NumeroDocumento");
+
+                    b.HasKey("IdDocumento");
+
+                    b.HasIndex("IdFornecedor");
+
+                    b.ToTable("documento");
+                });
+
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fornecedor", b =>
                 {
                     b.Property<int>("IdFornecedor")
@@ -287,6 +316,22 @@ namespace Civitas.WebAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("usuario");
+                });
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Documento", b =>
+                {
+                    b.HasOne("Civitas.WebAPI.Objects.Models.Fornecedor", "Fornecedor")
+                        .WithMany("Documentos")
+                        .HasForeignKey("IdFornecedor")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Fornecedor");
+                });
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fornecedor", b =>
+                {
+                    b.Navigation("Documentos");
                 });
 #pragma warning restore 612, 618
         }

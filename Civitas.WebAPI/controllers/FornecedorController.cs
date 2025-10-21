@@ -160,41 +160,6 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                var fornecedor = await _fornecedorService.GetById(id);
-                if (fornecedor == null)
-                {
-                    _response.Code = ResponseEnum.NOT_FOUND;
-                    _response.Data = null;
-                    _response.Message = "Fornecedor não encontrado";
-                    return NotFound(_response);
-                }
-
-                await _fornecedorService.Remove(id);
-
-                _response.Code = ResponseEnum.SUCCESS;
-                _response.Data = null;
-                _response.Message = "Fornecedor excluído com sucesso";
-
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao excluir o fornecedor";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
-            }
-        }
-
         [HttpPatch("{id}/alterar-situacao")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {

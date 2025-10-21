@@ -6,7 +6,7 @@ using Civitas.WebAPI.Services.Interfaces;
 
 namespace Civitas.WebAPI.Services.Entities
 {
-    public class DocumentoService : GenericService<Documento, DocumentoDTO>, IDocumentoRepository
+    public class DocumentoService : GenericService<Documento, DocumentoDTO>, IDocumentoService
     {
         private readonly IDocumentoRepository _documentoRepository;
         private readonly IMapper _mapper;

@@ -5,6 +5,6 @@ namespace Civitas.WebAPI.Services.Interfaces
 {
     public interface IDocumentoService : IGenericService<Documento, DocumentoDTO>
     {
-
+        
     }
 }

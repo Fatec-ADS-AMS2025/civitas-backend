@@ -1,5 +1,4 @@
-using AutoMapper;
-using Civitas.WebAPI.Objects.Contracts;
+Ôªøusing Civitas.WebAPI.Objects.Contracts;
 using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Entities;
@@ -11,7 +10,7 @@ namespace Civitas.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DocumentoController : Controller
+    public class DocumentoController : ControllerBase
     {
         private readonly IDocumentoService _documentoService;
         private readonly Response _response;
@@ -22,25 +21,56 @@ namespace Civitas.WebAPI.Controllers
             _response = new Response();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Post(DocumentoDTO documentoDTO)
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
         {
-            if (documentoDTO is null)
+            var documentoDto = await _documentoService.GetAll();
+
+            _response.Code = ResponseEnum.SUCCESS;
+            _response.Data = documentoDto;
+            _response.Message = "Documentos listados com sucesso";
+
+            return Ok(_response);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetDocumentoById(int id)
+        {
+            var fornecedorDto = await _documentoService.GetById(id);
+            if (fornecedorDto is null)
+            {
+                _response.Code = ResponseEnum.SUCCESS;
+                _response.Data = null;
+                _response.Message = "Nenhum Documento encontrado";
+
+                return NotFound(_response);
+            }
+
+            _response.Code = ResponseEnum.SUCCESS;
+            _response.Data = fornecedorDto;
+            _response.Message = "Documentos listados com sucesso";
+            return Ok(_response);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post(DocumentoDTO DocumentoDTO)
+        {
+            if (DocumentoDTO is null)
             {
                 _response.Code = ResponseEnum.INVALID;
                 _response.Data = null;
-                _response.Message = "Dados inv·lidos";
+                _response.Message = "Dados inv√°lidos";
 
                 return BadRequest(_response);
             }
 
             try
             {
-                documentoDTO.IdDocumento = 0;
-                await _documentoService.Create(documentoDTO);
+                DocumentoDTO.IdDocumento = 0;
+                await _documentoService.Create(DocumentoDTO);
 
                 _response.Code = ResponseEnum.SUCCESS;
-                _response.Data = documentoDTO;
+                _response.Data = DocumentoDTO;
                 _response.Message = "Documento cadastrado com sucesso";
 
                 return Ok(_response);
@@ -48,7 +78,7 @@ namespace Civitas.WebAPI.Controllers
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
-                _response.Message = "N„o foi possÌvel cadastrar o documento";
+                _response.Message = "N√£o foi poss√≠vel cadastrar o Documento";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
@@ -65,7 +95,7 @@ namespace Civitas.WebAPI.Controllers
             {
                 _response.Code = ResponseEnum.INVALID;
                 _response.Data = null;
-                _response.Message = "Dados inv·lidos";
+                _response.Message = "Dados inv√°lidos";
 
                 return BadRequest(_response);
             }
@@ -77,7 +107,7 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "O documento informado n„o existe";
+                    _response.Message = "O Documento informado n√£o existe";
                     return NotFound(_response);
                 }
 
@@ -85,7 +115,7 @@ namespace Civitas.WebAPI.Controllers
 
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = documentoDTO;
-                _response.Message = "Documento atualizado com sucesso";
+                _response.Message = "Documneto atualizado com sucesso";
 
                 return Ok(_response);
             }
@@ -102,76 +132,17 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            try
-            {
-                var documentos = await _documentoService.GetAll();
-
-                _response.Code = ResponseEnum.SUCCESS;
-                _response.Data = documentos;
-                _response.Message = "Lista de documentos obtida com sucesso";
-
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao obter os documentos";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
-            }
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            try
-            {
-                var documento = await _documentoService.GetById(id);
-                if (documento == null)
-                {
-                    _response.Code = ResponseEnum.NOT_FOUND;
-                    _response.Data = null;
-                    _response.Message = "Documento n„o encontrado";
-                    return NotFound(_response);
-                }
-
-                _response.Code = ResponseEnum.SUCCESS;
-                _response.Data = documento;
-                _response.Message = "Documento obtido com sucesso";
-
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao obter o documento";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
-            }
-        }
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var documento = await _documentoService.GetById(id);
-                if (documento == null)
+                var fornecedor = await _documentoService.GetById(id);
+                if (fornecedor == null)
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "Documento n„o encontrado";
+                    _response.Message = "Documento n√£o encontrado";
                     return NotFound(_response);
                 }
 
@@ -179,7 +150,7 @@ namespace Civitas.WebAPI.Controllers
 
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = null;
-                _response.Message = "Documento excluÌdo com sucesso";
+                _response.Message = "Documento exclu√≠do com sucesso";
 
                 return Ok(_response);
             }
@@ -195,5 +166,8 @@ namespace Civitas.WebAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
         }
+
+
+
     }
 }

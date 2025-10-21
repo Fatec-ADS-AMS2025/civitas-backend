@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Civitas.WebAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251013174418_AddSecretariaTable")]
-    partial class AddSecretariaTable
+    [Migration("20251020193406_inicial")]
+    partial class inicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,35 @@ namespace Civitas.WebAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Documento", b =>
+                {
+                    b.Property<int>("IdDocumento")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("IdDocumento");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdDocumento"));
+
+                    b.Property<byte[]>("Digitalizacao")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("Digitalizacao");
+
+                    b.Property<int>("IdFornecedor")
+                        .HasColumnType("integer")
+                        .HasColumnName("IdFornecedor");
+
+                    b.Property<int>("NumeroDocumento")
+                        .HasColumnType("integer")
+                        .HasColumnName("NumeroDocumento");
+
+                    b.HasKey("IdDocumento");
+
+                    b.HasIndex("IdFornecedor");
+
+                    b.ToTable("documento");
+                });
 
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fornecedor", b =>
                 {
@@ -125,8 +154,8 @@ namespace Civitas.WebAPI.Migrations
 
                     b.Property<string>("Cep")
                         .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("character varying(8)")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
                         .HasColumnName("cep");
 
                     b.Property<string>("Cidade")
@@ -137,8 +166,8 @@ namespace Civitas.WebAPI.Migrations
 
                     b.Property<string>("Cnpj")
                         .IsRequired()
-                        .HasMaxLength(14)
-                        .HasColumnType("character varying(14)")
+                        .HasMaxLength(18)
+                        .HasColumnType("character varying(18)")
                         .HasColumnName("cnpj");
 
                     b.Property<string>("Descricao")
@@ -189,8 +218,8 @@ namespace Civitas.WebAPI.Migrations
 
                     b.Property<string>("Telefone")
                         .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("character varying(15)")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
                         .HasColumnName("telefone");
 
                     b.HasKey("IdSecretaria");
@@ -290,6 +319,22 @@ namespace Civitas.WebAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("usuario");
+                });
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Documento", b =>
+                {
+                    b.HasOne("Civitas.WebAPI.Objects.Models.Fornecedor", "Fornecedor")
+                        .WithMany("Documentos")
+                        .HasForeignKey("IdFornecedor")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Fornecedor");
+                });
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fornecedor", b =>
+                {
+                    b.Navigation("Documentos");
                 });
 #pragma warning restore 612, 618
         }

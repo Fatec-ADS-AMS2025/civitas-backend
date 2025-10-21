@@ -23,7 +23,7 @@ builder.Services.AddScoped<IFornecedorService, FornecedorService>();
 builder.Services.AddScoped<ISecretariaRepository, SecretariaRepository>();
 builder.Services.AddScoped<ISecretariaService, SecretariaService>();
 builder.Services.AddScoped<IDocumentoRepository, DocumentoRepository>();
-builder.Services.AddScoped<IDocumentosService, DocumentosService>();
+builder.Services.AddScoped<IDocumentoService, DocumentoService>();
 
 var app = builder.Build();
 

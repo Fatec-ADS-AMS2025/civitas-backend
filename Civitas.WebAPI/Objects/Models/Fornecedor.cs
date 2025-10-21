@@ -45,6 +45,7 @@ namespace Civitas.WebAPI.Objects.Models
         [Column("estado")]
         public string Estado { get; set; }
 
+        public ICollection <Documento> Documentos { get; set; }
         public Fornecedor( int idFornecedor, string nomeFantasia, Situacao situacao, string cnpj, string nome, string logradouro, string numero, string bairro, string cep
             , string telefone, string email, string cidade, string estado)
         {
