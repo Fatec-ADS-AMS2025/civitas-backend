@@ -14,6 +14,9 @@ namespace Civitas.WebAPI.Data
         public DbSet<Fornecedor> Fornecedores { get; set; }
         public DbSet<Secretaria> Secretarias { get; set; }
         public DbSet<Documento> Documento { get; set; }
+        public DbSet<Auditoria> Auditorias { get; set; }
+        public DbSet<TipoInstituicao> TipoInstituicoes { get; set; }
+        public DbSet<Instituicao> Instituicoes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,6 +26,9 @@ namespace Civitas.WebAPI.Data
             FornecedorBuilder.Build(modelBuilder);
             SecretariaBuilder.Build(modelBuilder);
             DocumentoBuilder.Build(modelBuilder);
+            AuditoriaBuilder.Build(modelBuilder);
+            TipoInstituicaoBuilder.Build(modelBuilder);
+            InstituicaoBuilder.Build(modelBuilder);
         }
     }
 }

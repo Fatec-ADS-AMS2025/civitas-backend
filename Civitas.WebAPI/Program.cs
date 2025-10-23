@@ -24,6 +24,12 @@ builder.Services.AddScoped<ISecretariaRepository, SecretariaRepository>();
 builder.Services.AddScoped<ISecretariaService, SecretariaService>();
 builder.Services.AddScoped<IDocumentoRepository, DocumentoRepository>();
 builder.Services.AddScoped<IDocumentoService, DocumentoService>();
+builder.Services.AddScoped<IAuditoriaRepository, AuditoriaRepository>();
+builder.Services.AddScoped<IAuditoriaService, AuditoriaService>();
+builder.Services.AddScoped<IInstituicaoRepository, InstituicaoRepository>();
+builder.Services.AddScoped<IInstituicaoService, InstituicaoService>();
+builder.Services.AddScoped<ITipoInstituicaoRepository, TipoInstituicaoRepository>();
+builder.Services.AddScoped<ITipoInstituicaoService, TipoInstituicaoService>();
 
 var app = builder.Build();
 

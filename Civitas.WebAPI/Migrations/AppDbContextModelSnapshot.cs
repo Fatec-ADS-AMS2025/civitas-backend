@@ -48,6 +48,64 @@ namespace Civitas.WebAPI.Migrations
                     b.HasIndex("IdFornecedor");
 
                     b.ToTable("documento");
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Auditoria", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Data")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("data");
+
+                    b.Property<string>("Hora")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)")
+                        .HasColumnName("hora");
+
+                    b.Property<string>("NomeEntidade")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("nome_entidade");
+
+                    b.Property<string>("NovosValores")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("novos_valores");
+
+                    b.Property<string>("Operacao")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("operacao");
+
+                    b.Property<int>("Situacao")
+                        .HasColumnType("integer")
+                        .HasColumnName("situacao");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("integer")
+                        .HasColumnName("usuario_id");
+
+                    b.Property<string>("ValoresAtingidos")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("valores_atingidos");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("auditoria");
                 });
 
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fornecedor", b =>
@@ -132,6 +190,96 @@ namespace Civitas.WebAPI.Migrations
                     b.HasKey("IdFornecedor");
 
                     b.ToTable("fornecedor");
+                });
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Instituicao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Bairro")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("bairro");
+
+                    b.Property<string>("CEP")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)")
+                        .HasColumnName("cep");
+
+                    b.Property<string>("CNPJ")
+                        .IsRequired()
+                        .HasMaxLength(14)
+                        .HasColumnType("character varying(14)")
+                        .HasColumnName("cnpj");
+
+                    b.Property<string>("Cidade")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("cidade");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("email");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("estado");
+
+                    b.Property<int>("IdTipoInstituicao")
+                        .HasColumnType("integer")
+                        .HasColumnName("idtipoinstituicao");
+
+                    b.Property<string>("Logradouro")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("logradouro");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("nome");
+
+                    b.Property<string>("NomeRazaoSocial")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("nomerazaosocial");
+
+                    b.Property<string>("Numero")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .HasColumnType("character varying(4)")
+                        .HasColumnName("numero");
+
+                    b.Property<int>("Situacao")
+                        .HasColumnType("integer")
+                        .HasColumnName("situacao");
+
+                    b.Property<string>("Telefone")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)")
+                        .HasColumnName("telefone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdTipoInstituicao");
+
+                    b.ToTable("instituicao");
                 });
 
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Secretaria", b =>
@@ -222,6 +370,30 @@ namespace Civitas.WebAPI.Migrations
                     b.HasKey("IdSecretaria");
 
                     b.ToTable("secretaria");
+                });
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.TipoInstituicao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("descricao");
+
+                    b.Property<int>("Situacao")
+                        .HasColumnType("integer")
+                        .HasColumnName("situacao");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("tipoinstituicao");
                 });
 
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Usuario", b =>
@@ -332,6 +504,29 @@ namespace Civitas.WebAPI.Migrations
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fornecedor", b =>
                 {
                     b.Navigation("Documentos");
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Auditoria", b =>
+                {
+                    b.HasOne("Civitas.WebAPI.Objects.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Instituicao", b =>
+                {
+                    b.HasOne("Civitas.WebAPI.Objects.Models.TipoInstituicao", "TipoInstituicao")
+                        .WithMany("Instituicoes")
+                        .HasForeignKey("IdTipoInstituicao")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("TipoInstituicao");
+                });
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.TipoInstituicao", b =>
+                {
+                    b.Navigation("Instituicoes");
                 });
 #pragma warning restore 612, 618
         }
