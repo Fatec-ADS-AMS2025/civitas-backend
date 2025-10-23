@@ -13,6 +13,7 @@ namespace Civitas.WebAPI.Data
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Fornecedor> Fornecedores { get; set; }
         public DbSet<Secretaria> Secretarias { get; set; }
+        public DbSet<Auditoria> Auditorias { get; set; }
         public DbSet<TipoInstituicao> TipoInstituicoes { get; set; }
         public DbSet<Instituicao> Instituicoes { get; set; }
 
@@ -23,6 +24,7 @@ namespace Civitas.WebAPI.Data
             UsuarioBuilder.Build(modelBuilder);
             FornecedorBuilder.Build(modelBuilder);
             SecretariaBuilder.Build(modelBuilder);
+            AuditoriaBuilder.Build(modelBuilder);
             TipoInstituicaoBuilder.Build(modelBuilder);
             InstituicaoBuilder.Build(modelBuilder);
         }
