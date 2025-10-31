@@ -21,33 +21,6 @@ namespace Civitas.WebAPI.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Documento", b =>
-                {
-                    b.Property<int>("IdDocumento")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("IdDocumento");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdDocumento"));
-
-                    b.Property<byte[]>("Digitalizacao")
-                        .IsRequired()
-                        .HasColumnType("bytea")
-                        .HasColumnName("Digitalizacao");
-
-                    b.Property<int>("IdFornecedor")
-                        .HasColumnType("integer")
-                        .HasColumnName("IdFornecedor");
-
-                    b.Property<int>("NumeroDocumento")
-                        .HasColumnType("integer")
-                        .HasColumnName("NumeroDocumento");
-
-                    b.HasKey("IdDocumento");
-
-                    b.HasIndex("IdFornecedor");
-
-                    b.ToTable("documento");
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Auditoria", b =>
                 {
                     b.Property<int>("Id")
@@ -106,6 +79,35 @@ namespace Civitas.WebAPI.Migrations
                     b.HasIndex("UsuarioId");
 
                     b.ToTable("auditoria");
+                });
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Documento", b =>
+                {
+                    b.Property<int>("IdDocumento")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("IdDocumento");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdDocumento"));
+
+                    b.Property<byte[]>("Digitalizacao")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("Digitalizacao");
+
+                    b.Property<int>("IdFornecedor")
+                        .HasColumnType("integer")
+                        .HasColumnName("IdFornecedor");
+
+                    b.Property<int>("NumeroDocumento")
+                        .HasColumnType("integer")
+                        .HasColumnName("NumeroDocumento");
+
+                    b.HasKey("IdDocumento");
+
+                    b.HasIndex("IdFornecedor");
+
+                    b.ToTable("documento");
                 });
 
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fornecedor", b =>
@@ -280,6 +282,35 @@ namespace Civitas.WebAPI.Migrations
                     b.HasIndex("IdTipoInstituicao");
 
                     b.ToTable("instituicao");
+                });
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Orcamento", b =>
+                {
+                    b.Property<int>("IdOrcamento")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("idorcamento");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdOrcamento"));
+
+                    b.Property<int>("AnoOrcamento")
+                        .HasColumnType("integer")
+                        .HasColumnName("anoorcamento");
+
+                    b.Property<int>("IdInstituicao")
+                        .HasColumnType("integer")
+                        .HasColumnName("idinstituicao");
+
+                    b.Property<double>("ValorOrcamento")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("double precision")
+                        .HasColumnName("valororcamento");
+
+                    b.HasKey("IdOrcamento");
+
+                    b.HasIndex("IdInstituicao");
+
+                    b.ToTable("orcamento");
                 });
 
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Secretaria", b =>
@@ -490,6 +521,17 @@ namespace Civitas.WebAPI.Migrations
                     b.ToTable("usuario");
                 });
 
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Auditoria", b =>
+                {
+                    b.HasOne("Civitas.WebAPI.Objects.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Documento", b =>
                 {
                     b.HasOne("Civitas.WebAPI.Objects.Models.Fornecedor", "Fornecedor")
@@ -501,18 +543,6 @@ namespace Civitas.WebAPI.Migrations
                     b.Navigation("Fornecedor");
                 });
 
-            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fornecedor", b =>
-                {
-                    b.Navigation("Documentos");
-            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Auditoria", b =>
-                {
-                    b.HasOne("Civitas.WebAPI.Objects.Models.Usuario", "Usuario")
-                        .WithMany()
-                        .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Usuario");
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Instituicao", b =>
                 {
                     b.HasOne("Civitas.WebAPI.Objects.Models.TipoInstituicao", "TipoInstituicao")
@@ -522,6 +552,22 @@ namespace Civitas.WebAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("TipoInstituicao");
+                });
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Orcamento", b =>
+                {
+                    b.HasOne("Civitas.WebAPI.Objects.Models.Instituicao", "Instituicao")
+                        .WithMany()
+                        .HasForeignKey("IdInstituicao")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Instituicao");
+                });
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fornecedor", b =>
+                {
+                    b.Navigation("Documentos");
                 });
 
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.TipoInstituicao", b =>
