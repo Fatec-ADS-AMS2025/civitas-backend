@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Civitas.WebAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251016170557_AddInstituicaoETipoInstituicao")]
-    partial class AddInstituicaoETipoInstituicao
+    [Migration("20251101185030_addTipoDespesa_UnidadeMedida")]
+    partial class addTipoDespesa_UnidadeMedida
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,95 @@ namespace Civitas.WebAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Auditoria", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Data")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("data");
+
+                    b.Property<string>("Hora")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)")
+                        .HasColumnName("hora");
+
+                    b.Property<string>("NomeEntidade")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("nome_entidade");
+
+                    b.Property<string>("NovosValores")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("novos_valores");
+
+                    b.Property<string>("Operacao")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("operacao");
+
+                    b.Property<int>("Situacao")
+                        .HasColumnType("integer")
+                        .HasColumnName("situacao");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("integer")
+                        .HasColumnName("usuario_id");
+
+                    b.Property<string>("ValoresAtingidos")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("valores_atingidos");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("auditoria");
+                });
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Documento", b =>
+                {
+                    b.Property<int>("IdDocumento")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("IdDocumento");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdDocumento"));
+
+                    b.Property<byte[]>("Digitalizacao")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("Digitalizacao");
+
+                    b.Property<int>("IdFornecedor")
+                        .HasColumnType("integer")
+                        .HasColumnName("IdFornecedor");
+
+                    b.Property<int>("NumeroDocumento")
+                        .HasColumnType("integer")
+                        .HasColumnName("NumeroDocumento");
+
+                    b.HasKey("IdDocumento");
+
+                    b.HasIndex("IdFornecedor");
+
+                    b.ToTable("documento");
+                });
 
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fornecedor", b =>
                 {
@@ -288,6 +377,40 @@ namespace Civitas.WebAPI.Migrations
                     b.ToTable("secretaria");
                 });
 
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.TipoDespesa", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("descricao");
+
+                    b.Property<int>("IdUnidadeMedida")
+                        .HasColumnType("integer")
+                        .HasColumnName("idunidademedida");
+
+                    b.Property<int>("Situacao")
+                        .HasColumnType("integer")
+                        .HasColumnName("situacao");
+
+                    b.Property<int>("SolicitaUc")
+                        .HasColumnType("integer")
+                        .HasColumnName("solicitauc");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdUnidadeMedida");
+
+                    b.ToTable("tipodespesa");
+                });
+
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.TipoInstituicao", b =>
                 {
                     b.Property<int>("Id")
@@ -303,9 +426,43 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("descricao");
 
+                    b.Property<int>("Situacao")
+                        .HasColumnType("integer")
+                        .HasColumnName("situacao");
+
                     b.HasKey("Id");
 
                     b.ToTable("tipoinstituicao");
+                });
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.UnidadeMedida", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Abreviatura")
+                        .IsRequired()
+                        .HasMaxLength(45)
+                        .HasColumnType("character varying(45)")
+                        .HasColumnName("abreviatura");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("descricao");
+
+                    b.Property<int>("Situacao")
+                        .HasColumnType("integer")
+                        .HasColumnName("situacao");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("unidademedida");
                 });
 
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Usuario", b =>
@@ -402,6 +559,28 @@ namespace Civitas.WebAPI.Migrations
                     b.ToTable("usuario");
                 });
 
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Auditoria", b =>
+                {
+                    b.HasOne("Civitas.WebAPI.Objects.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Documento", b =>
+                {
+                    b.HasOne("Civitas.WebAPI.Objects.Models.Fornecedor", "Fornecedor")
+                        .WithMany("Documentos")
+                        .HasForeignKey("IdFornecedor")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Fornecedor");
+                });
+
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Instituicao", b =>
                 {
                     b.HasOne("Civitas.WebAPI.Objects.Models.TipoInstituicao", "TipoInstituicao")
@@ -413,9 +592,30 @@ namespace Civitas.WebAPI.Migrations
                     b.Navigation("TipoInstituicao");
                 });
 
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.TipoDespesa", b =>
+                {
+                    b.HasOne("Civitas.WebAPI.Objects.Models.UnidadeMedida", "UnidadeMedida")
+                        .WithMany("TiposDespesas")
+                        .HasForeignKey("IdUnidadeMedida")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("UnidadeMedida");
+                });
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fornecedor", b =>
+                {
+                    b.Navigation("Documentos");
+                });
+
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.TipoInstituicao", b =>
                 {
                     b.Navigation("Instituicoes");
+                });
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.UnidadeMedida", b =>
+                {
+                    b.Navigation("TiposDespesas");
                 });
 #pragma warning restore 612, 618
         }
