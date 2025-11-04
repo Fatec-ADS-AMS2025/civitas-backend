@@ -284,6 +284,35 @@ namespace Civitas.WebAPI.Migrations
                     b.ToTable("instituicao");
                 });
 
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Orcamento", b =>
+                {
+                    b.Property<int>("IdOrcamento")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("idorcamento");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdOrcamento"));
+
+                    b.Property<int>("AnoOrcamento")
+                        .HasColumnType("integer")
+                        .HasColumnName("anoorcamento");
+
+                    b.Property<int>("IdInstituicao")
+                        .HasColumnType("integer")
+                        .HasColumnName("idinstituicao");
+
+                    b.Property<double>("ValorOrcamento")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("double precision")
+                        .HasColumnName("valororcamento");
+
+                    b.HasKey("IdOrcamento");
+
+                    b.HasIndex("IdInstituicao");
+
+                    b.ToTable("orcamento");
+                });
+
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Secretaria", b =>
                 {
                     b.Property<int>("IdSecretaria")
@@ -587,6 +616,17 @@ namespace Civitas.WebAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("TipoInstituicao");
+                });
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Orcamento", b =>
+                {
+                    b.HasOne("Civitas.WebAPI.Objects.Models.Instituicao", "Instituicao")
+                        .WithMany()
+                        .HasForeignKey("IdInstituicao")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Instituicao");
                 });
 
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.TipoDespesa", b =>
