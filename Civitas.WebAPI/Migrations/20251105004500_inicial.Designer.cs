@@ -2,6 +2,7 @@
 using Civitas.WebAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Civitas.WebAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251105004500_inicial")]
+    partial class inicial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -312,35 +315,6 @@ namespace Civitas.WebAPI.Migrations
                     b.ToTable("instituicao");
                 });
 
-            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Orcamento", b =>
-                {
-                    b.Property<int>("IdOrcamento")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("idorcamento");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdOrcamento"));
-
-                    b.Property<int>("AnoOrcamento")
-                        .HasColumnType("integer")
-                        .HasColumnName("anoorcamento");
-
-                    b.Property<int>("IdInstituicao")
-                        .HasColumnType("integer")
-                        .HasColumnName("idinstituicao");
-
-                    b.Property<double>("ValorOrcamento")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("double precision")
-                        .HasColumnName("valororcamento");
-
-                    b.HasKey("IdOrcamento");
-
-                    b.HasIndex("IdInstituicao");
-
-                    b.ToTable("orcamento");
-                });
-
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Secretaria", b =>
                 {
                     b.Property<int>("IdSecretaria")
@@ -431,40 +405,6 @@ namespace Civitas.WebAPI.Migrations
                     b.ToTable("secretaria");
                 });
 
-            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.TipoDespesa", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Descricao")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("descricao");
-
-                    b.Property<int>("IdUnidadeMedida")
-                        .HasColumnType("integer")
-                        .HasColumnName("idunidademedida");
-
-                    b.Property<int>("Situacao")
-                        .HasColumnType("integer")
-                        .HasColumnName("situacao");
-
-                    b.Property<int>("SolicitaUc")
-                        .HasColumnType("integer")
-                        .HasColumnName("solicitauc");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdUnidadeMedida");
-
-                    b.ToTable("tipodespesa");
-                });
-
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.TipoInstituicao", b =>
                 {
                     b.Property<int>("Id")
@@ -487,36 +427,6 @@ namespace Civitas.WebAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("tipoinstituicao");
-                });
-
-            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.UnidadeMedida", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Abreviatura")
-                        .IsRequired()
-                        .HasMaxLength(45)
-                        .HasColumnType("character varying(45)")
-                        .HasColumnName("abreviatura");
-
-                    b.Property<string>("Descricao")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("descricao");
-
-                    b.Property<int>("Situacao")
-                        .HasColumnType("integer")
-                        .HasColumnName("situacao");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("unidademedida");
                 });
 
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Usuario", b =>
@@ -646,33 +556,6 @@ namespace Civitas.WebAPI.Migrations
                     b.Navigation("TipoInstituicao");
                 });
 
-            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Orcamento", b =>
-                {
-                    b.HasOne("Civitas.WebAPI.Objects.Models.Instituicao", "Instituicao")
-                        .WithMany()
-                        .HasForeignKey("IdInstituicao")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Instituicao");
-                });
-
-            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.TipoDespesa", b =>
-                {
-                    b.HasOne("Civitas.WebAPI.Objects.Models.UnidadeMedida", "UnidadeMedida")
-                        .WithMany("TiposDespesas")
-                        .HasForeignKey("IdUnidadeMedida")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("UnidadeMedida");
-                });
-
-            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fornecedor", b =>
-                {
-                    b.Navigation("Documentos");
-                });
-
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fornecedor", b =>
                 {
                     b.Navigation("Documentos");
@@ -681,11 +564,6 @@ namespace Civitas.WebAPI.Migrations
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.TipoInstituicao", b =>
                 {
                     b.Navigation("Instituicoes");
-                });
-
-            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.UnidadeMedida", b =>
-                {
-                    b.Navigation("TiposDespesas");
                 });
 #pragma warning restore 612, 618
         }
