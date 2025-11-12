@@ -16,8 +16,13 @@ namespace Civitas.WebAPI.Objects.Models
 
         [Column("idinstituicao")]
         public int IdInstituicao { get; set; }
-
         public Instituicao? Instituicao { get; set; }
+
+        [Column("idtipodespesa")]
+        public int IdTipoDespesa { get; set; }
+        public TipoDespesa? TipoDespesa { get; set; }
+
+        public ICollection<Despesa> Despesas { get; set; }
 
         public Orcamento()
         {

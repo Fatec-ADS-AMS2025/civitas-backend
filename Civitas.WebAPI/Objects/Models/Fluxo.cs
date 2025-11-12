@@ -18,6 +18,8 @@ namespace Civitas.WebAPI.Objects.Models
         [Column("status")]
         public Status Status { get; set; }
 
+        public ICollection<Documento> Documentos { get; set; }
+
         public Fluxo()
         {
         }

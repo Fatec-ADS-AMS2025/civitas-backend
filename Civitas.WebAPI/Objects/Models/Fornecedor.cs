@@ -6,10 +6,10 @@ namespace Civitas.WebAPI.Objects.Models
     [Table("fornecedor")]
     public class Fornecedor
     {
-        [Column("idFornecedor")]
+        [Column("idfornecedor")]
         public int IdFornecedor { get; set; }
 
-        [Column("nomeFantasia")]
+        [Column("nomefantasia")]
         public string NomeFantasia { get; set; }
 
         [Column("situacao")]
@@ -45,8 +45,10 @@ namespace Civitas.WebAPI.Objects.Models
         [Column("estado")]
         public string Estado { get; set; }
 
-        public ICollection <Documento> Documentos { get; set; }
-        public Fornecedor( int idFornecedor, string nomeFantasia, Situacao situacao, string cnpj, string nome, string logradouro, string numero, string bairro, string cep
+        public ICollection<Documento> Documentos { get; set; }
+        public ICollection<Despesa> Despesas { get; set; }
+
+        public Fornecedor(int idFornecedor, string nomeFantasia, Situacao situacao, string cnpj, string nome, string logradouro, string numero, string bairro, string cep
             , string telefone, string email, string cidade, string estado)
         {
             IdFornecedor = idFornecedor;

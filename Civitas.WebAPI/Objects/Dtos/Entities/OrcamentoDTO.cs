@@ -6,5 +6,7 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         public int AnoOrcamento { get; set; }
         public double ValorOrcamento { get; set; }
         public int IdInstituicao { get; set; }
+        public int IdTipoDespesa { get; set; }
+        
     }
 }

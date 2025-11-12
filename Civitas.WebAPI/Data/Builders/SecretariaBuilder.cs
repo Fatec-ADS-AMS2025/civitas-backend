@@ -21,6 +21,7 @@ namespace Civitas.WebAPI.Data.Builders
             modelBuilder.Entity<Secretaria>().Property(s => s.Telefone).IsRequired().HasMaxLength(20);
             modelBuilder.Entity<Secretaria>().Property(s => s.Cidade).IsRequired().HasMaxLength(100);
             modelBuilder.Entity<Secretaria>().Property(s => s.Estado).IsRequired().HasMaxLength(2);
+
         }
     }
 }

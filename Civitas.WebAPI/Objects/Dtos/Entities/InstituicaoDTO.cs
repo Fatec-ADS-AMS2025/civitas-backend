@@ -18,5 +18,6 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         public string Estado { get; set; }
         public Situacao Situacao { get; set; }
         public int IdTipoInstituicao { get; set; }
+        public int IdSecretaria { get; set; }
     }
 }

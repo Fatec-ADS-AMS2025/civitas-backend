@@ -38,6 +38,8 @@ builder.Services.AddScoped<ITipoDespesaRepository, TipoDespesaRepository>();
 builder.Services.AddScoped<ITipoDespesaService, TipoDespesaService>();
 builder.Services.AddScoped<IOrcamentoRepository, OrcamentoRepository>();
 builder.Services.AddScoped<IOrcamentoService, OrcamentoService>();
+builder.Services.AddScoped<IDespesaRepository, DespesaRepository>();
+builder.Services.AddScoped<IDespesaService, DespesaService>();
 
 var app = builder.Build();
 
@@ -51,9 +53,14 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+app.UseCors(policy =>
+    policy
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+);
 
-app.UseCors("DefaultPolicy");
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

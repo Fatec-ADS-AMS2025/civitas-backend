@@ -1,28 +1,26 @@
-﻿using Civitas.WebAPI.Objects.Enums;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Reflection.Metadata;
-using System.Runtime.ConstrainedExecution;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Civitas.WebAPI.Objects.Models
 {
     [Table("documento")]
     public class Documento
     {
-        [Column("IdDocumento")]
+        [Column("iddocumento")]
         public int IdDocumento { get; set; }
 
-        [Column("Digitalizacao")]
-        public Byte[] Digitalizacao { get; set; }
+        [Column("digitalizacao")]
+        public byte[] Digitalizacao { get; set; }
 
-        [Column("NumeroDocumento")]
+        [Column("numerodocumento")]
         public int NumeroDocumento { get; set; }
 
-        [Column("IdFornecedor")]
+        [Column("idfornecedor")]
         public int IdFornecedor { get; set; }
-
         public Fornecedor Fornecedor { get; set; }
 
+        [Column("idfluxo")]
+        public int IdFluxo { get; set; }
+        public Fluxo Fluxo { get; set; }
 
         public Documento(int idDocumento, byte[] digitalizacao, int numeroDocumento)
         {
@@ -30,6 +28,5 @@ namespace Civitas.WebAPI.Objects.Models
             Digitalizacao = digitalizacao;
             NumeroDocumento = numeroDocumento;
         }
-
     }
 }
