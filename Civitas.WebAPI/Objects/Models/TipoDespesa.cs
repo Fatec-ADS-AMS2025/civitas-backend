@@ -21,6 +21,7 @@ namespace Civitas.WebAPI.Objects.Models
         [Column("situacao")]
         public Situacao Situacao { get; set; }
 
+        public ICollection<Despesa> Despesas { get; set; }
 
         public TipoDespesa(int id, string descricao, SolicitaUc solicitaUc, Situacao situacao)
         {

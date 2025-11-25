@@ -18,6 +18,7 @@ namespace Civitas.WebAPI.Objects.Models
 
         public ICollection<TipoDespesa> TiposDespesas { get; set; }
 
+
         public UnidadeMedida(int id, string descricao, string abreviatura, Situacao situacao)
         {
             Id = id;

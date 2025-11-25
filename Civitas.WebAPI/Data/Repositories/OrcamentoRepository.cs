@@ -1,5 +1,7 @@
 using Civitas.WebAPI.Data.Interfaces;
+using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Objects.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Civitas.WebAPI.Data.Repositories
 {
@@ -11,5 +13,13 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             _context = context;
         }
+
+        public async Task<bool> ExisteDespesaVinculada(int idOrcamento)
+        {
+            return await _context.Despesas
+                .AnyAsync(d => d.IdOrcamento == idOrcamento);
+        }
+
+
     }
 }

@@ -5,5 +5,8 @@ namespace Civitas.WebAPI.Services.Interfaces
 {
     public interface IOrcamentoService : IGenericService<Orcamento, OrcamentoDTO>
     {
+        Task<bool> ExisteDespesaVinculada(int idOrcamento);
+
+
     }
 }

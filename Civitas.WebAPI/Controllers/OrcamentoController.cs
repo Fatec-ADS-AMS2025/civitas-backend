@@ -1,5 +1,6 @@
 using Civitas.WebAPI.Objects.Contracts;
 using Civitas.WebAPI.Objects.Dtos.Entities;
+using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -192,6 +193,14 @@ namespace Civitas.WebAPI.Controllers
                     _response.Message = "Orçamento não encontrado";
                     return NotFound(_response);
                 }
+
+                if (await _orcamentoService.ExisteDespesaVinculada(idOrcamento))
+                {
+                    _response.Code = ResponseEnum.INVALID;
+                    _response.Message = "Não é possível excluir o orçamento, pois há despesas vinculadas a ele.";
+                    return BadRequest(_response);
+                }
+
 
                 await _orcamentoService.Remove(idOrcamento);
 

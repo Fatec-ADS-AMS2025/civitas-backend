@@ -6,7 +6,7 @@ namespace Civitas.WebAPI.Objects.Models
     [Table("secretaria")]
     public class Secretaria
     {
-        [Column("idSecretaria")]
+        [Column("idsecretaria")]
         public int IdSecretaria { get; set; }
 
         [Column("situacao")]
@@ -33,7 +33,7 @@ namespace Civitas.WebAPI.Objects.Models
         [Column("cep")]
         public string Cep { get; set; }
 
-        [Column("nomeRazaoSocial")]
+        [Column("nomerazaosocial")]
         public string NomeRazaoSocial { get; set; }
 
         [Column("email")]
@@ -47,6 +47,8 @@ namespace Civitas.WebAPI.Objects.Models
 
         [Column("estado")]
         public string Estado { get; set; }
+
+        public ICollection<Instituicao> Instituicoes { get; set; }
 
         // Construtor parameterless necessário para o Entity Framework
         public Secretaria()

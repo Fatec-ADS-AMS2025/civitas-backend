@@ -17,5 +17,12 @@ namespace Civitas.WebAPI.Services.Entities
             _orcamentoRepository = orcamentoRepository;
             _mapper = mapper;
         }
+
+        public async Task<bool> ExisteDespesaVinculada(int idOrcamento)
+        {
+            return await _orcamentoRepository.ExisteDespesaVinculada(idOrcamento);
+        }
+
+
     }
 }

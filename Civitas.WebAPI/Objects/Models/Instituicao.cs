@@ -50,6 +50,15 @@ namespace Civitas.WebAPI.Objects.Models
 
         public TipoInstituicao TipoInstituicao { get; set; }
 
+        [Column("idsecretaria")]
+        public int IdSecretaria { get; set; }
+
+        public Secretaria Secretaria { get; set; }
+
+        public ICollection<Orcamento> Orcamento { get; set; }
+
+        public Despesa Despesa { get; set; }
+
         public Instituicao()
         {
             

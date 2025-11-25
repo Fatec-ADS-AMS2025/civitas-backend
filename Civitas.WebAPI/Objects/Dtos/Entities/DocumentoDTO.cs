@@ -9,5 +9,6 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         public byte[] Digitalizacao { get; set; }
         public int NumeroDocumento { get; set; }
         public int IdFornecedor { get; set; }
+        public int IdFluxo { get; set; }
     }
 }

@@ -18,6 +18,7 @@ namespace Civitas.WebAPI.Data.Builders
                 .WithMany()
                 .HasForeignKey(o => o.IdInstituicao)
                 .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

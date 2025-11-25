@@ -17,5 +17,6 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         public string Email { get; set; }
         public string Cidade { get; set; }
         public string Estado { get; set; }
+
     }
 }

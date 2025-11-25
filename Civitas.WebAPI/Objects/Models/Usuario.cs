@@ -49,6 +49,7 @@ namespace Civitas.WebAPI.Objects.Models
         public TipoUsuario TipoUsuario { get; set; }
         [Column("situacao")]
         public Situacao Situacao { get; set; }
+        public ICollection<Despesa> Despesas { get; set; }
 
         public Usuario(int id, string cpf, string nome, string rg, string logradouro, string numero, string cidade, string estado, string cep, string email, string senha
             , Situacao situacao, string matricula, TipoUsuario tipoUsuario, string bairro)
