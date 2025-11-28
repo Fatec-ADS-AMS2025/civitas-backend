@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/tipo-despesa")]
     [ApiController]
     public class TipoDespesaController : ControllerBase
     {
@@ -131,7 +131,7 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
-        [HttpPatch("{id}/AlterarSituacao")]
+        [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {
             try

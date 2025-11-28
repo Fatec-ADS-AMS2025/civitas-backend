@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/usuarios")]
     [ApiController]
     public class UsuarioController : Controller
     {
@@ -34,8 +34,8 @@ namespace Civitas.WebAPI.Controllers
         }
 
 
-        [HttpGet("GetUsuarioByCpf")]
-        public async Task<IActionResult> GetUsuarioByCpf(string cpf)
+        [HttpGet("cpf")]
+        public async Task<IActionResult> GetUsuarioByCpf([FromQuery] string cpf)
         {
             var usuarioDto = await _usuarioService.GetUsuarioByCpf(cpf);
             if (usuarioDto is null || !usuarioDto.Any())
@@ -53,7 +53,7 @@ namespace Civitas.WebAPI.Controllers
             return Ok(_response);
         }
 
-        [HttpGet("GetUsuarioById")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetUsuarioById(int id)
         {
             var usuarioDto = await _usuarioService.GetById(id);
@@ -68,7 +68,7 @@ namespace Civitas.WebAPI.Controllers
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = usuarioDto;
-            _response.Message = "Usuários listados com sucesso";
+            _response.Message = "Usuário listado com sucesso";
             return Ok(_response);
         }
 
@@ -152,7 +152,7 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -187,41 +187,41 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
-        [HttpPatch("{id}/alterar-situacao")]
+        [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {
             try
             {
-                var fornecedor = await _usuarioService.GetById(id);
-                if (fornecedor == null)
+                var usuario = await _usuarioService.GetById(id);
+                if (usuario == null)
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "Fornecedor não encontrado";
+                    _response.Message = "Usuário não encontrado";
                     return NotFound(_response);
                 }
 
                 // Alterna o valor atual do enum
-                fornecedor.Situacao = fornecedor.Situacao == Situacao.ATIVO
+                usuario.Situacao = usuario.Situacao == Situacao.ATIVO
                     ? Situacao.INATIVO
                     : Situacao.ATIVO;
 
-                await _usuarioService.Update(fornecedor, id);
+                await _usuarioService.Update(usuario, id);
 
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = new
                 {
-                    fornecedor.Id,
-                    Situacao = fornecedor.Situacao.ToString()
+                    usuario.Id,
+                    Situacao = usuario.Situacao.ToString()
                 };
-                _response.Message = $"Situação alterada para {fornecedor.Situacao} com sucesso";
+                _response.Message = $"Situação alterada para {usuario.Situacao} com sucesso";
 
                 return Ok(_response);
             }
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao alterar a situação do fornecedor";
+                _response.Message = "Ocorreu um erro ao alterar a situação do usuário";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,

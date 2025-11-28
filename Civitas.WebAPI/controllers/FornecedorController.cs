@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/fornecedores")]
     [ApiController]
     public class FornecedorController : Controller
     {
@@ -28,7 +28,7 @@ namespace Civitas.WebAPI.Controllers
             {
                 _response.Code = ResponseEnum.INVALID;
                 _response.Data = null;
-                _response.Message = "Dados inválidos";
+                _response.Message = "Dados invï¿½lidos";
 
                 return BadRequest(_response);
             }
@@ -47,7 +47,7 @@ namespace Civitas.WebAPI.Controllers
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Não foi possível cadastrar o fornecedor";
+                _response.Message = "Nï¿½o foi possï¿½vel cadastrar o fornecedor";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
@@ -64,7 +64,7 @@ namespace Civitas.WebAPI.Controllers
             {
                 _response.Code = ResponseEnum.INVALID;
                 _response.Data = null;
-                _response.Message = "Dados inválidos";
+                _response.Message = "Dados invï¿½lidos";
 
                 return BadRequest(_response);
             }
@@ -76,7 +76,7 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "O fornecedor informado não existe";
+                    _response.Message = "O fornecedor informado nï¿½o existe";
                     return NotFound(_response);
                 }
 
@@ -137,7 +137,7 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "Fornecedor não encontrado";
+                    _response.Message = "Fornecedor nï¿½o encontrado";
                     return NotFound(_response);
                 }
 
@@ -160,7 +160,7 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
-        [HttpPatch("{id}/alterar-situacao")]
+        [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {
             try
@@ -170,7 +170,7 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "Fornecedor não encontrado";
+                    _response.Message = "Fornecedor nï¿½o encontrado";
                     return NotFound(_response);
                 }
 
@@ -187,14 +187,14 @@ namespace Civitas.WebAPI.Controllers
                     fornecedor.IdFornecedor,
                     Situacao = fornecedor.Situacao.ToString()
                 };
-                _response.Message = $"Situação alterada para {fornecedor.Situacao} com sucesso";
+                _response.Message = $"Situaï¿½ï¿½o alterada para {fornecedor.Situacao} com sucesso";
 
                 return Ok(_response);
             }
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao alterar a situação do fornecedor";
+                _response.Message = "Ocorreu um erro ao alterar a situaï¿½ï¿½o do fornecedor";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,

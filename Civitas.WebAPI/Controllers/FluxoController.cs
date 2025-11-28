@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/fluxos")]
     [ApiController]
     public class FluxoController : Controller
     {
@@ -28,7 +28,7 @@ namespace Civitas.WebAPI.Controllers
             {
                 _response.Code = ResponseEnum.INVALID;
                 _response.Data = null;
-                _response.Message = "Dados inválidos";
+                _response.Message = "Dados invï¿½lidos";
 
                 return BadRequest(_response);
             }
@@ -47,7 +47,7 @@ namespace Civitas.WebAPI.Controllers
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Não foi possível cadastrar o fluxo";
+                _response.Message = "Nï¿½o foi possï¿½vel cadastrar o fluxo";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
@@ -64,7 +64,7 @@ namespace Civitas.WebAPI.Controllers
             {
                 _response.Code = ResponseEnum.INVALID;
                 _response.Data = null;
-                _response.Message = "Dados inválidos";
+                _response.Message = "Dados invï¿½lidos";
 
                 return BadRequest(_response);
             }
@@ -76,7 +76,7 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "O fluxo informado não existe";
+                    _response.Message = "O fluxo informado nï¿½o existe";
                     return NotFound(_response);
                 }
 
@@ -137,7 +137,7 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "Fluxo não encontrado";
+                    _response.Message = "Fluxo nï¿½o encontrado";
                     return NotFound(_response);
                 }
 
@@ -160,7 +160,7 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
-        [HttpPatch("{id}/alterar-status")]
+        [HttpPatch("status/{id}")]
         public async Task<IActionResult> AlterarStatus(int id, [FromBody] Status novoStatus)
         {
             try
@@ -170,7 +170,7 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "Fluxo não encontrado";
+                    _response.Message = "Fluxo nï¿½o encontrado";
                     return NotFound(_response);
                 }
 
