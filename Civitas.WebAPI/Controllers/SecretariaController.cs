@@ -8,6 +8,17 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
 {
+    /// <summary>
+    /// Controller responsável pela gestão de Secretarias no sistema.
+    /// </summary>
+    /// <remarks>
+    /// Finalidade:
+    /// - Manipular operações de CRUD das Secretarias.
+    /// - Encapsular respostas padronizadas utilizando o objeto <see cref="Response"/>.
+    /// 
+    /// Dependências:
+    /// - <see cref="ISecretariaService"/>: Serviço responsável por regras de negócio e acesso a dados.
+    /// </remarks>
     [Route("api/[controller]")]
     [ApiController]
     public class SecretariaController : Controller
@@ -15,12 +26,26 @@ namespace Civitas.WebAPI.Controllers
         private readonly ISecretariaService _secretariaService;
         private readonly Response _response;
 
+        /// <summary>
+        /// Inicializa o controller de Secretaria.
+        /// </summary>
+        /// <param name="secretariaService">Serviço responsável pelas operações de Secretaria.</param>
         public SecretariaController(ISecretariaService secretariaService)
         {
             _secretariaService = secretariaService;
             _response = new Response();
         }
 
+        /// <summary>
+        /// Cadastra uma nova Secretaria.
+        /// </summary>
+        /// <param name="secretariaDTO">Dados da Secretaria a ser criada.</param>
+        /// <returns>Resultado da operação de criação.</returns>
+        /// <remarks>
+        /// Regras:
+        /// - O objeto deve vir preenchido.
+        /// - O ID sempre é zerado para garantir criação.
+        /// </remarks>
         [HttpPost]
         public async Task<IActionResult> Post(SecretariaDTO secretariaDTO)
         {
@@ -57,6 +82,12 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Atualiza os dados de uma Secretaria existente.
+        /// </summary>
+        /// <param name="id">ID da Secretaria a ser atualizada.</param>
+        /// <param name="secretariaDTO">Dados atualizados.</param>
+        /// <returns>Resultado da operação de atualização.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, SecretariaDTO secretariaDTO)
         {
@@ -101,6 +132,10 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Retorna a lista de todas as Secretarias cadastradas.
+        /// </summary>
+        /// <returns>Lista de Secretarias.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -127,6 +162,11 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Obtém uma Secretaria específica pelo ID.
+        /// </summary>
+        /// <param name="id">ID da Secretaria.</param>
+        /// <returns>Dados da Secretaria solicitada.</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -160,6 +200,11 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Exclui uma Secretaria existente.
+        /// </summary>
+        /// <param name="id">ID da Secretaria.</param>
+        /// <returns>Resultado da exclusão.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -195,6 +240,16 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Alterna a situação (Ativo/Inativo) de uma Secretaria.
+        /// </summary>
+        /// <param name="id">ID da Secretaria.</param>
+        /// <returns>Resultado com a nova situação.</returns>
+        /// <remarks>
+        /// Regra:
+        /// - Caso esteja ATIVO → vira INATIVO
+        /// - Caso esteja INATIVO → vira ATIVO
+        /// </remarks>
         [HttpPatch("{id}/alterar-situacao")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {
@@ -209,7 +264,6 @@ namespace Civitas.WebAPI.Controllers
                     return NotFound(_response);
                 }
 
-                // Alterna o valor atual do enum
                 secretaria.Situacao = secretaria.Situacao == Situacao.ATIVO
                     ? Situacao.INATIVO
                     : Situacao.ATIVO;

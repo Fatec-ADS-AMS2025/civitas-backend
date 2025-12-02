@@ -8,6 +8,21 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
 {
+    /// <summary>
+    /// Controller responsável por gerenciar Documentos dentro do sistema.
+    /// </summary>
+    /// <remarks>
+    /// Funcionalidades disponíveis:
+    /// - Listar todos os Documentos
+    /// - Buscar Documento por ID
+    /// - Criar novo Documento
+    /// - Atualizar Documento
+    /// - Excluir Documento
+    ///
+    /// Observações:
+    /// - Todos os retornos seguem o padrão do objeto Response.
+    /// - Erros internos retornam Status 500 com detalhes.
+    /// </remarks>
     [Route("api/[controller]")]
     [ApiController]
     public class DocumentoController : ControllerBase
@@ -15,12 +30,29 @@ namespace Civitas.WebAPI.Controllers
         private readonly IDocumentoService _documentoService;
         private readonly Response _response;
 
+        /// <summary>
+        /// Construtor com injeção de dependência.
+        /// </summary>
         public DocumentoController(IDocumentoService documentoService)
         {
             _documentoService = documentoService;
             _response = new Response();
         }
 
+        // ======================================================================================================
+        // GET /api/documento
+        // ======================================================================================================
+
+        /// <summary>
+        /// Retorna a lista de todos os Documentos cadastrados no sistema.
+        /// </summary>
+        /// <remarks>
+        /// <b>Verbo HTTP:</b> GET  
+        ///
+        /// Possíveis respostas:
+        /// - 200: Documentos listados com sucesso
+        /// - 500: Erro interno
+        /// </remarks>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -33,6 +65,22 @@ namespace Civitas.WebAPI.Controllers
             return Ok(_response);
         }
 
+        // ======================================================================================================
+        // GET /api/documento/{id}
+        // ======================================================================================================
+
+        /// <summary>
+        /// Retorna os dados de um Documento específico pelo ID.
+        /// </summary>
+        /// <param name="id">ID do Documento.</param>
+        /// <remarks>
+        /// <b>Verbo HTTP:</b> GET
+        ///
+        /// Possíveis respostas:
+        /// - 200: Documento encontrado
+        /// - 404: Documento não encontrado
+        /// - 500: Erro interno
+        /// </remarks>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDocumentoById(int id)
         {
@@ -52,6 +100,22 @@ namespace Civitas.WebAPI.Controllers
             return Ok(_response);
         }
 
+        // ======================================================================================================
+        // POST /api/documento
+        // ======================================================================================================
+
+        /// <summary>
+        /// Cadastra um novo Documento.
+        /// </summary>
+        /// <param name="DocumentoDTO">Dados do Documento.</param>
+        /// <remarks>
+        /// <b>Verbo HTTP:</b> POST  
+        ///
+        /// Possíveis respostas:
+        /// - 200: Documento criado com sucesso
+        /// - 400: Dados inválidos
+        /// - 500: Erro interno ao cadastrar
+        /// </remarks>
         [HttpPost]
         public async Task<IActionResult> Post(DocumentoDTO DocumentoDTO)
         {
@@ -66,6 +130,7 @@ namespace Civitas.WebAPI.Controllers
 
             try
             {
+                // ID deve ser zerado antes da criação
                 DocumentoDTO.IdDocumento = 0;
                 await _documentoService.Create(DocumentoDTO);
 
@@ -88,6 +153,24 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        // ======================================================================================================
+        // PUT /api/documento/{id}
+        // ======================================================================================================
+
+        /// <summary>
+        /// Atualiza os dados de um Documento existente.
+        /// </summary>
+        /// <param name="id">ID do Documento.</param>
+        /// <param name="documentoDTO">Dados atualizados.</param>
+        /// <remarks>
+        /// <b>Verbo HTTP:</b> PUT
+        ///
+        /// Possíveis respostas:
+        /// - 200: Documento atualizado
+        /// - 400: Dados inválidos
+        /// - 404: Documento não existe
+        /// - 500: Erro interno ao atualizar
+        /// </remarks>
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, DocumentoDTO documentoDTO)
         {
@@ -132,6 +215,22 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        // ======================================================================================================
+        // DELETE /api/documento/{id}
+        // ======================================================================================================
+
+        /// <summary>
+        /// Remove um Documento do sistema.
+        /// </summary>
+        /// <param name="id">ID do Documento.</param>
+        /// <remarks>
+        /// <b>Verbo HTTP:</b> DELETE  
+        ///
+        /// Possíveis respostas:
+        /// - 200: Documento excluído
+        /// - 404: Documento não encontrado
+        /// - 500: Erro interno ao excluir
+        /// </remarks>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -166,8 +265,5 @@ namespace Civitas.WebAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
         }
-
-
-
     }
 }

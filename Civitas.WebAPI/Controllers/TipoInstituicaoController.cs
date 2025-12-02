@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
 {
+    /// <summary>
+    /// Controller responsável pelo gerenciamento dos Tipos de Instituições.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class TipoInstituicaoController : ControllerBase
@@ -16,12 +19,20 @@ namespace Civitas.WebAPI.Controllers
         private readonly ITipoInstituicaoService _tipoInstituicaoService;
         private readonly Response _response;
 
+        /// <summary>
+        /// Construtor do controller de TipoInstituicao.
+        /// </summary>
+        /// <param name="tipoInstituicaoService">Serviço de Tipos de Instituições.</param>
         public TipoInstituicaoController(ITipoInstituicaoService tipoInstituicaoService)
         {
             _tipoInstituicaoService = tipoInstituicaoService;
             _response = new Response();
         }
 
+        /// <summary>
+        /// Lista todos os tipos de instituições.
+        /// </summary>
+        /// <returns>Retorna todos os tipos de instituições cadastrados.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -34,6 +45,11 @@ namespace Civitas.WebAPI.Controllers
             return Ok(_response);
         }
 
+        /// <summary>
+        /// Busca um tipo de instituição pelo ID.
+        /// </summary>
+        /// <param name="id">ID do tipo de instituição.</param>
+        /// <returns>Retorna o tipo de instituição encontrado.</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTipoInstituicaoById(int id)
         {
@@ -53,6 +69,11 @@ namespace Civitas.WebAPI.Controllers
             return Ok(_response);
         }
 
+        /// <summary>
+        /// Cadastra um novo tipo de instituição.
+        /// </summary>
+        /// <param name="tipoInstituicaoDTO">Dados do tipo de instituição a ser cadastrado.</param>
+        /// <returns>Retorna o tipo cadastrado.</returns>
         [HttpPost]
         public async Task<IActionResult> Post(TipoInstituicaoDTO tipoInstituicaoDTO)
         {
@@ -89,6 +110,12 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Atualiza um tipo de instituição existente.
+        /// </summary>
+        /// <param name="id">ID do tipo de instituição.</param>
+        /// <param name="tipoInstituicaoDTO">Dados atualizados.</param>
+        /// <returns>Retorna o tipo atualizado.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, TipoInstituicaoDTO tipoInstituicaoDTO)
         {
@@ -133,12 +160,16 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Alterna a situação do tipo de instituição (Ativo/Inativo).
+        /// </summary>
+        /// <param name="id">ID do tipo de instituição.</param>
+        /// <returns>Retorna o status atualizado.</returns>
         [HttpPatch("{id}/AlterarSituacao")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {
             try
             {
-                // Busca o tipo de instituição pelo id
                 var tipoInstituicao = await _tipoInstituicaoService.GetById(id);
                 if (tipoInstituicao == null)
                 {
@@ -148,7 +179,6 @@ namespace Civitas.WebAPI.Controllers
                     return NotFound(_response);
                 }
 
-                // Se estiver ativo e for desativar, checa se existem Instituições ativas vinculadas
                 if (tipoInstituicao.Situacao == Situacao.ATIVO)
                 {
                     var possuiAtivas = await _tipoInstituicaoService.ExisteInstituicoesAtivas(id);
@@ -164,11 +194,9 @@ namespace Civitas.WebAPI.Controllers
                 }
                 else
                 {
-                    // Se estiver inativo, pode ativar
                     tipoInstituicao.Situacao = Situacao.ATIVO;
                 }
 
-                // Atualiza o tipo de instituição
                 await _tipoInstituicaoService.Update(tipoInstituicao, id);
 
                 _response.Code = ResponseEnum.SUCCESS;

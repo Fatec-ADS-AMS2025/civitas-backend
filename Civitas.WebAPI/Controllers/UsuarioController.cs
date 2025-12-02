@@ -8,6 +8,18 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
 {
+    /// <summary>
+    /// Controlador responsável pelo gerenciamento de Usuários dentro do sistema.
+    /// </summary>
+    /// <remarks>
+    /// Finalidade:
+    /// - Fornece endpoints de CRUD para entidades de usuário.
+    /// - Permite buscas específicas, como consulta por CPF.
+    ///
+    /// Dependências:
+    /// - <see cref="IUsuarioService"/>: Camada de serviço que encapsula regras de negócio.
+    /// - <see cref="Response"/>: Objeto padrão utilizado para retorno de respostas.
+    /// </remarks>
     [Route("api/[controller]")]
     [ApiController]
     public class UsuarioController : Controller
@@ -15,12 +27,20 @@ namespace Civitas.WebAPI.Controllers
         private readonly IUsuarioService _usuarioService;
         private readonly Response _response;
 
+        /// <summary>
+        /// Inicializa o controlador de usuários.
+        /// </summary>
+        /// <param name="usuarioService">Serviço responsável pela lógica de usuários.</param>
         public UsuarioController(IUsuarioService usuarioService)
         {
             _usuarioService = usuarioService;
             _response = new Response();
         }
 
+        /// <summary>
+        /// Retorna todos os usuários cadastrados.
+        /// </summary>
+        /// <returns>Lista de usuários encapsulada em um objeto de resposta.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -33,7 +53,16 @@ namespace Civitas.WebAPI.Controllers
             return Ok(_response);
         }
 
-
+        /// <summary>
+        /// Busca usuários pelo CPF informado.
+        /// </summary>
+        /// <param name="cpf">CPF do usuário desejado.</param>
+        /// <returns>Lista de usuários que possuem o CPF informado.</returns>
+        /// <remarks>
+        /// Observações:
+        /// - Pode retornar múltiplos usuários, dependendo da modelagem.
+        /// - Retorna NotFound caso nenhum usuário seja encontrado.
+        /// </remarks>
         [HttpGet("GetUsuarioByCpf")]
         public async Task<IActionResult> GetUsuarioByCpf(string cpf)
         {
@@ -53,6 +82,11 @@ namespace Civitas.WebAPI.Controllers
             return Ok(_response);
         }
 
+        /// <summary>
+        /// Consulta um usuário pelo ID.
+        /// </summary>
+        /// <param name="id">Identificador único do usuário.</param>
+        /// <returns>DTO do usuário, caso encontrado.</returns>
         [HttpGet("GetUsuarioById")]
         public async Task<IActionResult> GetUsuarioById(int id)
         {
@@ -72,6 +106,11 @@ namespace Civitas.WebAPI.Controllers
             return Ok(_response);
         }
 
+        /// <summary>
+        /// Cria um novo usuário.
+        /// </summary>
+        /// <param name="usuarioDTO">Dados do usuário a ser criado.</param>
+        /// <returns>Objeto de resposta contendo o usuário criado.</returns>
         [HttpPost]
         public async Task<IActionResult> Post(UsuarioDTO usuarioDTO)
         {
@@ -108,6 +147,12 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Atualiza um usuário existente.
+        /// </summary>
+        /// <param name="id">ID do usuário a ser atualizado.</param>
+        /// <param name="usuarioDTO">Novos dados do usuário.</param>
+        /// <returns>Objeto de resposta com o usuário atualizado.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, UsuarioDTO usuarioDTO)
         {
@@ -152,6 +197,11 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Remove um usuário pelo ID.
+        /// </summary>
+        /// <param name="id">Identificador do usuário a ser removido.</param>
+        /// <returns>Resultado da operação de remoção.</returns>
         [HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
@@ -187,6 +237,11 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Alterna a situação (Ativo/Inativo) de um usuário.
+        /// </summary>
+        /// <param name="id">ID do usuário.</param>
+        /// <returns>Status atualizado da situação do usuário.</returns>
         [HttpPatch("{id}/alterar-situacao")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {
@@ -201,7 +256,7 @@ namespace Civitas.WebAPI.Controllers
                     return NotFound(_response);
                 }
 
-                // Alterna o valor atual do enum
+                // Alterna situação atual
                 fornecedor.Situacao = fornecedor.Situacao == Situacao.ATIVO
                     ? Situacao.INATIVO
                     : Situacao.ATIVO;
