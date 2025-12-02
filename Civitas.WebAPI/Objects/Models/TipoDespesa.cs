@@ -67,4 +67,12 @@ namespace Civitas.WebAPI.Objects.Models
         /// <summary>
         /// Construtor para inicialização da entidade TipoDespesa.
         /// </summary>
-        public Tipo
+        public TipoDespesa(int id, string descricao, SolicitaUc solicitaUc, Situacao situacao)
+        {
+            Id = id;
+            Descricao = descricao;
+            SolicitaUc = solicitaUc;
+            Situacao = situacao;
+        }
+    }
+}
