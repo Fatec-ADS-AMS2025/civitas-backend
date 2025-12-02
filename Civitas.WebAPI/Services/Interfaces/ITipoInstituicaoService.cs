@@ -21,4 +21,9 @@ namespace Civitas.WebAPI.Services.Interfaces
         /// </returns>
         /// <remarks>
         /// Contrato de Integridade:
-        /// Método essencial para implementar o "Safe Delete
+        /// Método essencial para implementar o "Safe Delete". O sistema não deve permitir a remoção de um tipo de instituição
+        /// que ainda possua vínculos, evitando a criação de registros órfãos.
+        /// </remarks>
+        Task<bool> ExisteInstituicoesAtivas(int idTipoInstituicao);
+    }
+}
