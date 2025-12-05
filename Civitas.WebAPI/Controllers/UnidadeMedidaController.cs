@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/unidade-medida")]
     [ApiController]
     public class UnidadeMedidaController : ControllerBase
     {
@@ -132,7 +132,7 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
-        [HttpPatch("{id}/AlterarSituacao")]
+        [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {
             try

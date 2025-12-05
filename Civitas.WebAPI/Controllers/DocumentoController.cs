@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/documentos")]
     [ApiController]
     public class DocumentoController : ControllerBase
     {

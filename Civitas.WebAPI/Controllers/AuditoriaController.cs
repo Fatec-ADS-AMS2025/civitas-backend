@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auditorias")]
     [ApiController]
     public class AuditoriaController : Controller
     {
@@ -87,7 +87,7 @@ namespace Civitas.WebAPI.Controllers
         /// <summary>
         /// Busca auditorias por ID do usuário
         /// </summary>
-        [HttpGet("GetByUsuarioId/{usuarioId}")]
+        [HttpGet("usuario/{usuarioId}")]
         public async Task<IActionResult> GetByUsuarioId(int usuarioId)
         {
             try
@@ -124,8 +124,8 @@ namespace Civitas.WebAPI.Controllers
         /// <summary>
         /// Busca auditorias por nome da entidade
         /// </summary>
-        [HttpGet("GetByEntidade")]
-        public async Task<IActionResult> GetByEntidade(string nomeEntidade)
+        [HttpGet("entidade")]
+        public async Task<IActionResult> GetByEntidade([FromQuery] string nomeEntidade)
         {
             try
             {
@@ -161,8 +161,8 @@ namespace Civitas.WebAPI.Controllers
         /// <summary>
         /// Busca auditorias por tipo de operação
         /// </summary>
-        [HttpGet("GetByOperacao")]
-        public async Task<IActionResult> GetByOperacao(string operacao)
+        [HttpGet("operacao")]
+        public async Task<IActionResult> GetByOperacao([FromQuery] string operacao)
         {
             try
             {
@@ -322,7 +322,7 @@ namespace Civitas.WebAPI.Controllers
         /// <summary>
         /// Altera a situação de uma auditoria (ATIVO/INATIVO)
         /// </summary>
-        [HttpPatch("{id}/alterar-situacao")]
+        [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {
             try

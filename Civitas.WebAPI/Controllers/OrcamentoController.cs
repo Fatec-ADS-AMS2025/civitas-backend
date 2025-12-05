@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/orcamentos")]
     [ApiController]
     public class OrcamentoController : ControllerBase
     {
@@ -31,10 +31,10 @@ namespace Civitas.WebAPI.Controllers
             return Ok(_response);
         }
 
-        [HttpGet("{idOrcamento}")]
-        public async Task<IActionResult> GetOrcamentoById(int idOrcamento)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOrcamentoById(int id)
         {
-            var orcamentoDto = await _orcamentoService.GetById(idOrcamento);
+            var orcamentoDto = await _orcamentoService.GetById(id);
             if (orcamentoDto is null)
             {
                 _response.Code = ResponseEnum.SUCCESS;
@@ -111,8 +111,8 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
-        [HttpPut("{idOrcamento}")]
-        public async Task<IActionResult> Put(int idOrcamento, OrcamentoDTO orcamentoDTO)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, OrcamentoDTO orcamentoDTO)
         {
             if (orcamentoDTO is null)
             {
@@ -125,7 +125,7 @@ namespace Civitas.WebAPI.Controllers
 
             try
             {
-                var existingOrcamentoDTO = await _orcamentoService.GetById(idOrcamento);
+                var existingOrcamentoDTO = await _orcamentoService.GetById(id);
                 if (existingOrcamentoDTO is null)
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
@@ -159,7 +159,7 @@ namespace Civitas.WebAPI.Controllers
                     return BadRequest(_response);
                 }
 
-                await _orcamentoService.Update(orcamentoDTO, idOrcamento);
+                await _orcamentoService.Update(orcamentoDTO, id);
 
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = orcamentoDTO;
@@ -180,12 +180,12 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
-        [HttpDelete("{idOrcamento}")]
-        public async Task<IActionResult> Delete(int idOrcamento)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var orcamento = await _orcamentoService.GetById(idOrcamento);
+                var orcamento = await _orcamentoService.GetById(id);
                 if (orcamento == null)
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
@@ -194,7 +194,7 @@ namespace Civitas.WebAPI.Controllers
                     return NotFound(_response);
                 }
 
-                if (await _orcamentoService.ExisteDespesaVinculada(idOrcamento))
+                if (await _orcamentoService.ExisteDespesaVinculada(id))
                 {
                     _response.Code = ResponseEnum.INVALID;
                     _response.Message = "Não é possível excluir o orçamento, pois há despesas vinculadas a ele.";
@@ -202,7 +202,7 @@ namespace Civitas.WebAPI.Controllers
                 }
 
 
-                await _orcamentoService.Remove(idOrcamento);
+                await _orcamentoService.Remove(id);
 
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = null;

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/instituicoes")]
     [ApiController]
     public class InstituicaoController : ControllerBase
     {
@@ -52,8 +52,8 @@ namespace Civitas.WebAPI.Controllers
             return Ok(_response);
         }
 
-        [HttpGet("GetInstituicaoByName")]
-        public async Task<IActionResult> GetInstituicaoByName(string name)
+        [HttpGet("nome")]
+        public async Task<IActionResult> GetInstituicaoByName([FromQuery] string name)
         {
             var instituicaoDto = await _instituicaoService.GetInstituicaoByName(name);
             if (instituicaoDto is null || !instituicaoDto.Any())
@@ -151,7 +151,7 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
-        [HttpPatch("{id}/AlterarSituacao")]
+        [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {
             try
