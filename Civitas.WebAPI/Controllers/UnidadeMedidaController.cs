@@ -8,6 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
 {
+    /// <summary>
+    /// Controller responsável pelo gerenciamento das Unidades de Medida.
+    /// </summary>
+    [Route("api/[controller]")]
     [Route("api/unidade-medida")]
     [ApiController]
     public class UnidadeMedidaController : ControllerBase
@@ -15,12 +19,20 @@ namespace Civitas.WebAPI.Controllers
         private readonly IUnidadeMedidaService _unidadeMedidaService;
         private readonly Response _response;
 
+        /// <summary>
+        /// Construtor do controller de Unidade de Medida.
+        /// </summary>
+        /// <param name="unidadeMedidaService">Serviço de Unidade de Medida.</param>
         public UnidadeMedidaController(IUnidadeMedidaService unidadeMedidaService)
         {
             _unidadeMedidaService = unidadeMedidaService;
             _response = new Response();
         }
 
+        /// <summary>
+        /// Lista todas as unidades de medida cadastradas.
+        /// </summary>
+        /// <returns>Retorna uma lista de unidades de medida.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -33,6 +45,11 @@ namespace Civitas.WebAPI.Controllers
             return Ok(_response);
         }
 
+        /// <summary>
+        /// Busca uma unidade de medida pelo ID.
+        /// </summary>
+        /// <param name="id">ID da unidade de medida.</param>
+        /// <returns>Retorna a unidade de medida correspondente.</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetInstituicaoById(int id)
         {
@@ -52,6 +69,11 @@ namespace Civitas.WebAPI.Controllers
             return Ok(_response);
         }
 
+        /// <summary>
+        /// Cadastra uma nova unidade de medida.
+        /// </summary>
+        /// <param name="unidadeMedidaDTO">Dados da unidade de medida.</param>
+        /// <returns>Retorna a unidade cadastrada.</returns>
         [HttpPost]
         public async Task<IActionResult> Post(UnidadeMedidaDTO unidadeMedidaDTO)
         {
@@ -88,6 +110,12 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Atualiza uma unidade de medida existente.
+        /// </summary>
+        /// <param name="id">ID da unidade a ser atualizada.</param>
+        /// <param name="unidadeMedidaDTO">Dados atualizados.</param>
+        /// <returns>Retorna a unidade de medida atualizada.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, UnidadeMedidaDTO unidadeMedidaDTO)
         {
@@ -132,6 +160,12 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Altera a situação (Ativo/Inativo) de uma unidade de medida.
+        /// </summary>
+        /// <param name="id">ID da unidade de medida.</param>
+        /// <returns>Retorna a situação atualizada.</returns>
+        [HttpPatch("{id}/AlterarSituacao")]
         [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {
@@ -175,6 +209,5 @@ namespace Civitas.WebAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
         }
-
     }
 }

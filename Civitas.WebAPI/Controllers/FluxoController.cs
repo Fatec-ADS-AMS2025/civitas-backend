@@ -8,22 +8,35 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
 {
+    // Define a rota base da controller como: api/Fluxo
+    [Route("api/[controller]")]
     [Route("api/fluxos")]
     [ApiController]
     public class FluxoController : Controller
     {
+        // Servi�o respons�vel pela regra de neg�cio dos Fluxos
         private readonly IFluxoService _fluxoService;
+
+        // Objeto padr�o de resposta da API
         private readonly Response _response;
 
+        // Construtor com inje��o de depend�ncia do servi�o de fluxo
         public FluxoController(IFluxoService fluxoService)
         {
             _fluxoService = fluxoService;
+
+            // Inicializa o objeto de resposta
             _response = new Response();
         }
 
+        // =========================
+        //   ENDPOINT: POST /api/Fluxo
+        //   Cria um novo fluxo
+        // =========================
         [HttpPost]
         public async Task<IActionResult> Post(FluxoDTO fluxoDTO)
         {
+            // Verifica se os dados recebidos s�o v�lidos
             if (fluxoDTO is null)
             {
                 _response.Code = ResponseEnum.INVALID;
@@ -35,9 +48,13 @@ namespace Civitas.WebAPI.Controllers
 
             try
             {
+                // Garante que o ID ser� gerado pelo banco
                 fluxoDTO.IdFluxo = 0;
+
+                // Chama o service para criar o fluxo
                 await _fluxoService.Create(fluxoDTO);
 
+                // Prepara a resposta
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = fluxoDTO;
                 _response.Message = "Fluxo cadastrado com sucesso";
@@ -46,6 +63,7 @@ namespace Civitas.WebAPI.Controllers
             }
             catch (Exception ex)
             {
+                // Resposta de erro com detalhes
                 _response.Code = ResponseEnum.ERROR;
                 _response.Message = "N�o foi poss�vel cadastrar o fluxo";
                 _response.Data = new
@@ -57,9 +75,14 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        // =========================
+        //   ENDPOINT: PUT /api/Fluxo/{id}
+        //   Atualiza um fluxo existente
+        // =========================
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, FluxoDTO fluxoDTO)
         {
+            // Verifica se os dados s�o v�lidos
             if (fluxoDTO is null)
             {
                 _response.Code = ResponseEnum.INVALID;
@@ -71,7 +94,10 @@ namespace Civitas.WebAPI.Controllers
 
             try
             {
+                // Busca o fluxo pelo ID
                 var existingFluxoDTO = await _fluxoService.GetById(id);
+
+                // Verifica se o fluxo existe
                 if (existingFluxoDTO is null)
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
@@ -80,6 +106,7 @@ namespace Civitas.WebAPI.Controllers
                     return NotFound(_response);
                 }
 
+                // Atualiza o fluxo via service
                 await _fluxoService.Update(fluxoDTO, id);
 
                 _response.Code = ResponseEnum.SUCCESS;
@@ -90,6 +117,7 @@ namespace Civitas.WebAPI.Controllers
             }
             catch (Exception ex)
             {
+                // Retorno em caso de erro
                 _response.Code = ResponseEnum.ERROR;
                 _response.Message = "Ocorreu um erro ao tentar atualizar os dados do fluxo";
                 _response.Data = new
@@ -101,11 +129,16 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        // =========================
+        //   ENDPOINT: GET /api/Fluxo
+        //   Retorna todos os fluxos
+        // =========================
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             try
             {
+                // Obt�m todos os fluxos
                 var fluxos = await _fluxoService.GetAll();
 
                 _response.Code = ResponseEnum.SUCCESS;
@@ -116,6 +149,7 @@ namespace Civitas.WebAPI.Controllers
             }
             catch (Exception ex)
             {
+                // Retorno de erro
                 _response.Code = ResponseEnum.ERROR;
                 _response.Message = "Ocorreu um erro ao obter a lista de fluxos";
                 _response.Data = new
@@ -127,12 +161,19 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        // =========================
+        //   ENDPOINT: GET /api/Fluxo/{id}
+        //   Retorna um fluxo espec�fico
+        // =========================
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             try
             {
+                // Busca o fluxo pelo ID
                 var fluxo = await _fluxoService.GetById(id);
+
+                // Caso n�o exista
                 if (fluxo == null)
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
@@ -141,6 +182,7 @@ namespace Civitas.WebAPI.Controllers
                     return NotFound(_response);
                 }
 
+                // Retorno sucesso
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = fluxo;
                 _response.Message = "Fluxo obtido com sucesso";
@@ -149,6 +191,7 @@ namespace Civitas.WebAPI.Controllers
             }
             catch (Exception ex)
             {
+                // Retorno em caso de erro
                 _response.Code = ResponseEnum.ERROR;
                 _response.Message = "Ocorreu um erro ao obter o fluxo";
                 _response.Data = new
@@ -160,12 +203,20 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        // ==============================================
+        //   ENDPOINT: PATCH /api/Fluxo/{id}/alterar-status
+        //   Altera apenas o status de um fluxo existente
+        // ==============================================
+        [HttpPatch("{id}/alterar-status")]
         [HttpPatch("status/{id}")]
         public async Task<IActionResult> AlterarStatus(int id, [FromBody] Status novoStatus)
         {
             try
             {
+                // Obt�m o fluxo existente
                 var fluxo = await _fluxoService.GetById(id);
+
+                // Verifica se existe
                 if (fluxo == null)
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
@@ -174,10 +225,13 @@ namespace Civitas.WebAPI.Controllers
                     return NotFound(_response);
                 }
 
-                // Atualiza o status conforme o valor recebido
+                // Atualiza somente o status
                 fluxo.Status = novoStatus;
+
+                // Chama o service para salvar a altera��o
                 await _fluxoService.Update(fluxo, id);
 
+                // Retorno de sucesso
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = new
                 {
@@ -190,6 +244,7 @@ namespace Civitas.WebAPI.Controllers
             }
             catch (Exception ex)
             {
+                // Caso ocorra erro
                 _response.Code = ResponseEnum.ERROR;
                 _response.Message = "Ocorreu um erro ao alterar o status do fluxo";
                 _response.Data = new

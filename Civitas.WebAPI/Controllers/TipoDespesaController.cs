@@ -7,6 +7,18 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
 {
+    /// <summary>
+    /// Controlador responsável pela gestão dos Tipos de Despesa do sistema.
+    /// </summary>
+    /// <remarks>
+    /// Finalidade:
+    /// - Disponibilizar operações de CRUD para tipos de despesa.
+    /// - Controlar ativação e desativação considerando regras de dependência.
+    ///
+    /// Dependências:
+    /// - <see cref="ITipoDespesaService"/>: Camada de serviços que contém regras de negócio.
+    /// </remarks>
+    [Route("api/[controller]")]
     [Route("api/tipo-despesa")]
     [ApiController]
     public class TipoDespesaController : ControllerBase
@@ -14,12 +26,20 @@ namespace Civitas.WebAPI.Controllers
         private readonly ITipoDespesaService _tipoDespesaService;
         private readonly Response _response;
 
+        /// <summary>
+        /// Inicializa o controlador de Tipos de Despesa.
+        /// </summary>
+        /// <param name="tipoDespesaService">Serviço responsável pelo gerenciamento de tipos de despesa.</param>
         public TipoDespesaController(ITipoDespesaService tipoDespesaService)
         {
             _tipoDespesaService = tipoDespesaService;
             _response = new Response();
         }
 
+        /// <summary>
+        /// Lista todos os tipos de despesa cadastrados.
+        /// </summary>
+        /// <returns>Lista de tipos de despesa.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -32,6 +52,11 @@ namespace Civitas.WebAPI.Controllers
             return Ok(_response);
         }
 
+        /// <summary>
+        /// Obtém um tipo de despesa específico pelo ID.
+        /// </summary>
+        /// <param name="id">Identificador único do tipo de despesa.</param>
+        /// <returns>Dados do tipo de despesa correspondente.</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTipoInstituicaoById(int id)
         {
@@ -51,6 +76,11 @@ namespace Civitas.WebAPI.Controllers
             return Ok(_response);
         }
 
+        /// <summary>
+        /// Cadastra um novo tipo de despesa.
+        /// </summary>
+        /// <param name="tipoDespesaDTO">Objeto contendo os dados do tipo de despesa.</param>
+        /// <returns>Retorna o tipo de despesa criado.</returns>
         [HttpPost]
         public async Task<IActionResult> Post(TipoDespesaDTO tipoDespesaDTO)
         {
@@ -87,6 +117,12 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Atualiza os dados de um tipo de despesa existente.
+        /// </summary>
+        /// <param name="id">ID do tipo de despesa a ser alterado.</param>
+        /// <param name="tipoDespesaDTO">Objeto com os novos dados.</param>
+        /// <returns>Retorna o tipo de despesa atualizado.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, TipoDespesaDTO tipoDespesaDTO)
         {
@@ -131,12 +167,22 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Alterna o status (Ativo/Inativo) de um tipo de despesa.
+        /// </summary>
+        /// <param name="id">ID do tipo de despesa.</param>
+        /// <returns>Status atualizado.</returns>
+        /// <remarks>
+        /// Regras:
+        /// - Não permite desativar caso existam unidades de medida ativas vinculadas.
+        /// - Ativação é sempre permitida.
+        /// </remarks>
+        [HttpPatch("{id}/AlterarSituacao")]
         [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {
             try
             {
-                // Busca o tipo de instituição pelo id
                 var tipoDespesa = await _tipoDespesaService.GetById(id);
                 if (tipoDespesa == null)
                 {
@@ -146,7 +192,6 @@ namespace Civitas.WebAPI.Controllers
                     return NotFound(_response);
                 }
 
-                // Se estiver ativo e for desativar, checa se existem Instituições ativas vinculadas
                 if (tipoDespesa.Situacao == Situacao.ATIVO)
                 {
                     var possuiAtivas = await _tipoDespesaService.ExisteUnidadesDeMedidaAtivas(id);
@@ -162,11 +207,9 @@ namespace Civitas.WebAPI.Controllers
                 }
                 else
                 {
-                    // Se estiver inativo, pode ativar
                     tipoDespesa.Situacao = Situacao.ATIVO;
                 }
 
-                // Atualiza o tipo de instituição
                 await _tipoDespesaService.Update(tipoDespesa, id);
 
                 _response.Code = ResponseEnum.SUCCESS;

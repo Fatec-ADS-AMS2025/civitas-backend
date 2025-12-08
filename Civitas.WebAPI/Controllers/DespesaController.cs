@@ -7,6 +7,25 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
 {
+    /// <summary>
+    /// Controller responsável pelo gerenciamento de despesas cadastradas no sistema.
+    /// </summary>
+    /// <remarks>
+    /// Este controller expõe endpoints REST para operações de CRUD e alteração de situação.
+    /// 
+    /// Funcionalidades disponíveis:
+    /// - Listar todas as despesas
+    /// - Consultar despesa por ID
+    /// - Criar nova despesa
+    /// - Atualizar uma despesa existente
+    /// - Alterar situação (Ativo/Inativo)
+    ///
+    /// Observações aos desenvolvedores:
+    /// - Todos os retornos seguem o padrão de objeto <see cref="Response"/>.
+    /// - Erros internos são retornados como Status 500 contendo mensagem + StackTrace.
+    /// - Situação usa o enum <see cref="Situacao"/>.
+    /// </remarks>
+    [Route("api/[controller]")]
     [Route("api/despesas")]
     [ApiController]
     public class DespesaController : ControllerBase
@@ -14,12 +33,39 @@ namespace Civitas.WebAPI.Controllers
         private readonly IDespesaService _despesaService;
         private readonly Response _response;
 
+        /// <summary>
+        /// Inicializa o controller com suas dependências.
+        /// </summary>
+        /// <param name="despesaService">Serviço de regras de negócio e persistência de despesas.</param>
         public DespesaController(IDespesaService despesaService)
         {
             _despesaService = despesaService;
             _response = new Response();
         }
 
+        // ======================================================================================================
+        // GET /api/despesa
+        // ======================================================================================================
+
+        /// <summary>
+        /// Retorna todas as despesas cadastradas.
+        /// </summary>
+        /// <remarks>
+        /// <b>Verbo HTTP:</b> GET  
+        ///
+        /// <b>Exemplo de Request:</b>  
+        /// GET /api/despesa
+        ///
+        /// <b>Exemplo de Response:</b>
+        /// {
+        ///   "code": "SUCCESS",
+        ///   "message": "Despesas listadas com sucesso",
+        ///   "data": [ ... ]
+        /// }
+        /// 
+        /// Possíveis Erros:
+        /// - 500: Erro interno inesperado.
+        /// </remarks>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -32,7 +78,38 @@ namespace Civitas.WebAPI.Controllers
             return Ok(_response);
         }
 
+        // ======================================================================================================
+        // GET /api/despesa/{id}
+        // ======================================================================================================
 
+        /// <summary>
+        /// Retorna uma despesa específica pelo seu ID.
+        /// </summary>
+        /// <param name="id">ID da despesa.</param>
+        /// <remarks>
+        /// <b>Verbo HTTP:</b> GET
+        ///
+        /// <b>Exemplo de Request:</b>  
+        /// GET /api/despesa/10
+        ///
+        /// <b>Exemplo de Response (200):</b>
+        /// {
+        ///   "code": "SUCCESS",
+        ///   "message": "Despesas listadas com sucesso",
+        ///   "data": { ... }
+        /// }
+        ///
+        /// <b>Exemplo de Response (404):</b>
+        /// {
+        ///   "code": "SUCCESS",
+        ///   "message": "Nenhuma despesa encontrada",
+        ///   "data": null
+        /// }
+        ///
+        /// Possíveis Erros:
+        /// - 404: Não encontrado.
+        /// - 500: Erro interno.
+        /// </remarks>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUsuarioById(int id)
         {
@@ -52,6 +129,35 @@ namespace Civitas.WebAPI.Controllers
             return Ok(_response);
         }
 
+        // ======================================================================================================
+        // POST /api/despesa
+        // ======================================================================================================
+
+        /// <summary>
+        /// Cria uma nova despesa no sistema.
+        /// </summary>
+        /// <param name="despesaDTO">Objeto contendo os dados da despesa.</param>
+        /// <remarks>
+        /// <b>Verbo HTTP:</b> POST
+        ///
+        /// <b>Exemplo de Request:</b>
+        /// {
+        ///   "descricao": "Conta de luz",
+        ///   "valor": 150.75,
+        ///   "situacao": "ATIVO"
+        /// }
+        ///
+        /// <b>Exemplo de Response:</b>
+        /// {
+        ///   "code": "SUCCESS",
+        ///   "message": "Despesa cadastrada com sucesso",
+        ///   "data": { ... }
+        /// }
+        ///
+        /// Possíveis Erros:
+        /// - 400: Dados inválidos
+        /// - 500: Erro ao salvar no banco
+        /// </remarks>
         [HttpPost]
         public async Task<IActionResult> Post(DespesaDTO despesaDTO)
         {
@@ -88,6 +194,30 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        // ======================================================================================================
+        // PUT /api/despesa/{id}
+        // ======================================================================================================
+
+        /// <summary>
+        /// Atualiza uma despesa existente.
+        /// </summary>
+        /// <param name="id">ID da despesa.</param>
+        /// <param name="despesaDTO">Dados atualizados.</param>
+        /// <remarks>
+        /// <b>Verbo HTTP:</b> PUT
+        ///
+        /// <b>Exemplo de Request:</b>
+        /// {
+        ///   "descricao": "Conta de luz - mês atual",
+        ///   "valor": 180.00,
+        ///   "situacao": "ATIVO"
+        /// }
+        ///
+        /// Possíveis Erros:
+        /// - 400: Dados inválidos
+        /// - 404: Despesa não encontrada
+        /// - 500: Erro interno
+        /// </remarks>
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, DespesaDTO despesaDTO)
         {
@@ -132,7 +262,37 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        // ======================================================================================================
+        // PATCH /api/despesa/{id}/alterar-situacao
+        // ======================================================================================================
 
+        /// <summary>
+        /// Alterna a situação da despesa entre ATIVO e INATIVO.
+        /// </summary>
+        /// <param name="id">ID da despesa.</param>
+        /// <remarks>
+        /// <b>Verbo HTTP:</b> PATCH  
+        ///
+        /// <b>Exemplo de Request:</b>
+        /// PATCH /api/despesa/20/alterar-situacao
+        ///
+        /// <b>Exemplo de Response:</b>
+        /// {
+        ///   "code": "SUCCESS",
+        ///   "message": "Situação alterada para INATIVO com sucesso",
+        ///   "data": {
+        ///       "id": 20,
+        ///       "situacao": "INATIVO"
+        ///   }
+        /// }
+        ///
+        /// Possíveis Erros:
+        /// - 404: Despesa não encontrada  
+        /// - 500: Erro interno  
+        ///
+        /// Observação: Nenhum corpo de request é necessário.
+        /// </remarks>
+        [HttpPatch("{id}/alterar-situacao")]
         [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {
@@ -178,3 +338,4 @@ namespace Civitas.WebAPI.Controllers
         }
     }
 }
+    

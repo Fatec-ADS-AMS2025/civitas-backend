@@ -2,21 +2,96 @@
 
 namespace Civitas.WebAPI.Objects.Dtos.Entities
 {
+    /// <summary>
+    /// Objeto de transferência de dados para gestão de Fornecedores (Credores).
+    /// </summary>
+    /// <remarks>
+    /// Finalidade:
+    /// - Input: Cadastro de novas empresas prestadoras de serviço.
+    /// - Output: Listagem de fornecedores para vínculo em despesas.
+    /// </remarks>
     public class FornecedorDTO
     {
+        /// <summary>
+        /// Identificador único do fornecedor.
+        /// </summary>
+        /// <remarks>
+        /// Input: Nulo ou zero na criação (POST). Obrigatório na edição (PUT).
+        /// </remarks>
         public int IdFornecedor { get; set; }
-        public string NomeFantasia { get; set; }
-        public Situacao Situacao { get; set; }
-        public string Cnpj { get; set; }
-        public string Nome { get; set; }
-        public string Logradouro { get; set; }
-        public string Numero { get; set; }
-        public string Bairro { get; set; }
-        public string Cep { get; set; }
-        public string Telefone { get; set; }
-        public string Email { get; set; }
-        public string Cidade { get; set; }
-        public string Estado { get; set; }
 
+        /// <summary>
+        /// Nome Fantasia (Nome comercial).
+        /// </summary>
+        /// <example>Papelaria Central, Kalunga, Sabesp.</example>
+        public string NomeFantasia { get; set; }
+
+        /// <summary>
+        /// Situação cadastral no sistema.
+        /// </summary>
+        /// <remarks>
+        /// Valores: <see cref="Situacao"/>.
+        /// Regra: Fornecedores INATIVOS (2) não podem ser selecionados para novas Despesas.
+        /// </remarks>
+        public Situacao Situacao { get; set; }
+
+        /// <summary>
+        /// CNPJ (Cadastro Nacional da Pessoa Jurídica).
+        /// </summary>
+        /// <remarks>
+        /// Obrigatório. O backend deve validar:
+        /// 1. Formato (14 dígitos).
+        /// 2. Dígitos verificadores (Algoritmo oficial).
+        /// 3. Unicidade (não permitir duplicidade de CNPJ).
+        /// </remarks>
+        public string Cnpj { get; set; }
+
+        /// <summary>
+        /// Razão Social oficial.
+        /// </summary>
+        /// <remarks>
+        /// Nome jurídico utilizado para emissão de notas fiscais.
+        /// </remarks>
+        public string Nome { get; set; }
+
+        /// <summary>
+        /// Logradouro do endereço da sede.
+        /// </summary>
+        public string Logradouro { get; set; }
+
+        /// <summary>
+        /// Número do imóvel.
+        /// </summary>
+        public string Numero { get; set; }
+
+        /// <summary>
+        /// Bairro.
+        /// </summary>
+        public string Bairro { get; set; }
+
+        /// <summary>
+        /// CEP.
+        /// </summary>
+        public string Cep { get; set; }
+
+        /// <summary>
+        /// Telefone comercial.
+        /// </summary>
+        public string Telefone { get; set; }
+
+        /// <summary>
+        /// E-mail para contato financeiro.
+        /// </summary>
+        public string Email { get; set; }
+
+        /// <summary>
+        /// Cidade.
+        /// </summary>
+        public string Cidade { get; set; }
+
+        /// <summary>
+        /// Estado (UF).
+        /// </summary>
+        public string Estado { get; set; }
     }
 }
