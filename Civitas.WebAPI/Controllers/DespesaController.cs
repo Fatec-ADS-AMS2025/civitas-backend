@@ -26,6 +26,7 @@ namespace Civitas.WebAPI.Controllers
     /// - Situação usa o enum <see cref="Situacao"/>.
     /// </remarks>
     [Route("api/[controller]")]
+    [Route("api/despesas")]
     [ApiController]
     public class DespesaController : ControllerBase
     {
@@ -292,6 +293,7 @@ namespace Civitas.WebAPI.Controllers
         /// Observação: Nenhum corpo de request é necessário.
         /// </remarks>
         [HttpPatch("{id}/alterar-situacao")]
+        [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {
             try

@@ -27,6 +27,7 @@ namespace Civitas.WebAPI.Controllers
     /// - *Não especificado*, presumidamente livre ou via políticas globais.
     /// </remarks>
     [Route("api/[controller]")]
+    [Route("api/instituicoes")]
     [ApiController]
     public class InstituicaoController : ControllerBase
     {
@@ -147,6 +148,8 @@ namespace Civitas.WebAPI.Controllers
         /// </remarks>
         [HttpGet("GetInstituicaoByName")]
         public async Task<IActionResult> GetInstituicaoByName(string name)
+        [HttpGet("nome")]
+        public async Task<IActionResult> GetInstituicaoByName([FromQuery] string name)
         {
             var instituicaoDto = await _instituicaoService.GetInstituicaoByName(name);
             if (instituicaoDto is null || !instituicaoDto.Any())
@@ -327,6 +330,7 @@ namespace Civitas.WebAPI.Controllers
         /// - 500: Erro ao alterar situação
         /// </remarks>
         [HttpPatch("{id}/AlterarSituacao")]
+        [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {
             try

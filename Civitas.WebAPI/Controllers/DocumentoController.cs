@@ -24,6 +24,7 @@ namespace Civitas.WebAPI.Controllers
     /// - Erros internos retornam Status 500 com detalhes.
     /// </remarks>
     [Route("api/[controller]")]
+    [Route("api/documentos")]
     [ApiController]
     public class DocumentoController : ControllerBase
     {

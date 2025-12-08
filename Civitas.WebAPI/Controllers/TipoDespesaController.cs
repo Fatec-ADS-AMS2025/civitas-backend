@@ -19,6 +19,7 @@ namespace Civitas.WebAPI.Controllers
     /// - <see cref="ITipoDespesaService"/>: Camada de serviços que contém regras de negócio.
     /// </remarks>
     [Route("api/[controller]")]
+    [Route("api/tipo-despesa")]
     [ApiController]
     public class TipoDespesaController : ControllerBase
     {
@@ -177,6 +178,7 @@ namespace Civitas.WebAPI.Controllers
         /// - Ativação é sempre permitida.
         /// </remarks>
         [HttpPatch("{id}/AlterarSituacao")]
+        [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {
             try

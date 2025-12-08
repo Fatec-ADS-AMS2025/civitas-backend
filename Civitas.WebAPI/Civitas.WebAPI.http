@@ -1,6 +1,147 @@
 @Civitas.WebAPI_HostAddress = http://localhost:5210
 
-GET {{Civitas.WebAPI_HostAddress}}/weatherforecast/
+### Auditorias - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/auditorias
+Accept: application/json
+
+### Auditorias - Get by ID
+GET {{Civitas.WebAPI_HostAddress}}/api/auditorias/1
+Accept: application/json
+
+### Auditorias - Get by Usuario
+GET {{Civitas.WebAPI_HostAddress}}/api/auditorias/usuario/1
+Accept: application/json
+
+### Auditorias - Get by Entidade
+GET {{Civitas.WebAPI_HostAddress}}/api/auditorias/entidade?nomeEntidade=Usuario
+Accept: application/json
+
+### Auditorias - Get by Operacao
+GET {{Civitas.WebAPI_HostAddress}}/api/auditorias/operacao?operacao=CREATE
+Accept: application/json
+
+### Auditorias - Change Situacao
+PATCH {{Civitas.WebAPI_HostAddress}}/api/auditorias/situacao/1
+Accept: application/json
+
+###
+
+### Despesas - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/despesas
+Accept: application/json
+
+### Despesas - Change Situacao
+PATCH {{Civitas.WebAPI_HostAddress}}/api/despesas/situacao/1
+Accept: application/json
+
+###
+
+### Documentos - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/documentos
+Accept: application/json
+
+###
+
+### Fluxos - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/fluxos
+Accept: application/json
+
+### Fluxos - Change Status (with body)
+PATCH {{Civitas.WebAPI_HostAddress}}/api/fluxos/status/1
+Content-Type: application/json
+
+0
+
+###
+
+### Fornecedores - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/fornecedores
+Accept: application/json
+
+### Fornecedores - Change Situacao
+PATCH {{Civitas.WebAPI_HostAddress}}/api/fornecedores/situacao/1
+Accept: application/json
+
+###
+
+### Instituicoes - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/instituicoes
+Accept: application/json
+
+### Instituicoes - Get by Name
+GET {{Civitas.WebAPI_HostAddress}}/api/instituicoes/nome?name=Prefeitura
+Accept: application/json
+
+### Instituicoes - Change Situacao
+PATCH {{Civitas.WebAPI_HostAddress}}/api/instituicoes/situacao/1
+Accept: application/json
+
+###
+
+### Orcamentos - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/orcamentos
+Accept: application/json
+
+### Orcamentos - Get by ID
+GET {{Civitas.WebAPI_HostAddress}}/api/orcamentos/1
+Accept: application/json
+
+###
+
+### Secretarias - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/secretarias
+Accept: application/json
+
+### Secretarias - Change Situacao
+PATCH {{Civitas.WebAPI_HostAddress}}/api/secretarias/situacao/1
+Accept: application/json
+
+###
+
+### Tipo Despesa - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/tipo-despesa
+Accept: application/json
+
+### Tipo Despesa - Change Situacao
+PATCH {{Civitas.WebAPI_HostAddress}}/api/tipo-despesa/situacao/1
+Accept: application/json
+
+###
+
+### Tipo Instituicao - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/tipo-instituicao
+Accept: application/json
+
+### Tipo Instituicao - Change Situacao
+PATCH {{Civitas.WebAPI_HostAddress}}/api/tipo-instituicao/situacao/1
+Accept: application/json
+
+###
+
+### Unidade Medida - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/unidade-medida
+Accept: application/json
+
+### Unidade Medida - Change Situacao
+PATCH {{Civitas.WebAPI_HostAddress}}/api/unidade-medida/situacao/1
+Accept: application/json
+
+###
+
+### Usuarios - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/usuarios
+Accept: application/json
+
+### Usuarios - Get by ID
+GET {{Civitas.WebAPI_HostAddress}}/api/usuarios/1
+Accept: application/json
+
+### Usuarios - Get by CPF
+GET {{Civitas.WebAPI_HostAddress}}/api/usuarios/cpf?cpf=12345678901
+Accept: application/json
+
+### Usuarios - Change Situacao
+PATCH {{Civitas.WebAPI_HostAddress}}/api/usuarios/situacao/1
 Accept: application/json
 
 ###

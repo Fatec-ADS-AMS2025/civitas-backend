@@ -13,6 +13,7 @@ namespace Civitas.WebAPI.Controllers
     /// Controller responsável pelo gerenciamento dos Tipos de Instituições.
     /// </summary>
     [Route("api/[controller]")]
+    [Route("api/tipo-instituicao")]
     [ApiController]
     public class TipoInstituicaoController : ControllerBase
     {
@@ -166,6 +167,7 @@ namespace Civitas.WebAPI.Controllers
         /// <param name="id">ID do tipo de instituição.</param>
         /// <returns>Retorna o status atualizado.</returns>
         [HttpPatch("{id}/AlterarSituacao")]
+        [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {
             try
