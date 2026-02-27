@@ -26,7 +26,6 @@ namespace Civitas.WebAPI.Controllers
     /// Autenticação/Autorização:
     /// - *Não especificado*, presumidamente livre ou via políticas globais.
     /// </remarks>
-    [Route("api/[controller]")]
     [Route("api/instituicoes")]
     [ApiController]
     public class InstituicaoController : ControllerBase
@@ -146,8 +145,6 @@ namespace Civitas.WebAPI.Controllers
         /// <b>Possíveis Erros:</b>
         /// - 404: Nenhuma instituição encontrada com esse nome
         /// </remarks>
-        [HttpGet("GetInstituicaoByName")]
-        public async Task<IActionResult> GetInstituicaoByName(string name)
         [HttpGet("nome")]
         public async Task<IActionResult> GetInstituicaoByName([FromQuery] string name)
         {
@@ -329,7 +326,6 @@ namespace Civitas.WebAPI.Controllers
         /// - 404: Instituição não encontrada
         /// - 500: Erro ao alterar situação
         /// </remarks>
-        [HttpPatch("{id}/AlterarSituacao")]
         [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {
