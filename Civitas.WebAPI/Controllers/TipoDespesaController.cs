@@ -41,9 +41,9 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <returns>Lista de tipos de despesa.</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
-            var instituicaoDto = await _tipoDespesaService.GetAll();
+            var instituicaoDto = await _tipoDespesaService.GetPage(paginationQuery);
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = instituicaoDto;

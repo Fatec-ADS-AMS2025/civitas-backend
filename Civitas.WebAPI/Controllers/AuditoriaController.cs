@@ -33,11 +33,11 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <returns>Lista completa das auditorias.</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
             try
             {
-                var auditorias = await _auditoriaService.GetAll();
+                var auditorias = await _auditoriaService.GetPage(paginationQuery);
 
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Message = "Lista de auditorias obtida com sucesso";
@@ -145,8 +145,6 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <param name="nomeEntidade">Nome da entidade auditada.</param>
         /// <returns>Lista de auditorias da entidade.</returns>
-        [HttpGet("GetByEntidade")]
-        public async Task<IActionResult> GetByEntidade(string nomeEntidade)
         [HttpGet("entidade")]
         public async Task<IActionResult> GetByEntidade([FromQuery] string nomeEntidade)
         {
@@ -187,8 +185,6 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <param name="operacao">Tipo de operação (CREATE, UPDATE, DELETE...).</param>
         /// <returns>Lista de auditorias da operação informada.</returns>
-        [HttpGet("GetByOperacao")]
-        public async Task<IActionResult> GetByOperacao(string operacao)
         [HttpGet("operacao")]
         public async Task<IActionResult> GetByOperacao([FromQuery] string operacao)
         {

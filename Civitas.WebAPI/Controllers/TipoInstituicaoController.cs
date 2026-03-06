@@ -35,9 +35,9 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <returns>Retorna todos os tipos de instituições cadastrados.</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
-            var instituicaoDto = await _tipoInstituicaoService.GetAll();
+            var instituicaoDto = await _tipoInstituicaoService.GetPage(paginationQuery);
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = instituicaoDto;

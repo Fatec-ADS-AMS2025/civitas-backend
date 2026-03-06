@@ -1,4 +1,6 @@
-﻿namespace Civitas.WebAPI.Services.Interfaces
+using Civitas.WebAPI.Objects.Contracts;
+
+namespace Civitas.WebAPI.Services.Interfaces
 {
     /// <summary>
     /// Interface genérica que define o contrato padrão de serviços para operações CRUD (Create, Read, Update, Delete).
@@ -16,6 +18,13 @@
         /// </summary>
         /// <returns>Uma tarefa assíncrona contendo a coleção de objetos convertidos para DTO.</returns>
         Task<IEnumerable<TDto>> GetAll();
+
+        /// <summary>
+        /// Recupera uma página específica com metadados de paginação e ordenação.
+        /// </summary>
+        /// <param name="paginationQuery">Parâmetros da consulta paginada.</param>
+        /// <returns>Uma tarefa assíncrona contendo o resultado paginado.</returns>
+        Task<PaginatedResult<TDto>> GetPage(PaginationQuery paginationQuery);
 
         /// <summary>
         /// Busca um registro específico pelo seu identificador único.

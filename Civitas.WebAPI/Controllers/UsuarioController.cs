@@ -43,9 +43,9 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <returns>Lista de usuários encapsulada em um objeto de resposta.</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
-            var usuarioDTO = await _usuarioService.GetAll();
+            var usuarioDTO = await _usuarioService.GetPage(paginationQuery);
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = usuarioDTO;
@@ -64,9 +64,6 @@ namespace Civitas.WebAPI.Controllers
         /// - Pode retornar múltiplos usuários, dependendo da modelagem.
         /// - Retorna NotFound caso nenhum usuário seja encontrado.
         /// </remarks>
-        [HttpGet("GetUsuarioByCpf")]
-        public async Task<IActionResult> GetUsuarioByCpf(string cpf)
-
         [HttpGet("cpf")]
         public async Task<IActionResult> GetUsuarioByCpf([FromQuery] string cpf)
         {
@@ -263,8 +260,6 @@ namespace Civitas.WebAPI.Controllers
                     return NotFound(_response);
                 }
 
-                // Alterna situação atual
-                fornecedor.Situacao = fornecedor.Situacao == Situacao.ATIVO
                 // Alterna o valor atual do enum
                 usuario.Situacao = usuario.Situacao == Situacao.ATIVO
                     ? Situacao.INATIVO

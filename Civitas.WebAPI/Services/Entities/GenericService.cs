@@ -1,5 +1,6 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Civitas.WebAPI.Data.Interfaces;
+using Civitas.WebAPI.Objects.Contracts;
 using Civitas.WebAPI.Services.Interfaces;
 
 namespace Civitas.WebAPI.Services.Entities
@@ -45,6 +46,26 @@ namespace Civitas.WebAPI.Services.Entities
         }
 
         /// <summary>
+        /// Obtém uma página de registros com metadados de paginação.
+        /// </summary>
+        /// <param name="paginationQuery">Parâmetros da consulta paginada.</param>
+        /// <returns>Resultado paginado convertido para DTO.</returns>
+        public virtual async Task<PaginatedResult<TDto>> GetPage(PaginationQuery paginationQuery)
+        {
+            var entities = await _repository.GetPage(paginationQuery);
+            var items = _mapper.Map<List<TDto>>(entities.Items);
+
+            return new PaginatedResult<TDto>
+            {
+                Items = items,
+                TotalRecords = entities.TotalRecords,
+                TotalPages = entities.TotalPages,
+                CurrentPage = entities.CurrentPage,
+                PageSize = entities.PageSize
+            };
+        }
+
+        /// <summary>
         /// Obtém um registro específico pelo seu identificador único.
         /// </summary>
         /// <param name="id">O ID do registro a ser buscado.</param>
@@ -64,7 +85,6 @@ namespace Civitas.WebAPI.Services.Entities
         /// </remarks>
         public async Task Create(TDto entityDTO)
         {
-
             var entity = _mapper.Map<T>(entityDTO);
             await _repository.Add(entity);
         }

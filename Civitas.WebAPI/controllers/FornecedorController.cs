@@ -135,12 +135,12 @@ namespace Civitas.WebAPI.Controllers
         //   Obt�m todos os fornecedores
         // ========================================
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
             try
             {
                 // Chama o service para listar todos
-                var fornecedores = await _fornecedorService.GetAll();
+                var fornecedores = await _fornecedorService.GetPage(paginationQuery);
 
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = fornecedores;
