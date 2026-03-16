@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace Civitas.WebAPI.Controllers
 {
     // Define a rota base da controller: api/Fornecedor
-    [Route("api/[controller]")]
     [Route("api/fornecedores")]
     [ApiController]
     public class FornecedorController : Controller
@@ -209,7 +208,6 @@ namespace Civitas.WebAPI.Controllers
         //   PATCH /api/Fornecedor/{id}/alterar-situacao
         //   Altera apenas a situa��o ATIVO/INATIVO do fornecedor
         // ==========================================================
-        [HttpPatch("{id}/alterar-situacao")]
         [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {

@@ -19,7 +19,6 @@ namespace Civitas.WebAPI.Controllers
     /// Dependências:
     /// - <see cref="ISecretariaService"/>: Serviço responsável por regras de negócio e acesso a dados.
     /// </remarks>
-    [Route("api/[controller]")]
     [Route("api/secretarias")]
     [ApiController]
     public class SecretariaController : Controller
@@ -251,7 +250,6 @@ namespace Civitas.WebAPI.Controllers
         /// - Caso esteja ATIVO → vira INATIVO
         /// - Caso esteja INATIVO → vira ATIVO
         /// </remarks>
-        [HttpPatch("{id}/alterar-situacao")]
         [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {

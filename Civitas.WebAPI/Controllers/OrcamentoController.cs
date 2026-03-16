@@ -17,7 +17,6 @@ namespace Civitas.WebAPI.Controllers
     /// Dependências:
     /// - <see cref="IOrcamentoService"/>: Camada de serviço contendo as regras de negócio.
     /// </remarks>
-    [Route("api/[controller]")]
     [Route("api/orcamentos")]
     [ApiController]
     public class OrcamentoController : ControllerBase
@@ -56,8 +55,6 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <param name="idOrcamento">Identificador único do orçamento.</param>
         /// <returns>Orçamento correspondente ou mensagem de erro.</returns>
-        [HttpGet("{idOrcamento}")]
-        public async Task<IActionResult> GetOrcamentoById(int idOrcamento)
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOrcamentoById(int id)
         {
@@ -154,8 +151,6 @@ namespace Civitas.WebAPI.Controllers
         /// <param name="idOrcamento">Identificador do orçamento.</param>
         /// <param name="orcamentoDTO">Dados atualizados do orçamento.</param>
         /// <returns>Resultado da operação.</returns>
-        [HttpPut("{idOrcamento}")]
-        public async Task<IActionResult> Put(int idOrcamento, OrcamentoDTO orcamentoDTO)
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, OrcamentoDTO orcamentoDTO)
         {
@@ -229,8 +224,6 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <param name="idOrcamento">Identificador do orçamento a ser excluído.</param>
         /// <returns>Mensagem indicando o sucesso ou falha da operação.</returns>
-        [HttpDelete("{idOrcamento}")]
-        public async Task<IActionResult> Delete(int idOrcamento)
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -251,8 +244,6 @@ namespace Civitas.WebAPI.Controllers
                     _response.Message = "Não é possível excluir o orçamento, pois há despesas vinculadas a ele.";
                     return BadRequest(_response);
                 }
-
-                await _orcamentoService.Remove(idOrcamento);
 
                 await _orcamentoService.Remove(id);
 

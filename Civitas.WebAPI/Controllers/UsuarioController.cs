@@ -20,7 +20,6 @@ namespace Civitas.WebAPI.Controllers
     /// - <see cref="IUsuarioService"/>: Camada de serviço que encapsula regras de negócio.
     /// - <see cref="Response"/>: Objeto padrão utilizado para retorno de respostas.
     /// </remarks>
-    [Route("api/[controller]")]
     [Route("api/usuarios")]
     [ApiController]
     public class UsuarioController : Controller
@@ -64,9 +63,6 @@ namespace Civitas.WebAPI.Controllers
         /// - Pode retornar múltiplos usuários, dependendo da modelagem.
         /// - Retorna NotFound caso nenhum usuário seja encontrado.
         /// </remarks>
-        [HttpGet("GetUsuarioByCpf")]
-        public async Task<IActionResult> GetUsuarioByCpf(string cpf)
-
         [HttpGet("cpf")]
         public async Task<IActionResult> GetUsuarioByCpf([FromQuery] string cpf)
         {
@@ -91,7 +87,6 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <param name="id">Identificador único do usuário.</param>
         /// <returns>DTO do usuário, caso encontrado.</returns>
-        [HttpGet("GetUsuarioById")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUsuarioById(int id)
         {
@@ -207,7 +202,6 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <param name="id">Identificador do usuário a ser removido.</param>
         /// <returns>Resultado da operação de remoção.</returns>
-        [HttpDelete]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -248,7 +242,6 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <param name="id">ID do usuário.</param>
         /// <returns>Status atualizado da situação do usuário.</returns>
-        [HttpPatch("{id}/alterar-situacao")]
         [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {
@@ -263,8 +256,6 @@ namespace Civitas.WebAPI.Controllers
                     return NotFound(_response);
                 }
 
-                // Alterna situação atual
-                fornecedor.Situacao = fornecedor.Situacao == Situacao.ATIVO
                 // Alterna o valor atual do enum
                 usuario.Situacao = usuario.Situacao == Situacao.ATIVO
                     ? Situacao.INATIVO
