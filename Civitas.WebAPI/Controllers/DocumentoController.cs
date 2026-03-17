@@ -17,7 +17,6 @@ namespace Civitas.WebAPI.Controllers
     /// - Buscar Documento por ID
     /// - Criar novo Documento
     /// - Atualizar Documento
-    /// - Excluir Documento
     ///
     /// Observações:
     /// - Todos os retornos seguem o padrão do objeto Response.
@@ -215,55 +214,5 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
-        // ======================================================================================================
-        // DELETE /api/documento/{id}
-        // ======================================================================================================
-
-        /// <summary>
-        /// Remove um Documento do sistema.
-        /// </summary>
-        /// <param name="id">ID do Documento.</param>
-        /// <remarks>
-        /// <b>Verbo HTTP:</b> DELETE  
-        ///
-        /// Possíveis respostas:
-        /// - 200: Documento excluído
-        /// - 404: Documento não encontrado
-        /// - 500: Erro interno ao excluir
-        /// </remarks>
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                var fornecedor = await _documentoService.GetById(id);
-                if (fornecedor == null)
-                {
-                    _response.Code = ResponseEnum.NOT_FOUND;
-                    _response.Data = null;
-                    _response.Message = "Documento não encontrado";
-                    return NotFound(_response);
-                }
-
-                await _documentoService.Remove(id);
-
-                _response.Code = ResponseEnum.SUCCESS;
-                _response.Data = null;
-                _response.Message = "Documento excluído com sucesso";
-
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao excluir o documento";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
-            }
-        }
     }
 }

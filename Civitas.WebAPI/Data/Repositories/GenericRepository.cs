@@ -2,6 +2,7 @@ using Civitas.WebAPI.Data.Interfaces;
 using Civitas.WebAPI.Objects.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using System.Reflection;
 using System.Linq.Expressions;
 
 namespace Civitas.WebAPI.Data.Repositories
@@ -29,6 +30,41 @@ namespace Civitas.WebAPI.Data.Repositories
 
             var orderedQuery = ApplyOrdering(
                 _dbSet.AsNoTracking(),
+                paginationQuery.SortBy,
+                paginationQuery.IsDescending);
+
+            var totalRecords = await orderedQuery.CountAsync();
+            var items = await orderedQuery
+                .Skip((currentPage - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PaginatedResult<T>
+            {
+                Items = items,
+                TotalRecords = totalRecords,
+                TotalPages = totalRecords == 0
+                    ? 0
+                    : (int)Math.Ceiling(totalRecords / (double)pageSize),
+                CurrentPage = currentPage,
+                PageSize = pageSize
+            };
+        }
+
+        public virtual async Task<IEnumerable<T>> GetByEnumValue<TEnum>(string propertyName, TEnum value) where TEnum : struct, Enum
+        {
+            var filteredQuery = ApplyEnumFilter(_dbSet.AsNoTracking(), propertyName, value);
+            return await filteredQuery.ToListAsync();
+        }
+
+        public virtual async Task<PaginatedResult<T>> GetPageByEnumValue<TEnum>(PaginationQuery paginationQuery, string propertyName, TEnum value) where TEnum : struct, Enum
+        {
+            var currentPage = paginationQuery.NormalizedPage;
+            var pageSize = paginationQuery.NormalizedSize;
+
+            var filteredQuery = ApplyEnumFilter(_dbSet.AsNoTracking(), propertyName, value);
+            var orderedQuery = ApplyOrdering(
+                filteredQuery,
                 paginationQuery.SortBy,
                 paginationQuery.IsDescending);
 
@@ -115,6 +151,27 @@ namespace Civitas.WebAPI.Data.Repositories
                 .Invoke(null, [query, selector]);
 
             return (IQueryable<T>)orderedQuery!;
+        }
+
+        private static IQueryable<T> ApplyEnumFilter<TEnum>(IQueryable<T> query, string propertyName, TEnum value) where TEnum : struct, Enum
+        {
+            var resolvedPropertyName = ResolvePropertyName(propertyName);
+            return query.Where(entity => EF.Property<TEnum>(entity, resolvedPropertyName).Equals(value));
+        }
+
+        private static string ResolvePropertyName(string requestedPropertyName)
+        {
+            var propertyInfo = typeof(T).GetProperty(
+                requestedPropertyName,
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
+
+            if (propertyInfo is null)
+            {
+                throw new InvalidOperationException(
+                    $"Property '{requestedPropertyName}' was not found on entity type {typeof(T).Name}.");
+            }
+
+            return propertyInfo.Name;
         }
 
         private static string ResolveSortPropertyName(IEntityType entityType, string? requestedSortBy)
