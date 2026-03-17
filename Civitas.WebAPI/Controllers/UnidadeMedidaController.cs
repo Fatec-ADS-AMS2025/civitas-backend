@@ -11,7 +11,6 @@ namespace Civitas.WebAPI.Controllers
     /// <summary>
     /// Controller responsável pelo gerenciamento das Unidades de Medida.
     /// </summary>
-    [Route("api/[controller]")]
     [Route("api/unidade-medida")]
     [ApiController]
     public class UnidadeMedidaController : ControllerBase
@@ -165,7 +164,6 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <param name="id">ID da unidade de medida.</param>
         /// <returns>Retorna a situação atualizada.</returns>
-        [HttpPatch("{id}/AlterarSituacao")]
         [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {

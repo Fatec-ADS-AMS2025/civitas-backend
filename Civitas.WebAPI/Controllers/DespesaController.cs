@@ -25,7 +25,6 @@ namespace Civitas.WebAPI.Controllers
     /// - Erros internos são retornados como Status 500 contendo mensagem + StackTrace.
     /// - Situação usa o enum <see cref="Situacao"/>.
     /// </remarks>
-    [Route("api/[controller]")]
     [Route("api/despesas")]
     [ApiController]
     public class DespesaController : ControllerBase
@@ -292,7 +291,6 @@ namespace Civitas.WebAPI.Controllers
         ///
         /// Observação: Nenhum corpo de request é necessário.
         /// </remarks>
-        [HttpPatch("{id}/alterar-situacao")]
         [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {

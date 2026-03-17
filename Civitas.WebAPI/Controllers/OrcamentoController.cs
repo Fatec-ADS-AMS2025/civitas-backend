@@ -17,7 +17,6 @@ namespace Civitas.WebAPI.Controllers
     /// Dependências:
     /// - <see cref="IOrcamentoService"/>: Camada de serviço contendo as regras de negócio.
     /// </remarks>
-    [Route("api/[controller]")]
     [Route("api/orcamentos")]
     [ApiController]
     public class OrcamentoController : ControllerBase

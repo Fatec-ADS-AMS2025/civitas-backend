@@ -9,7 +9,6 @@ namespace Civitas.WebAPI.Controllers
     /// <summary>
     /// Controlador responsável pelo gerenciamento das auditorias do sistema.
     /// </summary>
-    [Route("api/[controller]")]
     [Route("api/auditorias")]
     [ApiController]
     public class AuditoriaController : Controller
@@ -104,7 +103,6 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <param name="usuarioId">Identificador do usuário.</param>
         /// <returns>Lista de auditorias associadas ao usuário.</returns>
-        [HttpGet("GetByUsuarioId/{usuarioId}")]
         [HttpGet("usuario/{usuarioId}")]
         public async Task<IActionResult> GetByUsuarioId(int usuarioId)
         {
@@ -359,7 +357,6 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <param name="id">Identificador da auditoria.</param>
         /// <returns>Status atualizado da auditoria.</returns>
-        [HttpPatch("{id}/alterar-situacao")]
         [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {

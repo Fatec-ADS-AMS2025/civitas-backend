@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace Civitas.WebAPI.Controllers
 {
     // Define a rota base da controller como: api/Fluxo
-    [Route("api/[controller]")]
     [Route("api/fluxos")]
     [ApiController]
     public class FluxoController : Controller
@@ -207,7 +206,6 @@ namespace Civitas.WebAPI.Controllers
         //   ENDPOINT: PATCH /api/Fluxo/{id}/alterar-status
         //   Altera apenas o status de um fluxo existente
         // ==============================================
-        [HttpPatch("{id}/alterar-status")]
         [HttpPatch("status/{id}")]
         public async Task<IActionResult> AlterarStatus(int id, [FromBody] Status novoStatus)
         {
