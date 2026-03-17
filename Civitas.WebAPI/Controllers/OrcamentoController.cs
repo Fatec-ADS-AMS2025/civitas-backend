@@ -39,9 +39,9 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <returns>Lista de orçamentos e mensagem de sucesso.</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
-            var orcamentoDto = await _orcamentoService.GetAll();
+            var orcamentoDto = await _orcamentoService.GetPage(paginationQuery);
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = orcamentoDto;

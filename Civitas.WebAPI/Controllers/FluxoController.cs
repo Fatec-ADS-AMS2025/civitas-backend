@@ -133,12 +133,12 @@ namespace Civitas.WebAPI.Controllers
         //   Retorna todos os fluxos
         // =========================
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
             try
             {
-                // Obt�m todos os fluxos
-                var fluxos = await _fluxoService.GetAll();
+                // Obtém todos os fluxos
+                var fluxos = await _fluxoService.GetPage(paginationQuery);
 
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = fluxos;

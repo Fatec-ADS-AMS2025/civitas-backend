@@ -66,9 +66,9 @@ namespace Civitas.WebAPI.Controllers
         /// - 500: Erro interno inesperado.
         /// </remarks>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
-            var usuarioDTO = await _despesaService.GetAll();
+            var usuarioDTO = await _despesaService.GetPage(paginationQuery);
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = usuarioDTO;

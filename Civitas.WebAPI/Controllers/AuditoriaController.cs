@@ -32,11 +32,11 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <returns>Lista completa das auditorias.</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
             try
             {
-                var auditorias = await _auditoriaService.GetAll();
+                var auditorias = await _auditoriaService.GetPage(paginationQuery);
 
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Message = "Lista de auditorias obtida com sucesso";

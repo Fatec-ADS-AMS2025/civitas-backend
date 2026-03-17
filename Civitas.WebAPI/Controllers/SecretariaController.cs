@@ -137,11 +137,11 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <returns>Lista de Secretarias.</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
             try
             {
-                var secretarias = await _secretariaService.GetAll();
+                var secretarias = await _secretariaService.GetPage(paginationQuery);
 
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = secretarias;

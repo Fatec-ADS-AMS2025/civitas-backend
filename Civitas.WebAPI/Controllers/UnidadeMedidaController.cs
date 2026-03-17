@@ -33,9 +33,9 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <returns>Retorna uma lista de unidades de medida.</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
-            var instituicaoDto = await _unidadeMedidaService.GetAll();
+            var instituicaoDto = await _unidadeMedidaService.GetPage(paginationQuery);
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = instituicaoDto;

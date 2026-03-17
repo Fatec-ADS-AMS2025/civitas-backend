@@ -1,6 +1,8 @@
-﻿using Civitas.WebAPI.Data.Interfaces;
+using Civitas.WebAPI.Data.Interfaces;
+using Civitas.WebAPI.Objects.Contracts;
 using Microsoft.EntityFrameworkCore;
-using System;
+using Microsoft.EntityFrameworkCore.Metadata;
+using System.Linq.Expressions;
 
 namespace Civitas.WebAPI.Data.Repositories
 {
@@ -17,9 +19,36 @@ namespace Civitas.WebAPI.Data.Repositories
 
         public virtual async Task<IEnumerable<T>> Get()
         {
-            return await _dbSet.ToListAsync();
+            return await _dbSet.AsNoTracking().ToListAsync();
         }
 
+        public virtual async Task<PaginatedResult<T>> GetPage(PaginationQuery paginationQuery)
+        {
+            var currentPage = paginationQuery.NormalizedPage;
+            var pageSize = paginationQuery.NormalizedSize;
+
+            var orderedQuery = ApplyOrdering(
+                _dbSet.AsNoTracking(),
+                paginationQuery.SortBy,
+                paginationQuery.IsDescending);
+
+            var totalRecords = await orderedQuery.CountAsync();
+            var items = await orderedQuery
+                .Skip((currentPage - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PaginatedResult<T>
+            {
+                Items = items,
+                TotalRecords = totalRecords,
+                TotalPages = totalRecords == 0
+                    ? 0
+                    : (int)Math.Ceiling(totalRecords / (double)pageSize),
+                CurrentPage = currentPage,
+                PageSize = pageSize
+            };
+        }
 
         public async Task<T> GetById(int id)
         {
@@ -34,30 +63,26 @@ namespace Civitas.WebAPI.Data.Repositories
 
         public async Task Update(T entity)
         {
-            // Descobre dinamicamente o nome da chave primária
             var keyName = _context.Model.FindEntityType(typeof(T))!
                 .FindPrimaryKey()!
                 .Properties
                 .Select(x => x.Name)
                 .First();
 
-            // Pega o valor da chave primária da entidade atual
             var entityId = _context.Entry(entity).Property(keyName).CurrentValue;
 
-            // Verifica se a entidade com o mesmo Id já está sendo rastreada
             var trackedEntity = _context.ChangeTracker.Entries<T>()
-                .FirstOrDefault(e => e.Property(keyName).CurrentValue.Equals(entityId));
+                .FirstOrDefault(e => Equals(e.Property(keyName).CurrentValue, entityId));
 
-            // Se a entidade já estiver sendo rastreada, desanexa
             if (trackedEntity != null)
+            {
                 _context.Entry(trackedEntity.Entity).State = EntityState.Detached;
+            }
 
-            // Marca como modificada
             _context.Entry(entity).State = EntityState.Modified;
 
             await SaveChanges();
         }
-
 
         public async Task Remove(T entity)
         {
@@ -68,6 +93,49 @@ namespace Civitas.WebAPI.Data.Repositories
         public async Task<int> SaveChanges()
         {
             return await _context.SaveChangesAsync();
+        }
+
+        private IQueryable<T> ApplyOrdering(IQueryable<T> query, string? requestedSortBy, bool isDescending)
+        {
+            var entityType = _context.Model.FindEntityType(typeof(T))
+                ?? throw new InvalidOperationException($"Entity type {typeof(T).Name} is not mapped.");
+
+            var sortPropertyName = ResolveSortPropertyName(entityType, requestedSortBy);
+            var parameter = Expression.Parameter(typeof(T), "entity");
+            var property = Expression.Property(parameter, sortPropertyName);
+            var selector = Expression.Lambda(property, parameter);
+            var methodName = isDescending ? nameof(Queryable.OrderByDescending) : nameof(Queryable.OrderBy);
+
+            var orderedQuery = typeof(Queryable)
+                .GetMethods()
+                .Single(method =>
+                    method.Name == methodName &&
+                    method.GetParameters().Length == 2)
+                .MakeGenericMethod(typeof(T), property.Type)
+                .Invoke(null, [query, selector]);
+
+            return (IQueryable<T>)orderedQuery!;
+        }
+
+        private static string ResolveSortPropertyName(IEntityType entityType, string? requestedSortBy)
+        {
+            var matchedProperty = entityType
+                .GetProperties()
+                .FirstOrDefault(property =>
+                    string.Equals(property.Name, requestedSortBy, StringComparison.OrdinalIgnoreCase));
+
+            if (matchedProperty is not null)
+            {
+                return matchedProperty.Name;
+            }
+
+            var primaryKeyName = entityType.FindPrimaryKey()
+                ?.Properties
+                .Select(property => property.Name)
+                .FirstOrDefault();
+
+            return primaryKeyName
+                ?? throw new InvalidOperationException($"Entity type {entityType.Name} does not define a primary key.");
         }
     }
 }

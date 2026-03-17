@@ -42,9 +42,9 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <returns>Lista de usuários encapsulada em um objeto de resposta.</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
-            var usuarioDTO = await _usuarioService.GetAll();
+            var usuarioDTO = await _usuarioService.GetPage(paginationQuery);
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = usuarioDTO;

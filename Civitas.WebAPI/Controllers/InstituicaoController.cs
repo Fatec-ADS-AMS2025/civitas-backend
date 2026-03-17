@@ -67,9 +67,9 @@ namespace Civitas.WebAPI.Controllers
         /// - 500: Erro interno ao buscar instituições.
         /// </remarks>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
-            var instituicaoDto = await _instituicaoService.GetAll();
+            var instituicaoDto = await _instituicaoService.GetPage(paginationQuery);
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = instituicaoDto;
