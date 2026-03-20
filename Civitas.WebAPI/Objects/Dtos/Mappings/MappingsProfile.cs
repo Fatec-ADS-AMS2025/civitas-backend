@@ -9,7 +9,9 @@ namespace Civitas.WebAPI.Objects.Dtos.Mappings
 
         public MappingsProfile()
         {
-            CreateMap<Usuario, UsuarioDTO>().ReverseMap();
+            CreateMap<Usuario, UsuarioDTO>()
+                .ForMember(dest => dest.Senha, opt => opt.Ignore());
+            CreateMap<UsuarioDTO, Usuario>();
             CreateMap<Fornecedor, FornecedorDTO>().ReverseMap();
             CreateMap<Secretaria, SecretariaDTO>().ReverseMap();
             CreateMap<Documento, DocumentoDTO>().ReverseMap();

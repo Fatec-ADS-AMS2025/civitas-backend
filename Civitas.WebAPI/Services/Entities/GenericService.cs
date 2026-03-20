@@ -119,7 +119,7 @@ namespace Civitas.WebAPI.Services.Entities
         /// <remarks>
         /// O método converte o DTO para a Entidade de domínio antes de salvar.
         /// </remarks>
-        public async Task Create(TDto entityDTO)
+        public virtual async Task Create(TDto entityDTO)
         {
             var entity = _mapper.Map<T>(entityDTO);
             await _repository.Add(entity);
@@ -131,7 +131,7 @@ namespace Civitas.WebAPI.Services.Entities
         /// <param name="entityDTO">O objeto DTO com os novos dados.</param>
         /// <param name="id">O ID do registro a ser atualizado.</param>
         /// <exception cref="KeyNotFoundException">Lançada se não existir um registro com o ID informado no banco de dados.</exception>
-        public async Task Update(TDto entityDTO, int id)
+        public virtual async Task Update(TDto entityDTO, int id)
         {
             var existingEntity = await _repository.GetById(id);
 

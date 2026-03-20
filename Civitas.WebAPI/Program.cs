@@ -3,6 +3,7 @@ using Civitas.WebAPI.Data.Interfaces;
 using Civitas.WebAPI.Data.Repositories;
 using Civitas.WebAPI.Services.Entities;
 using Civitas.WebAPI.Services.Interfaces;
+using Civitas.WebAPI.Services.Security;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,7 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<IPasswordHashService, BCryptPasswordHashService>();
 builder.Services.AddScoped<IFornecedorRepository, FornecedorRepository>();
 builder.Services.AddScoped<IFornecedorService, FornecedorService>();
 builder.Services.AddScoped<ISecretariaRepository, SecretariaRepository>();

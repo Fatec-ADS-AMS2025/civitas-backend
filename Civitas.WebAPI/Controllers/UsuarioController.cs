@@ -3,6 +3,7 @@ using Civitas.WebAPI.Objects.Contracts;
 using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
+using Civitas.WebAPI.Services.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -151,14 +152,27 @@ namespace Civitas.WebAPI.Controllers
 
                 return Ok(_response);
             }
+            catch (UsuarioConflictException ex)
+            {
+                _response.Code = ResponseEnum.CONFLICT;
+                _response.Data = ex.Field is null ? null : new[] { ex.Field };
+                _response.Message = ex.Message;
+                return Conflict(_response);
+            }
+            catch (UsuarioValidationException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = ex.Errors;
+                _response.Message = "Os dados informados para o usuário são inválidos";
+                return BadRequest(_response);
+            }
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
                 _response.Message = "Não foi possível cadastrar o usuário";
                 _response.Data = new
                 {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    ErrorMessage = ex.Message
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
@@ -201,14 +215,27 @@ namespace Civitas.WebAPI.Controllers
 
                 return Ok(_response);
             }
+            catch (UsuarioConflictException ex)
+            {
+                _response.Code = ResponseEnum.CONFLICT;
+                _response.Data = ex.Field is null ? null : new[] { ex.Field };
+                _response.Message = ex.Message;
+                return Conflict(_response);
+            }
+            catch (UsuarioValidationException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = ex.Errors;
+                _response.Message = "Os dados informados para o usuário são inválidos";
+                return BadRequest(_response);
+            }
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
                 _response.Message = "Ocorreu um erro ao tentar atualizar os dados do usuário";
                 _response.Data = new
                 {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    ErrorMessage = ex.Message
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }

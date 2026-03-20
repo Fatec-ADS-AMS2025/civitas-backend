@@ -1,7 +1,5 @@
 ﻿using Civitas.WebAPI.Data.Interfaces;
-using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Objects.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Civitas.WebAPI.Data.Repositories
@@ -15,10 +13,32 @@ namespace Civitas.WebAPI.Data.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Usuario>> GetUsuarioByCpf(string cpf)
+        public async Task<bool> ExistsByCpf(string cpf, int? ignoredId = null)
         {
-            return await _context.Usuarios.Where(m => m.Cpf.Contains(cpf)).ToListAsync();
+            return await _context.Usuarios.AnyAsync(usuario =>
+                usuario.Cpf == cpf &&
+                (!ignoredId.HasValue || usuario.Id != ignoredId.Value));
         }
 
+        public async Task<bool> ExistsByEmail(string email, int? ignoredId = null)
+        {
+            return await _context.Usuarios.AnyAsync(usuario =>
+                usuario.Email == email &&
+                (!ignoredId.HasValue || usuario.Id != ignoredId.Value));
+        }
+
+        public async Task<bool> ExistsByMatricula(string matricula, int? ignoredId = null)
+        {
+            return await _context.Usuarios.AnyAsync(usuario =>
+                usuario.Matricula == matricula &&
+                (!ignoredId.HasValue || usuario.Id != ignoredId.Value));
+        }
+
+        public async Task<IEnumerable<Usuario>> GetUsuarioByCpf(string cpf)
+        {
+            return await _context.Usuarios
+                .Where(usuario => usuario.Cpf == cpf)
+                .ToListAsync();
+        }
     }
 }

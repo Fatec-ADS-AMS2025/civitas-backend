@@ -657,14 +657,14 @@ namespace Civitas.WebAPI.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("email");
 
                     b.Property<string>("Estado")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)")
                         .HasColumnName("estado");
 
                     b.Property<string>("Logradouro")
@@ -681,20 +681,20 @@ namespace Civitas.WebAPI.Migrations
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)")
                         .HasColumnName("nome");
 
                     b.Property<string>("Numero")
                         .IsRequired()
-                        .HasMaxLength(4)
-                        .HasColumnType("character varying(4)")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
                         .HasColumnName("numero");
 
                     b.Property<string>("Rg")
                         .IsRequired()
-                        .HasMaxLength(9)
-                        .HasColumnType("character varying(9)")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
                         .HasColumnName("rg");
 
                     b.Property<string>("Senha")
@@ -712,6 +712,15 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnName("tipousuario");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Cpf")
+                        .IsUnique();
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Matricula")
+                        .IsUnique();
 
                     b.ToTable("usuario");
                 });
