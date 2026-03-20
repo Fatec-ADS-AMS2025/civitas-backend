@@ -36,10 +36,10 @@ namespace Civitas.WebAPI.Controllers
         {
             try
             {
-                var auditorias = await _auditoriaService.GetPage(paginationQuery);
+                var auditorias = await _auditoriaService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.ATIVO);
 
                 _response.Code = ResponseEnum.SUCCESS;
-                _response.Message = "Lista de auditorias obtida com sucesso";
+                _response.Message = "Lista de auditorias ativas obtida com sucesso";
                 _response.Data = auditorias;
 
                 return Ok(_response);
@@ -48,6 +48,37 @@ namespace Civitas.WebAPI.Controllers
             {
                 _response.Code = ResponseEnum.ERROR;
                 _response.Message = "Ocorreu um erro ao obter as auditorias";
+                _response.Data = new
+                {
+                    ErrorMessage = ex.Message,
+                    StackTrace = ex.StackTrace
+                };
+
+                return StatusCode(StatusCodes.Status500InternalServerError, _response);
+            }
+        }
+
+        /// <summary>
+        /// Lista todas as auditorias inativas.
+        /// </summary>
+        /// <returns>Lista paginada das auditorias inativas.</returns>
+        [HttpGet("inativos")]
+        public async Task<IActionResult> GetInactive([FromQuery] PaginationQuery paginationQuery)
+        {
+            try
+            {
+                var auditorias = await _auditoriaService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.INATIVO);
+
+                _response.Code = ResponseEnum.SUCCESS;
+                _response.Message = "Lista de auditorias inativas obtida com sucesso";
+                _response.Data = auditorias;
+
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.Code = ResponseEnum.ERROR;
+                _response.Message = "Ocorreu um erro ao obter as auditorias inativas";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
@@ -249,99 +280,6 @@ namespace Civitas.WebAPI.Controllers
             {
                 _response.Code = ResponseEnum.ERROR;
                 _response.Message = "Não foi possível cadastrar a auditoria";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace
-                };
-
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
-            }
-        }
-
-        /// <summary>
-        /// Atualiza uma auditoria existente.
-        /// </summary>
-        /// <param name="id">ID da auditoria a ser atualizada.</param>
-        /// <param name="auditoriaDTO">Novos dados da auditoria.</param>
-        /// <returns>Auditoria atualizada.</returns>
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, AuditoriaDTO auditoriaDTO)
-        {
-            if (auditoriaDTO is null)
-            {
-                _response.Code = ResponseEnum.INVALID;
-                _response.Message = "Dados inválidos";
-                _response.Data = null;
-                return BadRequest(_response);
-            }
-
-            try
-            {
-                var existingAuditoria = await _auditoriaService.GetById(id);
-
-                if (existingAuditoria is null)
-                {
-                    _response.Code = ResponseEnum.NOT_FOUND;
-                    _response.Message = "A auditoria informada não existe";
-                    _response.Data = null;
-                    return NotFound(_response);
-                }
-
-                await _auditoriaService.Update(auditoriaDTO, id);
-
-                _response.Code = ResponseEnum.SUCCESS;
-                _response.Message = "Auditoria atualizada com sucesso";
-                _response.Data = auditoriaDTO;
-
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao tentar atualizar os dados da auditoria";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace
-                };
-
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
-            }
-        }
-
-        /// <summary>
-        /// Remove uma auditoria pelo ID.
-        /// </summary>
-        /// <param name="id">Identificador da auditoria a remover.</param>
-        /// <returns>Resultado da exclusão.</returns>
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                var auditoria = await _auditoriaService.GetById(id);
-
-                if (auditoria == null)
-                {
-                    _response.Code = ResponseEnum.NOT_FOUND;
-                    _response.Message = "Auditoria não encontrada";
-                    _response.Data = null;
-                    return NotFound(_response);
-                }
-
-                await _auditoriaService.Remove(id);
-
-                _response.Code = ResponseEnum.SUCCESS;
-                _response.Message = "Auditoria excluída com sucesso";
-                _response.Data = null;
-
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao excluir a auditoria";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,

@@ -66,6 +66,42 @@ namespace Civitas.WebAPI.Services.Entities
         }
 
         /// <summary>
+        /// Obtém todos os registros filtrando por uma propriedade do tipo enum.
+        /// </summary>
+        /// <typeparam name="TEnum">Tipo do enum utilizado no filtro.</typeparam>
+        /// <param name="propertyName">Nome da propriedade enum na entidade.</param>
+        /// <param name="value">Valor do enum utilizado no filtro.</param>
+        /// <returns>Coleção filtrada convertida para DTO.</returns>
+        public virtual async Task<IEnumerable<TDto>> GetByEnumValue<TEnum>(string propertyName, TEnum value) where TEnum : struct, Enum
+        {
+            var entities = await _repository.GetByEnumValue(propertyName, value);
+            return _mapper.Map<IEnumerable<TDto>>(entities);
+        }
+
+        /// <summary>
+        /// Obtém uma página de registros filtrando por uma propriedade do tipo enum.
+        /// </summary>
+        /// <typeparam name="TEnum">Tipo do enum utilizado no filtro.</typeparam>
+        /// <param name="paginationQuery">Parâmetros da consulta paginada.</param>
+        /// <param name="propertyName">Nome da propriedade enum na entidade.</param>
+        /// <param name="value">Valor do enum utilizado no filtro.</param>
+        /// <returns>Resultado paginado convertido para DTO.</returns>
+        public virtual async Task<PaginatedResult<TDto>> GetPageByEnumValue<TEnum>(PaginationQuery paginationQuery, string propertyName, TEnum value) where TEnum : struct, Enum
+        {
+            var entities = await _repository.GetPageByEnumValue(paginationQuery, propertyName, value);
+            var items = _mapper.Map<List<TDto>>(entities.Items);
+
+            return new PaginatedResult<TDto>
+            {
+                Items = items,
+                TotalRecords = entities.TotalRecords,
+                TotalPages = entities.TotalPages,
+                CurrentPage = entities.CurrentPage,
+                PageSize = entities.PageSize
+            };
+        }
+
+        /// <summary>
         /// Obtém um registro específico pelo seu identificador único.
         /// </summary>
         /// <param name="id">O ID do registro a ser buscado.</param>

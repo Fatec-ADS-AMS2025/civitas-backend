@@ -36,11 +36,27 @@ namespace Civitas.WebAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
-            var instituicaoDto = await _tipoInstituicaoService.GetPage(paginationQuery);
+            var instituicaoDto = await _tipoInstituicaoService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.ATIVO);
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = instituicaoDto;
-            _response.Message = "Tipos de Instituições listados com sucesso";
+            _response.Message = "Tipos de instituições ativos listados com sucesso";
+
+            return Ok(_response);
+        }
+
+        /// <summary>
+        /// Lista todos os tipos de instituições inativos.
+        /// </summary>
+        /// <returns>Retorna os tipos de instituições inativos cadastrados.</returns>
+        [HttpGet("inativos")]
+        public async Task<IActionResult> GetInactive([FromQuery] PaginationQuery paginationQuery)
+        {
+            var tipoInstituicaoDto = await _tipoInstituicaoService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.INATIVO);
+
+            _response.Code = ResponseEnum.SUCCESS;
+            _response.Data = tipoInstituicaoDto;
+            _response.Message = "Tipos de instituições inativos listados com sucesso";
 
             return Ok(_response);
         }
