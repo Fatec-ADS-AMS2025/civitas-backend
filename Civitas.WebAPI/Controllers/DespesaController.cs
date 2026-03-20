@@ -66,13 +66,30 @@ namespace Civitas.WebAPI.Controllers
         /// - 500: Erro interno inesperado.
         /// </remarks>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
-            var usuarioDTO = await _despesaService.GetAll();
+            var usuarioDTO = await _despesaService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.ATIVO);
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = usuarioDTO;
-            _response.Message = "Despesas listadas com sucesso";
+            _response.Message = "Despesas ativas listadas com sucesso";
+
+            return Ok(_response);
+        }
+
+        /// <summary>
+        /// Retorna apenas as despesas inativas.
+        /// </summary>
+        /// <param name="paginationQuery">Parâmetros de paginação.</param>
+        /// <returns>Lista paginada de despesas inativas.</returns>
+        [HttpGet("inativos")]
+        public async Task<IActionResult> GetInactive([FromQuery] PaginationQuery paginationQuery)
+        {
+            var despesaDto = await _despesaService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.INATIVO);
+
+            _response.Code = ResponseEnum.SUCCESS;
+            _response.Data = despesaDto;
+            _response.Message = "Despesas inativas listadas com sucesso";
 
             return Ok(_response);
         }

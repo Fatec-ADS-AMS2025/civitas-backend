@@ -134,16 +134,16 @@ namespace Civitas.WebAPI.Controllers
         //   Obt�m todos os fornecedores
         // ========================================
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
             try
             {
-                // Chama o service para listar todos
-                var fornecedores = await _fornecedorService.GetAll();
+                // Chama o service para listar apenas os ativos
+                var fornecedores = await _fornecedorService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.ATIVO);
 
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = fornecedores;
-                _response.Message = "Lista de fornecedores obtida com sucesso";
+                _response.Message = "Lista de fornecedores ativos obtida com sucesso";
 
                 return Ok(_response);
             }
@@ -152,6 +152,37 @@ namespace Civitas.WebAPI.Controllers
                 // Retorna erro
                 _response.Code = ResponseEnum.ERROR;
                 _response.Message = "Ocorreu um erro ao obter os fornecedores";
+                _response.Data = new
+                {
+                    ErrorMessage = ex.Message,
+                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                };
+
+                return StatusCode(StatusCodes.Status500InternalServerError, _response);
+            }
+        }
+
+        // ========================================
+        //   GET /api/fornecedores/inativos
+        //   Obtém apenas fornecedores inativos
+        // ========================================
+        [HttpGet("inativos")]
+        public async Task<IActionResult> GetInactive([FromQuery] PaginationQuery paginationQuery)
+        {
+            try
+            {
+                var fornecedores = await _fornecedorService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.INATIVO);
+
+                _response.Code = ResponseEnum.SUCCESS;
+                _response.Data = fornecedores;
+                _response.Message = "Lista de fornecedores inativos obtida com sucesso";
+
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.Code = ResponseEnum.ERROR;
+                _response.Message = "Ocorreu um erro ao obter os fornecedores inativos";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,

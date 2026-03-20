@@ -33,13 +33,29 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <returns>Retorna uma lista de unidades de medida.</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
-            var instituicaoDto = await _unidadeMedidaService.GetAll();
+            var instituicaoDto = await _unidadeMedidaService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.ATIVO);
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = instituicaoDto;
-            _response.Message = "Unidades de medida listadas com sucesso";
+            _response.Message = "Unidades de medida ativas listadas com sucesso";
+
+            return Ok(_response);
+        }
+
+        /// <summary>
+        /// Lista todas as unidades de medida inativas.
+        /// </summary>
+        /// <returns>Retorna uma lista paginada de unidades de medida inativas.</returns>
+        [HttpGet("inativos")]
+        public async Task<IActionResult> GetInactive([FromQuery] PaginationQuery paginationQuery)
+        {
+            var unidadeMedidaDto = await _unidadeMedidaService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.INATIVO);
+
+            _response.Code = ResponseEnum.SUCCESS;
+            _response.Data = unidadeMedidaDto;
+            _response.Message = "Unidades de medida inativas listadas com sucesso";
 
             return Ok(_response);
         }

@@ -1,4 +1,6 @@
-﻿namespace Civitas.WebAPI.Services.Interfaces
+using Civitas.WebAPI.Objects.Contracts;
+
+namespace Civitas.WebAPI.Services.Interfaces
 {
     /// <summary>
     /// Interface genérica que define o contrato padrão de serviços para operações CRUD (Create, Read, Update, Delete).
@@ -16,6 +18,32 @@
         /// </summary>
         /// <returns>Uma tarefa assíncrona contendo a coleção de objetos convertidos para DTO.</returns>
         Task<IEnumerable<TDto>> GetAll();
+
+        /// <summary>
+        /// Recupera uma página específica com metadados de paginação e ordenação.
+        /// </summary>
+        /// <param name="paginationQuery">Parâmetros da consulta paginada.</param>
+        /// <returns>Uma tarefa assíncrona contendo o resultado paginado.</returns>
+        Task<PaginatedResult<TDto>> GetPage(PaginationQuery paginationQuery);
+
+        /// <summary>
+        /// Recupera todos os registros cujo valor do enum informado corresponde ao filtro solicitado.
+        /// </summary>
+        /// <typeparam name="TEnum">Tipo do enum utilizado no filtro.</typeparam>
+        /// <param name="propertyName">Nome da propriedade enum na entidade.</param>
+        /// <param name="value">Valor do enum utilizado no filtro.</param>
+        /// <returns>Uma tarefa assíncrona contendo a coleção filtrada.</returns>
+        Task<IEnumerable<TDto>> GetByEnumValue<TEnum>(string propertyName, TEnum value) where TEnum : struct, Enum;
+
+        /// <summary>
+        /// Recupera uma página de registros filtrando por uma propriedade enum.
+        /// </summary>
+        /// <typeparam name="TEnum">Tipo do enum utilizado no filtro.</typeparam>
+        /// <param name="paginationQuery">Parâmetros da consulta paginada.</param>
+        /// <param name="propertyName">Nome da propriedade enum na entidade.</param>
+        /// <param name="value">Valor do enum utilizado no filtro.</param>
+        /// <returns>Uma tarefa assíncrona contendo o resultado paginado filtrado.</returns>
+        Task<PaginatedResult<TDto>> GetPageByEnumValue<TEnum>(PaginationQuery paginationQuery, string propertyName, TEnum value) where TEnum : struct, Enum;
 
         /// <summary>
         /// Busca um registro específico pelo seu identificador único.

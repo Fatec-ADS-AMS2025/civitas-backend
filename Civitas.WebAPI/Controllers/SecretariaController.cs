@@ -137,15 +137,15 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <returns>Lista de Secretarias.</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
             try
             {
-                var secretarias = await _secretariaService.GetAll();
+                var secretarias = await _secretariaService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.ATIVO);
 
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = secretarias;
-                _response.Message = "Lista de secretarias obtida com sucesso";
+                _response.Message = "Lista de secretarias ativas obtida com sucesso";
 
                 return Ok(_response);
             }
@@ -158,6 +158,37 @@ namespace Civitas.WebAPI.Controllers
                     ErrorMessage = ex.Message,
                     StackTrace = ex.StackTrace ?? "No stack trace available"
                 };
+                return StatusCode(StatusCodes.Status500InternalServerError, _response);
+            }
+        }
+
+        /// <summary>
+        /// Retorna a lista de Secretarias inativas.
+        /// </summary>
+        /// <returns>Lista de Secretarias inativas.</returns>
+        [HttpGet("inativos")]
+        public async Task<IActionResult> GetInactive([FromQuery] PaginationQuery paginationQuery)
+        {
+            try
+            {
+                var secretarias = await _secretariaService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.INATIVO);
+
+                _response.Code = ResponseEnum.SUCCESS;
+                _response.Data = secretarias;
+                _response.Message = "Lista de secretarias inativas obtida com sucesso";
+
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.Code = ResponseEnum.ERROR;
+                _response.Message = "Ocorreu um erro ao obter as secretarias inativas";
+                _response.Data = new
+                {
+                    ErrorMessage = ex.Message,
+                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                };
+
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
         }
@@ -191,46 +222,6 @@ namespace Civitas.WebAPI.Controllers
             {
                 _response.Code = ResponseEnum.ERROR;
                 _response.Message = "Ocorreu um erro ao obter a secretaria";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
-            }
-        }
-
-        /// <summary>
-        /// Exclui uma Secretaria existente.
-        /// </summary>
-        /// <param name="id">ID da Secretaria.</param>
-        /// <returns>Resultado da exclusão.</returns>
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                var secretaria = await _secretariaService.GetById(id);
-                if (secretaria == null)
-                {
-                    _response.Code = ResponseEnum.NOT_FOUND;
-                    _response.Data = null;
-                    _response.Message = "Secretaria não encontrada";
-                    return NotFound(_response);
-                }
-
-                await _secretariaService.Remove(id);
-
-                _response.Code = ResponseEnum.SUCCESS;
-                _response.Data = null;
-                _response.Message = "Secretaria excluída com sucesso";
-
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao excluir a secretaria";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,

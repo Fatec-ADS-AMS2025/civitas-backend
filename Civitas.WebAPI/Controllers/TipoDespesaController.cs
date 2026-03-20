@@ -40,13 +40,29 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <returns>Lista de tipos de despesa.</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
-            var instituicaoDto = await _tipoDespesaService.GetAll();
+            var instituicaoDto = await _tipoDespesaService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.ATIVO);
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = instituicaoDto;
-            _response.Message = "Tipos de despesa listados com sucesso";
+            _response.Message = "Tipos de despesa ativos listados com sucesso";
+
+            return Ok(_response);
+        }
+
+        /// <summary>
+        /// Lista todos os tipos de despesa inativos.
+        /// </summary>
+        /// <returns>Lista paginada de tipos de despesa inativos.</returns>
+        [HttpGet("inativos")]
+        public async Task<IActionResult> GetInactive([FromQuery] PaginationQuery paginationQuery)
+        {
+            var tipoDespesaDto = await _tipoDespesaService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.INATIVO);
+
+            _response.Code = ResponseEnum.SUCCESS;
+            _response.Data = tipoDespesaDto;
+            _response.Message = "Tipos de despesa inativos listados com sucesso";
 
             return Ok(_response);
         }

@@ -67,13 +67,30 @@ namespace Civitas.WebAPI.Controllers
         /// - 500: Erro interno ao buscar instituições.
         /// </remarks>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
-            var instituicaoDto = await _instituicaoService.GetAll();
+            var instituicaoDto = await _instituicaoService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.ATIVO);
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = instituicaoDto;
-            _response.Message = "Instituições listadas com sucesso";
+            _response.Message = "Instituições ativas listadas com sucesso";
+
+            return Ok(_response);
+        }
+
+        /// <summary>
+        /// Retorna todas as instituições inativas.
+        /// </summary>
+        /// <param name="paginationQuery">Parâmetros de paginação.</param>
+        /// <returns>Lista paginada de instituições inativas.</returns>
+        [HttpGet("inativos")]
+        public async Task<IActionResult> GetInactive([FromQuery] PaginationQuery paginationQuery)
+        {
+            var instituicaoDto = await _instituicaoService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.INATIVO);
+
+            _response.Code = ResponseEnum.SUCCESS;
+            _response.Data = instituicaoDto;
+            _response.Message = "Instituições inativas listadas com sucesso";
 
             return Ok(_response);
         }

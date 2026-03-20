@@ -39,9 +39,9 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <returns>Lista de orçamentos e mensagem de sucesso.</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
-            var orcamentoDto = await _orcamentoService.GetAll();
+            var orcamentoDto = await _orcamentoService.GetPage(paginationQuery);
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = orcamentoDto;
@@ -219,51 +219,5 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
-        /// <summary>
-        /// Remove um orçamento existente do sistema.
-        /// </summary>
-        /// <param name="idOrcamento">Identificador do orçamento a ser excluído.</param>
-        /// <returns>Mensagem indicando o sucesso ou falha da operação.</returns>
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                var orcamento = await _orcamentoService.GetById(id);
-                if (orcamento == null)
-                {
-                    _response.Code = ResponseEnum.NOT_FOUND;
-                    _response.Data = null;
-                    _response.Message = "Orçamento não encontrado";
-                    return NotFound(_response);
-                }
-
-                if (await _orcamentoService.ExisteDespesaVinculada(id))
-                {
-                    _response.Code = ResponseEnum.INVALID;
-                    _response.Message = "Não é possível excluir o orçamento, pois há despesas vinculadas a ele.";
-                    return BadRequest(_response);
-                }
-
-                await _orcamentoService.Remove(id);
-
-                _response.Code = ResponseEnum.SUCCESS;
-                _response.Data = null;
-                _response.Message = "Orçamento excluído com sucesso";
-
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao excluir o orçamento";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
-            }
-        }
     }
 }
