@@ -60,6 +60,7 @@ namespace Civitas.WebAPI.Controllers
 
             try
             {
+                await _secretariaService.ValidarCadastroAsync(secretariaDTO);
                 secretariaDTO.IdSecretaria = 0;
                 await _secretariaService.Create(secretariaDTO);
 
@@ -68,6 +69,13 @@ namespace Civitas.WebAPI.Controllers
                 _response.Message = "Secretaria cadastrada com sucesso";
 
                 return Ok(_response);
+            }
+            catch (ArgumentException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Message = ex.Message;
+                _response.Data = null;
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
@@ -111,6 +119,7 @@ namespace Civitas.WebAPI.Controllers
                     return NotFound(_response);
                 }
 
+                await _secretariaService.ValidarCadastroAsync(secretariaDTO, id);
                 await _secretariaService.Update(secretariaDTO, id);
 
                 _response.Code = ResponseEnum.SUCCESS;
@@ -118,6 +127,13 @@ namespace Civitas.WebAPI.Controllers
                 _response.Message = "Secretaria atualizada com sucesso";
 
                 return Ok(_response);
+            }
+            catch (ArgumentException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Message = ex.Message;
+                _response.Data = null;
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
