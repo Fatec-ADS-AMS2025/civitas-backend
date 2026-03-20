@@ -104,7 +104,7 @@ namespace Civitas.WebAPI.Controllers
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
@@ -154,7 +154,7 @@ namespace Civitas.WebAPI.Controllers
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
@@ -216,10 +216,11 @@ namespace Civitas.WebAPI.Controllers
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
         }
     }
 }
+

@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Civitas.WebAPI.Objects.Contracts;
 using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
@@ -13,13 +13,13 @@ namespace Civitas.WebAPI.Controllers
     [ApiController]
     public class FluxoController : Controller
     {
-        // Servi�o respons�vel pela regra de neg�cio dos Fluxos
+        // Serviï¿½o responsï¿½vel pela regra de negï¿½cio dos Fluxos
         private readonly IFluxoService _fluxoService;
 
-        // Objeto padr�o de resposta da API
+        // Objeto padrï¿½o de resposta da API
         private readonly Response _response;
 
-        // Construtor com inje��o de depend�ncia do servi�o de fluxo
+        // Construtor com injeï¿½ï¿½o de dependï¿½ncia do serviï¿½o de fluxo
         public FluxoController(IFluxoService fluxoService)
         {
             _fluxoService = fluxoService;
@@ -35,19 +35,19 @@ namespace Civitas.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(FluxoDTO fluxoDTO)
         {
-            // Verifica se os dados recebidos s�o v�lidos
+            // Verifica se os dados recebidos sï¿½o vï¿½lidos
             if (fluxoDTO is null)
             {
                 _response.Code = ResponseEnum.INVALID;
                 _response.Data = null;
-                _response.Message = "Dados inv�lidos";
+                _response.Message = "Dados invï¿½lidos";
 
                 return BadRequest(_response);
             }
 
             try
             {
-                // Garante que o ID ser� gerado pelo banco
+                // Garante que o ID serï¿½ gerado pelo banco
                 fluxoDTO.IdFluxo = 0;
 
                 // Chama o service para criar o fluxo
@@ -64,11 +64,11 @@ namespace Civitas.WebAPI.Controllers
             {
                 // Resposta de erro com detalhes
                 _response.Code = ResponseEnum.ERROR;
-                _response.Message = "N�o foi poss�vel cadastrar o fluxo";
+                _response.Message = "Nï¿½o foi possï¿½vel cadastrar o fluxo";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
@@ -81,12 +81,12 @@ namespace Civitas.WebAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, FluxoDTO fluxoDTO)
         {
-            // Verifica se os dados s�o v�lidos
+            // Verifica se os dados sï¿½o vï¿½lidos
             if (fluxoDTO is null)
             {
                 _response.Code = ResponseEnum.INVALID;
                 _response.Data = null;
-                _response.Message = "Dados inv�lidos";
+                _response.Message = "Dados invï¿½lidos";
 
                 return BadRequest(_response);
             }
@@ -101,7 +101,7 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "O fluxo informado n�o existe";
+                    _response.Message = "O fluxo informado nï¿½o existe";
                     return NotFound(_response);
                 }
 
@@ -122,7 +122,7 @@ namespace Civitas.WebAPI.Controllers
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
@@ -137,7 +137,7 @@ namespace Civitas.WebAPI.Controllers
         {
             try
             {
-                // Obtém todos os fluxos
+                // ObtÃ©m todos os fluxos
                 var fluxos = await _fluxoService.GetPage(paginationQuery);
 
                 _response.Code = ResponseEnum.SUCCESS;
@@ -154,7 +154,7 @@ namespace Civitas.WebAPI.Controllers
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
@@ -162,7 +162,7 @@ namespace Civitas.WebAPI.Controllers
 
         // =========================
         //   ENDPOINT: GET /api/Fluxo/{id}
-        //   Retorna um fluxo espec�fico
+        //   Retorna um fluxo especï¿½fico
         // =========================
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -172,12 +172,12 @@ namespace Civitas.WebAPI.Controllers
                 // Busca o fluxo pelo ID
                 var fluxo = await _fluxoService.GetById(id);
 
-                // Caso n�o exista
+                // Caso nï¿½o exista
                 if (fluxo == null)
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "Fluxo n�o encontrado";
+                    _response.Message = "Fluxo nï¿½o encontrado";
                     return NotFound(_response);
                 }
 
@@ -196,7 +196,7 @@ namespace Civitas.WebAPI.Controllers
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
@@ -211,7 +211,7 @@ namespace Civitas.WebAPI.Controllers
         {
             try
             {
-                // Obt�m o fluxo existente
+                // Obtï¿½m o fluxo existente
                 var fluxo = await _fluxoService.GetById(id);
 
                 // Verifica se existe
@@ -219,14 +219,14 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "Fluxo n�o encontrado";
+                    _response.Message = "Fluxo nï¿½o encontrado";
                     return NotFound(_response);
                 }
 
                 // Atualiza somente o status
                 fluxo.Status = novoStatus;
 
-                // Chama o service para salvar a altera��o
+                // Chama o service para salvar a alteraï¿½ï¿½o
                 await _fluxoService.Update(fluxo, id);
 
                 // Retorno de sucesso
@@ -248,7 +248,7 @@ namespace Civitas.WebAPI.Controllers
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
@@ -256,3 +256,4 @@ namespace Civitas.WebAPI.Controllers
 
     }
 }
+

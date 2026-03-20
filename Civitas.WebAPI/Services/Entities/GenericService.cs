@@ -101,7 +101,7 @@ namespace Civitas.WebAPI.Services.Entities
 
             if (existingEntity == null)
             {
-                throw new KeyNotFoundException($"Entity with id {id} not found.");
+                throw new KeyNotFoundException($"Entidade com id {id} não encontrada.");
             }
 
             var entity = _mapper.Map<T>(entityDTO);

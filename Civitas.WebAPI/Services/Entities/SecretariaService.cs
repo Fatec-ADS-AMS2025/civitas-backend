@@ -62,7 +62,7 @@ namespace Civitas.WebAPI.Services.Entities
                 var existingEntity = await _secretariaRepository.GetById(id.Value);
                 if (existingEntity is null)
                 {
-                    throw new KeyNotFoundException($"Entity with id {id.Value} not found.");
+                    throw new KeyNotFoundException($"Entidade com id {id.Value} não encontrada.");
                 }
             }
 
