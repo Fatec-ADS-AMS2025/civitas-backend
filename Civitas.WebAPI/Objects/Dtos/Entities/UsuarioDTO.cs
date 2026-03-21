@@ -1,5 +1,5 @@
 ﻿using Civitas.WebAPI.Objects.Enums;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Civitas.WebAPI.Objects.Dtos.Entities
 {
@@ -89,7 +89,8 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// Entrada: Deve ser enviada em texto plano ou hash pelo front-end para validação/criação.
         /// Saída: Por questões de segurança, recomenda-se retornar nulo ou o hash mascarado em operações de GET.
         /// </remarks>
-        public string Senha { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Senha { get; set; }
 
         /// <summary>
         /// Matrícula interna do funcionário.

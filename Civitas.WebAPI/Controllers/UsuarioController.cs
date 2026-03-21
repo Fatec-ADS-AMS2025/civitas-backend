@@ -3,6 +3,7 @@ using Civitas.WebAPI.Objects.Contracts;
 using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
+using Civitas.WebAPI.Services.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,11 +45,28 @@ namespace Civitas.WebAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
-            var usuarioDTO = await _usuarioService.GetPage(paginationQuery);
+            var usuarioDTO = await _usuarioService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.ATIVO);
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = usuarioDTO;
-            _response.Message = "Usuários listados com sucesso";
+            _response.Message = "Usuários ativos listados com sucesso";
+
+            return Ok(_response);
+        }
+
+        /// <summary>
+        /// Retorna os usuários inativos.
+        /// </summary>
+        /// <param name="paginationQuery">Parâmetros de paginação.</param>
+        /// <returns>Lista paginada de usuários inativos.</returns>
+        [HttpGet("inativos")]
+        public async Task<IActionResult> GetInactive([FromQuery] PaginationQuery paginationQuery)
+        {
+            var usuarioDTO = await _usuarioService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.INATIVO);
+
+            _response.Code = ResponseEnum.SUCCESS;
+            _response.Data = usuarioDTO;
+            _response.Message = "Usuários inativos listados com sucesso";
 
             return Ok(_response);
         }
@@ -134,14 +152,27 @@ namespace Civitas.WebAPI.Controllers
 
                 return Ok(_response);
             }
+            catch (UsuarioConflictException ex)
+            {
+                _response.Code = ResponseEnum.CONFLICT;
+                _response.Data = ex.Field is null ? null : new[] { ex.Field };
+                _response.Message = ex.Message;
+                return Conflict(_response);
+            }
+            catch (UsuarioValidationException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = ex.Errors;
+                _response.Message = "Os dados informados para o usuário são inválidos";
+                return BadRequest(_response);
+            }
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
                 _response.Message = "Não foi possível cadastrar o usuário";
                 _response.Data = new
                 {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
+                    ErrorMessage = ex.Message
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
@@ -184,54 +215,27 @@ namespace Civitas.WebAPI.Controllers
 
                 return Ok(_response);
             }
+            catch (UsuarioConflictException ex)
+            {
+                _response.Code = ResponseEnum.CONFLICT;
+                _response.Data = ex.Field is null ? null : new[] { ex.Field };
+                _response.Message = ex.Message;
+                return Conflict(_response);
+            }
+            catch (UsuarioValidationException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = ex.Errors;
+                _response.Message = "Os dados informados para o usuário são inválidos";
+                return BadRequest(_response);
+            }
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
                 _response.Message = "Ocorreu um erro ao tentar atualizar os dados do usuário";
                 _response.Data = new
                 {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
-            }
-        }
-
-        /// <summary>
-        /// Remove um usuário pelo ID.
-        /// </summary>
-        /// <param name="id">Identificador do usuário a ser removido.</param>
-        /// <returns>Resultado da operação de remoção.</returns>
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                var existingUsuarioDTO = await _usuarioService.GetById(id);
-                if (existingUsuarioDTO is null)
-                {
-                    _response.Code = ResponseEnum.NOT_FOUND;
-                    _response.Data = null;
-                    _response.Message = "O usuário informado não existe";
-                    return NotFound(_response);
-                }
-
-                await _usuarioService.Remove(id);
-
-                _response.Code = ResponseEnum.SUCCESS;
-                _response.Data = null;
-                _response.Message = "Usuário removido com sucesso";
-
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao tentar remover o usuário";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
+                    ErrorMessage = ex.Message
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }

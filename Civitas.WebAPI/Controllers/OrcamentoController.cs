@@ -219,52 +219,6 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
-        /// <summary>
-        /// Remove um orÃ§amento existente do sistema.
-        /// </summary>
-        /// <param name="idOrcamento">Identificador do orÃ§amento a ser excluÃ­do.</param>
-        /// <returns>Mensagem indicando o sucesso ou falha da operaÃ§Ã£o.</returns>
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                var orcamento = await _orcamentoService.GetById(id);
-                if (orcamento == null)
-                {
-                    _response.Code = ResponseEnum.NOT_FOUND;
-                    _response.Data = null;
-                    _response.Message = "OrÃ§amento nÃ£o encontrado";
-                    return NotFound(_response);
-                }
-
-                if (await _orcamentoService.ExisteDespesaVinculada(id))
-                {
-                    _response.Code = ResponseEnum.INVALID;
-                    _response.Message = "NÃ£o Ã© possÃ­vel excluir o orÃ§amento, pois hÃ¡ despesas vinculadas a ele.";
-                    return BadRequest(_response);
-                }
-
-                await _orcamentoService.Remove(id);
-
-                _response.Code = ResponseEnum.SUCCESS;
-                _response.Data = null;
-                _response.Message = "OrÃ§amento excluÃ­do com sucesso";
-
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao excluir o orÃ§amento";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
-            }
-        }
     }
 }
 

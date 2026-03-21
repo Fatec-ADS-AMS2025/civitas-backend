@@ -3,6 +3,7 @@ using Civitas.WebAPI.Data.Interfaces;
 using Civitas.WebAPI.Data.Repositories;
 using Civitas.WebAPI.Services.Entities;
 using Civitas.WebAPI.Services.Interfaces;
+using Civitas.WebAPI.Services.Security;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,10 +15,20 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 });
 builder.Services.AddAutoMapper(opt => { }, AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+    if (File.Exists(xmlPath))
+    {
+        options.IncludeXmlComments(xmlPath);
+    }
+});
 
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<IPasswordHashService, BCryptPasswordHashService>();
 builder.Services.AddScoped<IFornecedorRepository, FornecedorRepository>();
 builder.Services.AddScoped<IFornecedorService, FornecedorService>();
 builder.Services.AddScoped<ISecretariaRepository, SecretariaRepository>();

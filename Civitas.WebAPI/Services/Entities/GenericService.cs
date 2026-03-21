@@ -66,6 +66,42 @@ namespace Civitas.WebAPI.Services.Entities
         }
 
         /// <summary>
+        /// Obtém todos os registros filtrando por uma propriedade do tipo enum.
+        /// </summary>
+        /// <typeparam name="TEnum">Tipo do enum utilizado no filtro.</typeparam>
+        /// <param name="propertyName">Nome da propriedade enum na entidade.</param>
+        /// <param name="value">Valor do enum utilizado no filtro.</param>
+        /// <returns>Coleção filtrada convertida para DTO.</returns>
+        public virtual async Task<IEnumerable<TDto>> GetByEnumValue<TEnum>(string propertyName, TEnum value) where TEnum : struct, Enum
+        {
+            var entities = await _repository.GetByEnumValue(propertyName, value);
+            return _mapper.Map<IEnumerable<TDto>>(entities);
+        }
+
+        /// <summary>
+        /// Obtém uma página de registros filtrando por uma propriedade do tipo enum.
+        /// </summary>
+        /// <typeparam name="TEnum">Tipo do enum utilizado no filtro.</typeparam>
+        /// <param name="paginationQuery">Parâmetros da consulta paginada.</param>
+        /// <param name="propertyName">Nome da propriedade enum na entidade.</param>
+        /// <param name="value">Valor do enum utilizado no filtro.</param>
+        /// <returns>Resultado paginado convertido para DTO.</returns>
+        public virtual async Task<PaginatedResult<TDto>> GetPageByEnumValue<TEnum>(PaginationQuery paginationQuery, string propertyName, TEnum value) where TEnum : struct, Enum
+        {
+            var entities = await _repository.GetPageByEnumValue(paginationQuery, propertyName, value);
+            var items = _mapper.Map<List<TDto>>(entities.Items);
+
+            return new PaginatedResult<TDto>
+            {
+                Items = items,
+                TotalRecords = entities.TotalRecords,
+                TotalPages = entities.TotalPages,
+                CurrentPage = entities.CurrentPage,
+                PageSize = entities.PageSize
+            };
+        }
+
+        /// <summary>
         /// Obtém um registro específico pelo seu identificador único.
         /// </summary>
         /// <param name="id">O ID do registro a ser buscado.</param>
@@ -83,7 +119,7 @@ namespace Civitas.WebAPI.Services.Entities
         /// <remarks>
         /// O método converte o DTO para a Entidade de domínio antes de salvar.
         /// </remarks>
-        public async Task Create(TDto entityDTO)
+        public virtual async Task Create(TDto entityDTO)
         {
             var entity = _mapper.Map<T>(entityDTO);
             await _repository.Add(entity);
@@ -95,7 +131,7 @@ namespace Civitas.WebAPI.Services.Entities
         /// <param name="entityDTO">O objeto DTO com os novos dados.</param>
         /// <param name="id">O ID do registro a ser atualizado.</param>
         /// <exception cref="KeyNotFoundException">Lançada se não existir um registro com o ID informado no banco de dados.</exception>
-        public async Task Update(TDto entityDTO, int id)
+        public virtual async Task Update(TDto entityDTO, int id)
         {
             var existingEntity = await _repository.GetById(id);
 

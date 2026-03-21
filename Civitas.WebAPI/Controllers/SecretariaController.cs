@@ -157,11 +157,11 @@ namespace Civitas.WebAPI.Controllers
         {
             try
             {
-                var secretarias = await _secretariaService.GetPage(paginationQuery);
+                var secretarias = await _secretariaService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.ATIVO);
 
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = secretarias;
-                _response.Message = "Lista de secretarias obtida com sucesso";
+                _response.Message = "Lista de secretarias ativas obtida com sucesso";
 
                 return Ok(_response);
             }
@@ -179,7 +179,38 @@ namespace Civitas.WebAPI.Controllers
         }
 
         /// <summary>
-        /// ObtÃ©m uma Secretaria especÃ­fica pelo ID.
+        /// Retorna a lista de Secretarias inativas.
+        /// </summary>
+        /// <returns>Lista de Secretarias inativas.</returns>
+        [HttpGet("inativos")]
+        public async Task<IActionResult> GetInactive([FromQuery] PaginationQuery paginationQuery)
+        {
+            try
+            {
+                var secretarias = await _secretariaService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.INATIVO);
+
+                _response.Code = ResponseEnum.SUCCESS;
+                _response.Data = secretarias;
+                _response.Message = "Lista de secretarias inativas obtida com sucesso";
+
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.Code = ResponseEnum.ERROR;
+                _response.Message = "Ocorreu um erro ao obter as secretarias inativas";
+                _response.Data = new
+                {
+                    ErrorMessage = ex.Message,
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
+                };
+
+                return StatusCode(StatusCodes.Status500InternalServerError, _response);
+            }
+        }
+
+        /// <summary>
+        /// Obtém uma Secretaria específica pelo ID.
         /// </summary>
         /// <param name="id">ID da Secretaria.</param>
         /// <returns>Dados da Secretaria solicitada.</returns>
@@ -207,46 +238,6 @@ namespace Civitas.WebAPI.Controllers
             {
                 _response.Code = ResponseEnum.ERROR;
                 _response.Message = "Ocorreu um erro ao obter a secretaria";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
-                };
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
-            }
-        }
-
-        /// <summary>
-        /// Exclui uma Secretaria existente.
-        /// </summary>
-        /// <param name="id">ID da Secretaria.</param>
-        /// <returns>Resultado da exclusÃ£o.</returns>
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                var secretaria = await _secretariaService.GetById(id);
-                if (secretaria == null)
-                {
-                    _response.Code = ResponseEnum.NOT_FOUND;
-                    _response.Data = null;
-                    _response.Message = "Secretaria nÃ£o encontrada";
-                    return NotFound(_response);
-                }
-
-                await _secretariaService.Remove(id);
-
-                _response.Code = ResponseEnum.SUCCESS;
-                _response.Data = null;
-                _response.Message = "Secretaria excluÃ­da com sucesso";
-
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao excluir a secretaria";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,

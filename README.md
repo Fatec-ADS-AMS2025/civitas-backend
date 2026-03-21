@@ -1,4 +1,4 @@
-# 🏛️ Civitas Backend
+# Civitas Backend
 
 <div align="center">
 
@@ -8,57 +8,57 @@
 ![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-**Sistema de Gestão Pública Municipal**
+**Sistema de Gestao Publica Municipal**
 
-*API RESTful para gerenciamento de despesas, orçamentos, instituições e fornecedores da administração pública*
+*API RESTful para gerenciamento de despesas, orcamentos, instituicoes e fornecedores da administracao publica*
 
-[Recursos](#-recursos) •
-[Tecnologias](#-tecnologias) •
-[Instalação](#-instalação) •
-[Uso](#-uso) •
-[API Endpoints](#-api-endpoints) •
-[Estrutura](#-estrutura-do-projeto) •
-[Contribuição](#-contribuição)
+[Recursos](#recursos) •
+[Tecnologias](#tecnologias) •
+[Instalacao](#instalacao) •
+[Uso](#uso) •
+[API Endpoints](#api-endpoints) •
+[Estrutura](#estrutura-do-projeto) •
+[Contribuicao](#contribuicao)
 
 </div>
 
 ---
 
-## 📋 Sobre o Projeto
+## Sobre o Projeto
 
-O **Civitas** é um sistema ERP (Enterprise Resource Planning) desenvolvido para auxiliar na gestão pública municipal. O backend foi construído utilizando ASP.NET Core 9.0, seguindo os princípios de arquitetura limpa e boas práticas de desenvolvimento.
+O **Civitas** e um sistema ERP (Enterprise Resource Planning) desenvolvido para auxiliar na gestao publica municipal. O backend foi construido utilizando ASP.NET Core 9.0, seguindo principios de arquitetura em camadas e boas praticas de desenvolvimento.
 
 O sistema permite o gerenciamento completo de:
-- 👤 **Usuários** - Controle de acesso com diferentes tipos de permissões
-- 🏢 **Secretarias** - Gestão das secretarias municipais
-- 🏫 **Instituições** - Cadastro e controle de instituições públicas
-- 💰 **Orçamentos** - Planejamento e acompanhamento orçamentário
-- 💸 **Despesas** - Registro e controle de despesas públicas
-- 🤝 **Fornecedores** - Cadastro de fornecedores e prestadores de serviço
-- 📄 **Documentos** - Gestão documental do sistema
-- 🔄 **Fluxos** - Controle de fluxos e processos
-- 📊 **Auditorias** - Rastreabilidade de operações
+- **Usuarios** - Controle de acesso com diferentes tipos de permissoes
+- **Secretarias** - Gestao das secretarias municipais
+- **Instituicoes** - Cadastro e controle de instituicoes publicas
+- **Orcamentos** - Planejamento e acompanhamento orcamentario
+- **Despesas** - Registro e controle de despesas publicas
+- **Fornecedores** - Cadastro de fornecedores e prestadores de servico
+- **Documentos** - Gestao documental do sistema
+- **Fluxos** - Controle de fluxos e processos
+- **Auditorias** - Rastreabilidade de operacoes
 
 ---
 
-## ✨ Recursos
+## Recursos
 
-- ✅ API RESTful completa com documentação Swagger
-- ✅ Arquitetura em camadas (Controllers, Services, Repositories)
-- ✅ Entity Framework Core com PostgreSQL
-- ✅ AutoMapper para mapeamento de DTOs
-- ✅ Injeção de Dependência nativa do .NET
-- ✅ Suporte a CORS para integração com frontend
-- ✅ Migrations para versionamento do banco de dados
-- ✅ Padrão Repository para acesso a dados
-- ✅ Responses padronizadas para consistência da API
+- API RESTful com documentacao Swagger
+- Arquitetura em camadas (Controllers, Services, Repositories)
+- Entity Framework Core com PostgreSQL
+- AutoMapper para mapeamento de DTOs
+- Injecao de dependencia nativa do .NET
+- Suporte a CORS para integracao com frontend
+- Migrations para versionamento do banco de dados
+- Padrao Repository para acesso a dados
+- Responses padronizadas para consistencia da API
 
 ---
 
-## 🛠️ Tecnologias
+## Tecnologias
 
 ### Backend
-| Tecnologia | Versão | Descrição |
+| Tecnologia | Versao | Descricao |
 |------------|--------|-----------|
 | **.NET** | 9.0 | Framework principal |
 | **ASP.NET Core** | 9.0 | Framework web |
@@ -66,21 +66,21 @@ O sistema permite o gerenciamento completo de:
 | **PostgreSQL** | - | Banco de dados relacional |
 | **Npgsql** | 9.0.4 | Provider PostgreSQL para EF Core |
 | **AutoMapper** | 15.0.1 | Mapeamento objeto-objeto |
-| **Swashbuckle** | 9.0.6 | Documentação Swagger/OpenAPI |
+| **Swashbuckle** | 9.0.6 | Documentacao Swagger/OpenAPI |
 
 ---
 
-## 📦 Instalação
+## Instalacao
 
-### Pré-requisitos
+### Pre-requisitos
 
-Certifique-se de ter instalado em sua máquina:
+Certifique-se de ter instalado em sua maquina:
 
 - [.NET SDK 9.0](https://dotnet.microsoft.com/download/dotnet/9.0) ou superior
 - [PostgreSQL](https://www.postgresql.org/download/) 13 ou superior
 - [Git](https://git-scm.com/)
 
-### Clonando o Repositório
+### Clonando o Repositorio
 
 ```bash
 git clone https://github.com/Fatec-ADS-AMS2025/civitas-backend.git
@@ -105,318 +105,256 @@ CREATE DATABASE civitas;
 }
 ```
 
-### Instalando Dependências e Executando Migrations
+### Instalando Dependencias e Executando Migrations
 
 ```bash
 cd Civitas.WebAPI
 
-# Restaurar pacotes NuGet
 dotnet restore
-
-# Aplicar migrations ao banco de dados
 dotnet ef database update
-
-# Executar a aplicação
 dotnet run
 ```
 
 ---
 
-## 🚀 Uso
+## Uso
 
-Após iniciar a aplicação, acesse:
+Apos iniciar a aplicacao, acesse:
 
 - **Swagger UI**: `http://localhost:5000` ou `https://localhost:5001`
 - **API Base URL**: `http://localhost:5000/api`
 
-A documentação interativa do Swagger permite testar todos os endpoints diretamente no navegador.
+A documentacao interativa do Swagger permite testar os endpoints diretamente no navegador.
 
 ---
 
-## 📡 API Endpoints
+## API Endpoints
 
-### Usuários
-| Método | Endpoint | Descrição |
+### Usuarios
+| Metodo | Endpoint | Descricao |
 |--------|----------|-----------|
-| `GET` | `/api/Usuario` | Lista todos os usuários |
-| `GET` | `/api/Usuario/GetUsuarioById?id={id}` | Busca usuário por ID |
-| `GET` | `/api/Usuario/GetUsuarioByCpf?cpf={cpf}` | Busca usuário por CPF |
-| `POST` | `/api/Usuario` | Cria novo usuário |
-| `PUT` | `/api/Usuario` | Atualiza usuário |
-| `DELETE` | `/api/Usuario?id={id}` | Remove usuário |
+| `GET` | `/api/usuarios` | Lista usuarios ativos |
+| `GET` | `/api/usuarios/inativos` | Lista usuarios inativos |
+| `GET` | `/api/usuarios/cpf?cpf={cpf}` | Busca usuario por CPF |
+| `GET` | `/api/usuarios/{id}` | Busca usuario por ID |
+| `POST` | `/api/usuarios` | Cria novo usuario |
+| `PUT` | `/api/usuarios/{id}` | Atualiza usuario |
+| `PATCH` | `/api/usuarios/situacao/{id}` | Alterna situacao do usuario |
 
 ### Secretarias
-| Método | Endpoint | Descrição |
+| Metodo | Endpoint | Descricao |
 |--------|----------|-----------|
-| `GET` | `/api/Secretaria` | Lista todas as secretarias |
-| `GET` | `/api/Secretaria/{id}` | Busca secretaria por ID |
-| `POST` | `/api/Secretaria` | Cria nova secretaria |
-| `PUT` | `/api/Secretaria` | Atualiza secretaria |
-| `DELETE` | `/api/Secretaria/{id}` | Remove secretaria |
+| `GET` | `/api/secretarias` | Lista secretarias ativas |
+| `GET` | `/api/secretarias/inativos` | Lista secretarias inativas |
+| `GET` | `/api/secretarias/{id}` | Busca secretaria por ID |
+| `POST` | `/api/secretarias` | Cria nova secretaria |
+| `PUT` | `/api/secretarias/{id}` | Atualiza secretaria |
+| `PATCH` | `/api/secretarias/situacao/{id}` | Alterna situacao da secretaria |
 
 ### Fornecedores
-| Método | Endpoint | Descrição |
+| Metodo | Endpoint | Descricao |
 |--------|----------|-----------|
-| `GET` | `/api/Fornecedor` | Lista todos os fornecedores |
-| `GET` | `/api/Fornecedor/{id}` | Busca fornecedor por ID |
-| `POST` | `/api/Fornecedor` | Cria novo fornecedor |
-| `PUT` | `/api/Fornecedor` | Atualiza fornecedor |
-| `DELETE` | `/api/Fornecedor/{id}` | Remove fornecedor |
+| `GET` | `/api/fornecedores` | Lista fornecedores ativos |
+| `GET` | `/api/fornecedores/inativos` | Lista fornecedores inativos |
+| `GET` | `/api/fornecedores/{id}` | Busca fornecedor por ID |
+| `POST` | `/api/fornecedores` | Cria novo fornecedor |
+| `PUT` | `/api/fornecedores/{id}` | Atualiza fornecedor |
+| `PATCH` | `/api/fornecedores/situacao/{id}` | Alterna situacao do fornecedor |
 
-### Instituições
-| Método | Endpoint | Descrição |
+### Instituicoes
+| Metodo | Endpoint | Descricao |
 |--------|----------|-----------|
-| `GET` | `/api/Instituicao` | Lista todas as instituições |
-| `GET` | `/api/Instituicao/{id}` | Busca instituição por ID |
-| `POST` | `/api/Instituicao` | Cria nova instituição |
-| `PUT` | `/api/Instituicao` | Atualiza instituição |
-| `DELETE` | `/api/Instituicao/{id}` | Remove instituição |
+| `GET` | `/api/instituicoes` | Lista instituicoes ativas |
+| `GET` | `/api/instituicoes/inativos` | Lista instituicoes inativas |
+| `GET` | `/api/instituicoes/{id}` | Busca instituicao por ID |
+| `GET` | `/api/instituicoes/nome?name={name}` | Busca instituicoes por nome |
+| `POST` | `/api/instituicoes` | Cria nova instituicao |
+| `PUT` | `/api/instituicoes/{id}` | Atualiza instituicao |
+| `PATCH` | `/api/instituicoes/situacao/{id}` | Alterna situacao da instituicao |
 
-### Orçamentos
-| Método | Endpoint | Descrição |
+### Orcamentos
+| Metodo | Endpoint | Descricao |
 |--------|----------|-----------|
-| `GET` | `/api/Orcamento` | Lista todos os orçamentos |
-| `GET` | `/api/Orcamento/{id}` | Busca orçamento por ID |
-| `POST` | `/api/Orcamento` | Cria novo orçamento |
-| `PUT` | `/api/Orcamento` | Atualiza orçamento |
-| `DELETE` | `/api/Orcamento/{id}` | Remove orçamento |
+| `GET` | `/api/orcamentos` | Lista orcamentos |
+| `GET` | `/api/orcamentos/{id}` | Busca orcamento por ID |
+| `POST` | `/api/orcamentos` | Cria novo orcamento |
+| `PUT` | `/api/orcamentos/{id}` | Atualiza orcamento |
 
 ### Despesas
-| Método | Endpoint | Descrição |
+| Metodo | Endpoint | Descricao |
 |--------|----------|-----------|
-| `GET` | `/api/Despesa` | Lista todas as despesas |
-| `GET` | `/api/Despesa/{id}` | Busca despesa por ID |
-| `POST` | `/api/Despesa` | Cria nova despesa |
-| `PUT` | `/api/Despesa` | Atualiza despesa |
-| `DELETE` | `/api/Despesa/{id}` | Remove despesa |
+| `GET` | `/api/despesas` | Lista despesas ativas |
+| `GET` | `/api/despesas/inativos` | Lista despesas inativas |
+| `GET` | `/api/despesas/{id}` | Busca despesa por ID |
+| `POST` | `/api/despesas` | Cria nova despesa |
+| `PUT` | `/api/despesas/{id}` | Atualiza despesa |
+| `PATCH` | `/api/despesas/situacao/{id}` | Alterna situacao da despesa |
 
 ### Documentos
-| Método | Endpoint | Descrição |
+| Metodo | Endpoint | Descricao |
 |--------|----------|-----------|
-| `GET` | `/api/Documento` | Lista todos os documentos |
-| `GET` | `/api/Documento/{id}` | Busca documento por ID |
-| `POST` | `/api/Documento` | Cria novo documento |
-| `PUT` | `/api/Documento` | Atualiza documento |
-| `DELETE` | `/api/Documento/{id}` | Remove documento |
+| `GET` | `/api/documentos` | Lista documentos |
+| `GET` | `/api/documentos/{id}` | Busca documento por ID |
+| `POST` | `/api/documentos` | Cria novo documento |
+| `PUT` | `/api/documentos/{id}` | Atualiza documento |
 
 ### Fluxos
-| Método | Endpoint | Descrição |
+| Metodo | Endpoint | Descricao |
 |--------|----------|-----------|
-| `GET` | `/api/Fluxo` | Lista todos os fluxos |
-| `GET` | `/api/Fluxo/{id}` | Busca fluxo por ID |
-| `POST` | `/api/Fluxo` | Cria novo fluxo |
-| `PUT` | `/api/Fluxo` | Atualiza fluxo |
-| `DELETE` | `/api/Fluxo/{id}` | Remove fluxo |
+| `GET` | `/api/fluxos` | Lista fluxos |
+| `GET` | `/api/fluxos/{id}` | Busca fluxo por ID |
+| `POST` | `/api/fluxos` | Cria novo fluxo |
+| `PUT` | `/api/fluxos/{id}` | Atualiza fluxo |
+| `PATCH` | `/api/fluxos/status/{id}` | Atualiza o status do fluxo |
 
 ### Auditorias
-| Método | Endpoint | Descrição |
+| Metodo | Endpoint | Descricao |
 |--------|----------|-----------|
-| `GET` | `/api/Auditoria` | Lista todas as auditorias |
-| `GET` | `/api/Auditoria/{id}` | Busca auditoria por ID |
-| `POST` | `/api/Auditoria` | Cria nova auditoria |
+| `GET` | `/api/auditorias` | Lista auditorias ativas |
+| `GET` | `/api/auditorias/inativos` | Lista auditorias inativas |
+| `GET` | `/api/auditorias/{id}` | Busca auditoria por ID |
+| `GET` | `/api/auditorias/usuario/{usuarioId}` | Lista auditorias por usuario |
+| `GET` | `/api/auditorias/entidade?nomeEntidade={nomeEntidade}` | Busca auditorias por entidade |
+| `GET` | `/api/auditorias/operacao?operacao={operacao}` | Busca auditorias por operacao |
+| `POST` | `/api/auditorias` | Cria nova auditoria |
+| `PATCH` | `/api/auditorias/situacao/{id}` | Alterna situacao da auditoria |
 
-### Tipos de Instituição
-| Método | Endpoint | Descrição |
+### Tipos de Instituicao
+| Metodo | Endpoint | Descricao |
 |--------|----------|-----------|
-| `GET` | `/api/TipoInstituicao` | Lista todos os tipos |
-| `POST` | `/api/TipoInstituicao` | Cria novo tipo |
+| `GET` | `/api/tipo-instituicao` | Lista tipos de instituicao ativos |
+| `GET` | `/api/tipo-instituicao/inativos` | Lista tipos de instituicao inativos |
+| `GET` | `/api/tipo-instituicao/{id}` | Busca tipo de instituicao por ID |
+| `POST` | `/api/tipo-instituicao` | Cria novo tipo de instituicao |
+| `PUT` | `/api/tipo-instituicao/{id}` | Atualiza tipo de instituicao |
+| `PATCH` | `/api/tipo-instituicao/situacao/{id}` | Alterna situacao do tipo de instituicao |
 
 ### Tipos de Despesa
-| Método | Endpoint | Descrição |
+| Metodo | Endpoint | Descricao |
 |--------|----------|-----------|
-| `GET` | `/api/TipoDespesa` | Lista todos os tipos |
-| `POST` | `/api/TipoDespesa` | Cria novo tipo |
+| `GET` | `/api/tipo-despesa` | Lista tipos de despesa ativos |
+| `GET` | `/api/tipo-despesa/inativos` | Lista tipos de despesa inativos |
+| `GET` | `/api/tipo-despesa/{id}` | Busca tipo de despesa por ID |
+| `POST` | `/api/tipo-despesa` | Cria novo tipo de despesa |
+| `PUT` | `/api/tipo-despesa/{id}` | Atualiza tipo de despesa |
+| `PATCH` | `/api/tipo-despesa/situacao/{id}` | Alterna situacao do tipo de despesa |
 
 ### Unidades de Medida
-| Método | Endpoint | Descrição |
+| Metodo | Endpoint | Descricao |
 |--------|----------|-----------|
-| `GET` | `/api/UnidadeMedida` | Lista todas as unidades |
-| `POST` | `/api/UnidadeMedida` | Cria nova unidade |
+| `GET` | `/api/unidade-medida` | Lista unidades de medida ativas |
+| `GET` | `/api/unidade-medida/inativos` | Lista unidades de medida inativas |
+| `GET` | `/api/unidade-medida/{id}` | Busca unidade de medida por ID |
+| `POST` | `/api/unidade-medida` | Cria nova unidade de medida |
+| `PUT` | `/api/unidade-medida/{id}` | Atualiza unidade de medida |
+| `PATCH` | `/api/unidade-medida/situacao/{id}` | Alterna situacao da unidade de medida |
 
 ---
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
-```
+```text
 civitas-backend/
-├── 📂 Civitas.WebAPI/
-│   ├── 📂 Controllers/          # Controladores da API
-│   │   ├── AuditoriaController.cs
-│   │   ├── DespesaController.cs
-│   │   ├── DocumentoController.cs
-│   │   ├── FluxoController.cs
-│   │   ├── FornecedorController.cs
-│   │   ├── InstituicaoController.cs
-│   │   ├── OrcamentoController.cs
-│   │   ├── SecretariaController.cs
-│   │   ├── TipoDespesaController.cs
-│   │   ├── TipoInstituicaoController.cs
-│   │   ├── UnidadeMedidaController.cs
-│   │   └── UsuarioController.cs
-│   │
-│   ├── 📂 Data/                 # Camada de dados
-│   │   ├── AppDbContext.cs      # Contexto do Entity Framework
-│   │   ├── 📂 Builders/         # Configurações de entidades
-│   │   ├── 📂 Interfaces/       # Interfaces de repositórios
-│   │   └── 📂 Repositories/     # Implementações dos repositórios
-│   │
-│   ├── 📂 Migrations/           # Migrations do EF Core
-│   │
-│   ├── 📂 Objects/              # Objetos do domínio
-│   │   ├── 📂 Contracts/        # Contratos de resposta
-│   │   ├── 📂 Dtos/             # Data Transfer Objects
-│   │   ├── 📂 Enums/            # Enumeradores
-│   │   │   ├── Situacao.cs
-│   │   │   ├── SolicitaUc.cs
-│   │   │   ├── Status.cs
-│   │   │   └── TipoUsuario.cs
-│   │   └── 📂 Models/           # Entidades do domínio
-│   │       ├── Auditoria.cs
-│   │       ├── Despesa.cs
-│   │       ├── Documento.cs
-│   │       ├── Fluxo.cs
-│   │       ├── Fornecedor.cs
-│   │       ├── Instituicao.cs
-│   │       ├── Orcamento.cs
-│   │       ├── Secretaria.cs
-│   │       ├── TipoDespesa.cs
-│   │       ├── TipoInstituicao.cs
-│   │       ├── UnidadeMedida.cs
-│   │       └── Usuario.cs
-│   │
-│   ├── 📂 Services/             # Camada de serviços
-│   │   ├── 📂 Entities/         # Implementações dos serviços
-│   │   └── 📂 Interfaces/       # Interfaces dos serviços
-│   │
-│   ├── 📂 sql/                  # Scripts SQL auxiliares
-│   │
-│   ├── appsettings.json         # Configurações da aplicação
-│   ├── Program.cs               # Ponto de entrada da aplicação
-│   └── Civitas.WebAPI.csproj    # Arquivo de projeto
-│
-├── 📂 documentation/            # Documentação do projeto
-│   ├── 📂 ClassDiagram/         # Diagramas de classe
-│   └── 📂 template/             # Templates de documentação
-│
-└── README.md                    # Este arquivo
+|-- Civitas.WebAPI/
+|   |-- Controllers/
+|   |   |-- AuditoriaController.cs
+|   |   |-- DespesaController.cs
+|   |   |-- DocumentoController.cs
+|   |   |-- FluxoController.cs
+|   |   |-- FornecedorController.cs
+|   |   |-- InstituicaoController.cs
+|   |   |-- OrcamentoController.cs
+|   |   |-- SecretariaController.cs
+|   |   |-- TipoDespesaController.cs
+|   |   |-- TipoInstituicaoController.cs
+|   |   |-- UnidadeMedidaController.cs
+|   |   `-- UsuarioController.cs
+|   |-- Data/
+|   |   |-- AppDbContext.cs
+|   |   |-- Builders/
+|   |   |-- Interfaces/
+|   |   `-- Repositories/
+|   |-- Migrations/
+|   |-- Objects/
+|   |   |-- Contracts/
+|   |   |-- Dtos/
+|   |   |-- Enums/
+|   |   `-- Models/
+|   |-- Services/
+|   |   |-- Entities/
+|   |   `-- Interfaces/
+|   |-- sql/
+|   |-- appsettings.json
+|   |-- Program.cs
+|   `-- Civitas.WebAPI.csproj
+|-- documentation/
+|   |-- ClassDiagram/
+|   `-- template/
+`-- README.md
 ```
 
 ---
 
-## 🗃️ Modelo de Dados
+## Modelo de Dados
 
-### Entidades Principais
-
-```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│    Secretaria   │     │   Instituição   │     │   Fornecedor    │
-├─────────────────┤     ├─────────────────┤     ├─────────────────┤
-│ IdSecretaria    │     │ Id              │     │ IdFornecedor    │
-│ Nome            │     │ Nome            │     │ NomeFantasia    │
-│ CNPJ            │     │ CNPJ            │     │ CNPJ            │
-│ Descrição       │     │ IdTipoInstituição│    │ Nome            │
-│ Situação        │     │ Situação        │     │ Situação        │
-└─────────────────┘     └────────┬────────┘     └────────┬────────┘
-                                 │                       │
-                                 ▼                       ▼
-                        ┌─────────────────┐     ┌─────────────────┐
-                        │    Orçamento    │     │    Documento    │
-                        ├─────────────────┤     ├─────────────────┤
-                        │ IdOrcamento     │     │ Id              │
-                        │ AnoOrcamento    │     │ Nome            │
-                        │ ValorOrcamento  │     │ IdFornecedor    │
-                        │ IdInstituição   │     └─────────────────┘
-                        │ IdTipoDespesa   │
-                        └────────┬────────┘
-                                 │
-                                 ▼
-                        ┌─────────────────┐
-                        │     Despesa     │
-                        ├─────────────────┤
-                        │ Id              │
-                        │ NumeroDocumento │
-                        │ UC              │
-                        │ DataEmissão     │
-                        │ ConsumoPrevisto │
-                        │ DataVencimento  │
-                        │ IdOrcamento     │
-                        │ IdInstituição   │
-                        │ IdFornecedor    │
-                        │ IdUsuário       │
-                        └─────────────────┘
-```
+As entidades principais do sistema incluem Secretaria, Instituicao, Fornecedor, Orcamento, Documento e Despesa, com relacionamento entre cadastro institucional, planejamento orcamentario e execucao de despesas.
 
 ---
 
-## 🔧 Configuração de Desenvolvimento
+## Configuracao de Desenvolvimento
 
-### Variáveis de Ambiente
+### Variaveis de Ambiente
 
-Para desenvolvimento local, você pode configurar as seguintes variáveis:
-
-| Variável | Descrição | Valor Padrão |
+| Variavel | Descricao | Valor Padrao |
 |----------|-----------|--------------|
-| `ASPNETCORE_ENVIRONMENT` | Ambiente de execução | `Development` |
-| `ConnectionStrings__DefaultConnection` | String de conexão PostgreSQL | Ver `appsettings.json` |
+| `ASPNETCORE_ENVIRONMENT` | Ambiente de execucao | `Development` |
+| `ConnectionStrings__DefaultConnection` | String de conexao PostgreSQL | Ver `appsettings.json` |
 
 ### Executando em Modo de Desenvolvimento
 
 ```bash
-# Modo watch (recompila automaticamente)
 dotnet watch run
+```
 
-# Modo normal
+```bash
 dotnet run
 ```
 
 ### Aplicando Migrations
 
 ```bash
-# Criar nova migration
 dotnet ef migrations add NomeDaMigration
-
-# Aplicar migrations pendentes
 dotnet ef database update
-
-# Reverter última migration
 dotnet ef migrations remove
 ```
 
 ---
 
-## 🤝 Contribuição
+## Contribuicao
 
-Contribuições são bem-vindas! Para contribuir:
+Contribuicoes sao bem-vindas. Para contribuir:
 
-1. Faça um Fork do projeto
+1. Faca um fork do projeto
 2. Crie uma branch para sua feature (`git checkout -b feature/NovaFeature`)
-3. Commit suas mudanças (`git commit -m 'Adiciona NovaFeature'`)
+3. Commit suas mudancas (`git commit -m 'Adiciona NovaFeature'`)
 4. Push para a branch (`git push origin feature/NovaFeature`)
 5. Abra um Pull Request
 
-### Padrões de Código
+### Padroes de Codigo
 
-- Utilize nomes em português para entidades de negócio
-- Siga o padrão de nomenclatura do C# (PascalCase para classes e métodos públicos)
-- Documente métodos públicos complexos
-- Escreva testes unitários para novos recursos
-
----
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+- Utilize nomes em portugues para entidades de negocio
+- Siga o padrao de nomenclatura do C# (PascalCase para classes e metodos publicos)
+- Documente metodos publicos complexos
+- Escreva testes unitarios para novos recursos
 
 ---
 
-## 👥 Equipe
+## Licenca
 
-Desenvolvido com ❤️ pela equipe **FATEC-ADS-AMS2025**
+Este projeto esta sob a licenca MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
 ---
 
-<div align="center">
+## Equipe
 
-**[⬆ Voltar ao topo](#️-civitas-backend)**
-
-</div>
+Desenvolvido pela equipe **FATEC-ADS-AMS2025**.
