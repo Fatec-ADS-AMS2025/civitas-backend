@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Civitas.WebAPI.Objects.Contracts;
 using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
@@ -13,13 +13,13 @@ namespace Civitas.WebAPI.Controllers
     [ApiController]
     public class FornecedorController : Controller
     {
-        // Servi�o respons�vel pela l�gica de neg�cios dos fornecedores
+        // Serviï¿½o responsï¿½vel pela lï¿½gica de negï¿½cios dos fornecedores
         private readonly IFornecedorService _fornecedorService;
 
-        // Objeto padr�o para respostas da API
+        // Objeto padrï¿½o para respostas da API
         private readonly Response _response;
 
-        // Construtor com inje��o do service
+        // Construtor com injeï¿½ï¿½o do service
         public FornecedorController(IFornecedorService fornecedorService)
         {
             _fornecedorService = fornecedorService;
@@ -33,23 +33,23 @@ namespace Civitas.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(FornecedorDTO fornecedorDTO)
         {
-            // Verifica se o DTO recebido � nulo
+            // Verifica se o DTO recebido ï¿½ nulo
             if (fornecedorDTO is null)
             {
                 _response.Code = ResponseEnum.INVALID;
                 _response.Data = null;
-                _response.Message = "Dados inv�lidos";
-                _response.Message = "Dados inv�lidos";
+                _response.Message = "Dados invï¿½lidos";
+                _response.Message = "Dados invï¿½lidos";
 
                 return BadRequest(_response);
             }
 
             try
             {
-                // Garante que o ID ser� gerado pelo banco
+                // Garante que o ID serï¿½ gerado pelo banco
                 fornecedorDTO.IdFornecedor = 0;
 
-                // Chama o servi�o para criar o registro
+                // Chama o serviï¿½o para criar o registro
                 await _fornecedorService.Create(fornecedorDTO);
 
                 // Retorna sucesso
@@ -61,13 +61,13 @@ namespace Civitas.WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                // Resposta de erro com detalhes t�cnicos
+                // Resposta de erro com detalhes tï¿½cnicos
                 _response.Code = ResponseEnum.ERROR;
-                _response.Message = "N�o foi poss�vel cadastrar o fornecedor";
+                _response.Message = "Nï¿½o foi possï¿½vel cadastrar o fornecedor";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
 
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
@@ -86,8 +86,8 @@ namespace Civitas.WebAPI.Controllers
             {
                 _response.Code = ResponseEnum.INVALID;
                 _response.Data = null;
-                _response.Message = "Dados inv�lidos";
-                _response.Message = "Dados inv�lidos";
+                _response.Message = "Dados invï¿½lidos";
+                _response.Message = "Dados invï¿½lidos";
 
                 return BadRequest(_response);
             }
@@ -101,7 +101,7 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "O fornecedor informado n�o existe";
+                    _response.Message = "O fornecedor informado nï¿½o existe";
                     return NotFound(_response);
                 }
 
@@ -116,13 +116,13 @@ namespace Civitas.WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                // Erro no processo de atualiza��o
+                // Erro no processo de atualizaï¿½ï¿½o
                 _response.Code = ResponseEnum.ERROR;
                 _response.Message = "Ocorreu um erro ao tentar atualizar os dados do fornecedor";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
 
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
@@ -131,7 +131,7 @@ namespace Civitas.WebAPI.Controllers
 
         // ========================================
         //   GET /api/Fornecedor
-        //   Obt�m todos os fornecedores
+        //   Obtï¿½m todos os fornecedores
         // ========================================
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
@@ -155,7 +155,7 @@ namespace Civitas.WebAPI.Controllers
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
 
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
@@ -195,7 +195,7 @@ namespace Civitas.WebAPI.Controllers
 
         // ========================================
         //   GET /api/Fornecedor/{id}
-        //   Obt�m um fornecedor espec�fico
+        //   Obtï¿½m um fornecedor especï¿½fico
         // ========================================
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -209,7 +209,7 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "Fornecedor n�o encontrado";
+                    _response.Message = "Fornecedor nï¿½o encontrado";
                     return NotFound(_response);
                 }
 
@@ -228,7 +228,7 @@ namespace Civitas.WebAPI.Controllers
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
 
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
@@ -237,21 +237,21 @@ namespace Civitas.WebAPI.Controllers
 
         // ==========================================================
         //   PATCH /api/Fornecedor/{id}/alterar-situacao
-        //   Altera apenas a situa��o ATIVO/INATIVO do fornecedor
+        //   Altera apenas a situaï¿½ï¿½o ATIVO/INATIVO do fornecedor
         // ==========================================================
         [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
         {
             try
             {
-                // Obt�m o fornecedor
+                // Obtï¿½m o fornecedor
                 var fornecedor = await _fornecedorService.GetById(id);
 
                 if (fornecedor == null)
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "Fornecedor n�o encontrado";
+                    _response.Message = "Fornecedor nï¿½o encontrado";
                     return NotFound(_response);
                 }
 
@@ -262,7 +262,7 @@ namespace Civitas.WebAPI.Controllers
                     ? Situacao.INATIVO
                     : Situacao.ATIVO;
 
-                // Salva atualiza��o
+                // Salva atualizaï¿½ï¿½o
                 await _fornecedorService.Update(fornecedor, id);
 
                 // Monta resposta de sucesso
@@ -272,19 +272,19 @@ namespace Civitas.WebAPI.Controllers
                     fornecedor.IdFornecedor,
                     Situacao = fornecedor.Situacao.ToString()
                 };
-                _response.Message = $"Situa��o alterada para {fornecedor.Situacao} com sucesso";
+                _response.Message = $"Situaï¿½ï¿½o alterada para {fornecedor.Situacao} com sucesso";
 
                 return Ok(_response);
             }
             catch (Exception ex)
             {
-                // Erro ao processar altera��o
+                // Erro ao processar alteraï¿½ï¿½o
                 _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao alterar a situa��o do fornecedor";
+                _response.Message = "Ocorreu um erro ao alterar a situaï¿½ï¿½o do fornecedor";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
 
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
@@ -292,3 +292,4 @@ namespace Civitas.WebAPI.Controllers
         }
     }
 }
+

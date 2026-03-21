@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Civitas.WebAPI.Objects.Contracts;
 using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
@@ -9,15 +9,15 @@ using Microsoft.AspNetCore.Mvc;
 namespace Civitas.WebAPI.Controllers
 {
     /// <summary>
-    /// Controller responsável pela gestão de Secretarias no sistema.
+    /// Controller responsÃ¡vel pela gestÃ£o de Secretarias no sistema.
     /// </summary>
     /// <remarks>
     /// Finalidade:
-    /// - Manipular operações de CRUD das Secretarias.
+    /// - Manipular operaÃ§Ãµes de CRUD das Secretarias.
     /// - Encapsular respostas padronizadas utilizando o objeto <see cref="Response"/>.
     /// 
-    /// Dependências:
-    /// - <see cref="ISecretariaService"/>: Serviço responsável por regras de negócio e acesso a dados.
+    /// DependÃªncias:
+    /// - <see cref="ISecretariaService"/>: ServiÃ§o responsÃ¡vel por regras de negÃ³cio e acesso a dados.
     /// </remarks>
     [Route("api/secretarias")]
     [ApiController]
@@ -29,7 +29,7 @@ namespace Civitas.WebAPI.Controllers
         /// <summary>
         /// Inicializa o controller de Secretaria.
         /// </summary>
-        /// <param name="secretariaService">Serviço responsável pelas operações de Secretaria.</param>
+        /// <param name="secretariaService">ServiÃ§o responsÃ¡vel pelas operaÃ§Ãµes de Secretaria.</param>
         public SecretariaController(ISecretariaService secretariaService)
         {
             _secretariaService = secretariaService;
@@ -40,11 +40,11 @@ namespace Civitas.WebAPI.Controllers
         /// Cadastra uma nova Secretaria.
         /// </summary>
         /// <param name="secretariaDTO">Dados da Secretaria a ser criada.</param>
-        /// <returns>Resultado da operação de criação.</returns>
+        /// <returns>Resultado da operaÃ§Ã£o de criaÃ§Ã£o.</returns>
         /// <remarks>
         /// Regras:
         /// - O objeto deve vir preenchido.
-        /// - O ID sempre é zerado para garantir criação.
+        /// - O ID sempre Ã© zerado para garantir criaÃ§Ã£o.
         /// </remarks>
         [HttpPost]
         public async Task<IActionResult> Post(SecretariaDTO secretariaDTO)
@@ -53,13 +53,14 @@ namespace Civitas.WebAPI.Controllers
             {
                 _response.Code = ResponseEnum.INVALID;
                 _response.Data = null;
-                _response.Message = "Dados inválidos";
+                _response.Message = "Dados invÃ¡lidos";
 
                 return BadRequest(_response);
             }
 
             try
             {
+                await _secretariaService.ValidarCadastroAsync(secretariaDTO);
                 secretariaDTO.IdSecretaria = 0;
                 await _secretariaService.Create(secretariaDTO);
 
@@ -69,14 +70,21 @@ namespace Civitas.WebAPI.Controllers
 
                 return Ok(_response);
             }
+            catch (ArgumentException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Message = ex.Message;
+                _response.Data = null;
+                return BadRequest(_response);
+            }
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Não foi possível cadastrar a secretaria";
+                _response.Message = "NÃ£o foi possÃ­vel cadastrar a secretaria";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
@@ -87,7 +95,7 @@ namespace Civitas.WebAPI.Controllers
         /// </summary>
         /// <param name="id">ID da Secretaria a ser atualizada.</param>
         /// <param name="secretariaDTO">Dados atualizados.</param>
-        /// <returns>Resultado da operação de atualização.</returns>
+        /// <returns>Resultado da operaÃ§Ã£o de atualizaÃ§Ã£o.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, SecretariaDTO secretariaDTO)
         {
@@ -95,7 +103,7 @@ namespace Civitas.WebAPI.Controllers
             {
                 _response.Code = ResponseEnum.INVALID;
                 _response.Data = null;
-                _response.Message = "Dados inválidos";
+                _response.Message = "Dados invÃ¡lidos";
 
                 return BadRequest(_response);
             }
@@ -107,10 +115,11 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "A secretaria informada não existe";
+                    _response.Message = "A secretaria informada nÃ£o existe";
                     return NotFound(_response);
                 }
 
+                await _secretariaService.ValidarCadastroAsync(secretariaDTO, id);
                 await _secretariaService.Update(secretariaDTO, id);
 
                 _response.Code = ResponseEnum.SUCCESS;
@@ -119,6 +128,13 @@ namespace Civitas.WebAPI.Controllers
 
                 return Ok(_response);
             }
+            catch (ArgumentException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Message = ex.Message;
+                _response.Data = null;
+                return BadRequest(_response);
+            }
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
@@ -126,7 +142,7 @@ namespace Civitas.WebAPI.Controllers
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
@@ -156,7 +172,7 @@ namespace Civitas.WebAPI.Controllers
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
@@ -186,7 +202,7 @@ namespace Civitas.WebAPI.Controllers
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
 
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
@@ -208,7 +224,7 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "Secretaria não encontrada";
+                    _response.Message = "Secretaria nÃ£o encontrada";
                     return NotFound(_response);
                 }
 
@@ -225,21 +241,21 @@ namespace Civitas.WebAPI.Controllers
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
         }
 
         /// <summary>
-        /// Alterna a situação (Ativo/Inativo) de uma Secretaria.
+        /// Alterna a situaÃ§Ã£o (Ativo/Inativo) de uma Secretaria.
         /// </summary>
         /// <param name="id">ID da Secretaria.</param>
-        /// <returns>Resultado com a nova situação.</returns>
+        /// <returns>Resultado com a nova situaÃ§Ã£o.</returns>
         /// <remarks>
         /// Regra:
-        /// - Caso esteja ATIVO → vira INATIVO
-        /// - Caso esteja INATIVO → vira ATIVO
+        /// - Caso esteja ATIVO â†’ vira INATIVO
+        /// - Caso esteja INATIVO â†’ vira ATIVO
         /// </remarks>
         [HttpPatch("situacao/{id}")]
         public async Task<IActionResult> AlterarSituacao(int id)
@@ -251,7 +267,7 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "Secretaria não encontrada";
+                    _response.Message = "Secretaria nÃ£o encontrada";
                     return NotFound(_response);
                 }
 
@@ -267,21 +283,22 @@ namespace Civitas.WebAPI.Controllers
                     secretaria.IdSecretaria,
                     Situacao = secretaria.Situacao.ToString()
                 };
-                _response.Message = $"Situação alterada para {secretaria.Situacao} com sucesso";
+                _response.Message = $"SituaÃ§Ã£o alterada para {secretaria.Situacao} com sucesso";
 
                 return Ok(_response);
             }
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao alterar a situação da secretaria";
+                _response.Message = "Ocorreu um erro ao alterar a situaÃ§Ã£o da secretaria";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
         }
     }
 }
+

@@ -1,4 +1,4 @@
-using Civitas.WebAPI.Objects.Contracts;
+﻿using Civitas.WebAPI.Objects.Contracts;
 using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
@@ -7,15 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 namespace Civitas.WebAPI.Controllers
 {
     /// <summary>
-    /// Controller responsável pelo gerenciamento dos Orçamentos.
+    /// Controller responsÃ¡vel pelo gerenciamento dos OrÃ§amentos.
     /// </summary>
     /// <remarks>
-    /// Funções:
-    /// - Expor os endpoints CRUD de orçamentos.
+    /// FunÃ§Ãµes:
+    /// - Expor os endpoints CRUD de orÃ§amentos.
     /// - Padronizar as respostas utilizando o objeto <see cref="Response"/>.
     /// 
-    /// Dependências:
-    /// - <see cref="IOrcamentoService"/>: Camada de serviço contendo as regras de negócio.
+    /// DependÃªncias:
+    /// - <see cref="IOrcamentoService"/>: Camada de serviÃ§o contendo as regras de negÃ³cio.
     /// </remarks>
     [Route("api/orcamentos")]
     [ApiController]
@@ -25,9 +25,9 @@ namespace Civitas.WebAPI.Controllers
         private readonly Response _response;
 
         /// <summary>
-        /// Construtor responsável por inicializar o controller de Orçamentos.
+        /// Construtor responsÃ¡vel por inicializar o controller de OrÃ§amentos.
         /// </summary>
-        /// <param name="orcamentoService">Serviço de regras de negócio de Orçamentos.</param>
+        /// <param name="orcamentoService">ServiÃ§o de regras de negÃ³cio de OrÃ§amentos.</param>
         public OrcamentoController(IOrcamentoService orcamentoService)
         {
             _orcamentoService = orcamentoService;
@@ -35,9 +35,9 @@ namespace Civitas.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Obtém todos os orçamentos cadastrados no sistema.
+        /// ObtÃ©m todos os orÃ§amentos cadastrados no sistema.
         /// </summary>
-        /// <returns>Lista de orçamentos e mensagem de sucesso.</returns>
+        /// <returns>Lista de orÃ§amentos e mensagem de sucesso.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
@@ -45,16 +45,16 @@ namespace Civitas.WebAPI.Controllers
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = orcamentoDto;
-            _response.Message = "Orçamentos listados com sucesso";
+            _response.Message = "OrÃ§amentos listados com sucesso";
 
             return Ok(_response);
         }
 
         /// <summary>
-        /// Obtém um orçamento específico pelo seu identificador.
+        /// ObtÃ©m um orÃ§amento especÃ­fico pelo seu identificador.
         /// </summary>
-        /// <param name="idOrcamento">Identificador único do orçamento.</param>
-        /// <returns>Orçamento correspondente ou mensagem de erro.</returns>
+        /// <param name="idOrcamento">Identificador Ãºnico do orÃ§amento.</param>
+        /// <returns>OrÃ§amento correspondente ou mensagem de erro.</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOrcamentoById(int id)
         {
@@ -63,27 +63,27 @@ namespace Civitas.WebAPI.Controllers
             {
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = null;
-                _response.Message = "Nenhum orçamento encontrado";
+                _response.Message = "Nenhum orÃ§amento encontrado";
 
                 return NotFound(_response);
             }
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = orcamentoDto;
-            _response.Message = "Orçamento encontrado com sucesso";
+            _response.Message = "OrÃ§amento encontrado com sucesso";
             return Ok(_response);
         }
 
         /// <summary>
-        /// Cadastra um novo orçamento no sistema.
+        /// Cadastra um novo orÃ§amento no sistema.
         /// </summary>
-        /// <param name="orcamentoDTO">Dados do orçamento a ser registrado.</param>
-        /// <returns>Resultado da operação, com mensagem de sucesso ou erro.</returns>
+        /// <param name="orcamentoDTO">Dados do orÃ§amento a ser registrado.</param>
+        /// <returns>Resultado da operaÃ§Ã£o, com mensagem de sucesso ou erro.</returns>
         /// <remarks>
-        /// Validações executadas:
-        /// - Ano do orçamento deve ser maior que zero.
+        /// ValidaÃ§Ãµes executadas:
+        /// - Ano do orÃ§amento deve ser maior que zero.
         /// - Valor total deve ser maior que zero.
-        /// - A instituição vinculada deve ser válida.
+        /// - A instituiÃ§Ã£o vinculada deve ser vÃ¡lida.
         /// </remarks>
         [HttpPost]
         public async Task<IActionResult> Post(OrcamentoDTO orcamentoDTO)
@@ -92,7 +92,7 @@ namespace Civitas.WebAPI.Controllers
             {
                 _response.Code = ResponseEnum.INVALID;
                 _response.Data = null;
-                _response.Message = "Dados inválidos";
+                _response.Message = "Dados invÃ¡lidos";
 
                 return BadRequest(_response);
             }
@@ -103,7 +103,7 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.INVALID;
                     _response.Data = null;
-                    _response.Message = "Ano do orçamento inválido";
+                    _response.Message = "Ano do orÃ§amento invÃ¡lido";
                     return BadRequest(_response);
                 }
 
@@ -111,7 +111,7 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.INVALID;
                     _response.Data = null;
-                    _response.Message = "Valor do orçamento deve ser maior que zero";
+                    _response.Message = "Valor do orÃ§amento deve ser maior que zero";
                     return BadRequest(_response);
                 }
 
@@ -119,7 +119,7 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.INVALID;
                     _response.Data = null;
-                    _response.Message = "Instituição inválida";
+                    _response.Message = "InstituiÃ§Ã£o invÃ¡lida";
                     return BadRequest(_response);
                 }
 
@@ -128,29 +128,29 @@ namespace Civitas.WebAPI.Controllers
 
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = orcamentoDTO;
-                _response.Message = "Orçamento cadastrado com sucesso";
+                _response.Message = "OrÃ§amento cadastrado com sucesso";
 
                 return Ok(_response);
             }
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Não foi possível cadastrar o orçamento";
+                _response.Message = "NÃ£o foi possÃ­vel cadastrar o orÃ§amento";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
         }
 
         /// <summary>
-        /// Atualiza os dados de um orçamento existente.
+        /// Atualiza os dados de um orÃ§amento existente.
         /// </summary>
-        /// <param name="idOrcamento">Identificador do orçamento.</param>
-        /// <param name="orcamentoDTO">Dados atualizados do orçamento.</param>
-        /// <returns>Resultado da operação.</returns>
+        /// <param name="idOrcamento">Identificador do orÃ§amento.</param>
+        /// <param name="orcamentoDTO">Dados atualizados do orÃ§amento.</param>
+        /// <returns>Resultado da operaÃ§Ã£o.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, OrcamentoDTO orcamentoDTO)
         {
@@ -158,7 +158,7 @@ namespace Civitas.WebAPI.Controllers
             {
                 _response.Code = ResponseEnum.INVALID;
                 _response.Data = null;
-                _response.Message = "Dados inválidos";
+                _response.Message = "Dados invÃ¡lidos";
 
                 return BadRequest(_response);
             }
@@ -170,7 +170,7 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
                     _response.Data = null;
-                    _response.Message = "O orçamento informado não existe";
+                    _response.Message = "O orÃ§amento informado nÃ£o existe";
                     return NotFound(_response);
                 }
 
@@ -178,7 +178,7 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.INVALID;
                     _response.Data = null;
-                    _response.Message = "Ano do orçamento inválido";
+                    _response.Message = "Ano do orÃ§amento invÃ¡lido";
                     return BadRequest(_response);
                 }
 
@@ -186,7 +186,7 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.INVALID;
                     _response.Data = null;
-                    _response.Message = "Valor do orçamento deve ser maior que zero";
+                    _response.Message = "Valor do orÃ§amento deve ser maior que zero";
                     return BadRequest(_response);
                 }
 
@@ -194,7 +194,7 @@ namespace Civitas.WebAPI.Controllers
                 {
                     _response.Code = ResponseEnum.INVALID;
                     _response.Data = null;
-                    _response.Message = "Instituição inválida";
+                    _response.Message = "InstituiÃ§Ã£o invÃ¡lida";
                     return BadRequest(_response);
                 }
 
@@ -202,18 +202,18 @@ namespace Civitas.WebAPI.Controllers
 
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = orcamentoDTO;
-                _response.Message = "Orçamento atualizado com sucesso";
+                _response.Message = "OrÃ§amento atualizado com sucesso";
 
                 return Ok(_response);
             }
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao tentar atualizar os dados do orçamento";
+                _response.Message = "Ocorreu um erro ao tentar atualizar os dados do orÃ§amento";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "No stack trace available"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
@@ -221,3 +221,4 @@ namespace Civitas.WebAPI.Controllers
 
     }
 }
+
