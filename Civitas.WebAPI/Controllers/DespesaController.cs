@@ -188,6 +188,7 @@ namespace Civitas.WebAPI.Controllers
 
             try
             {
+                await _despesaService.ValidarCadastroAsync(despesaDTO);
                 despesaDTO.Id = 0;
                 await _despesaService.Create(despesaDTO);
 
@@ -196,6 +197,13 @@ namespace Civitas.WebAPI.Controllers
                 _response.Message = "Despesa cadastrada com sucesso";
 
                 return Ok(_response);
+            }
+            catch (ArgumentException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Message = ex.Message;
+                _response.Data = null;
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
@@ -257,6 +265,7 @@ namespace Civitas.WebAPI.Controllers
                     return NotFound(_response);
                 }
 
+                await _despesaService.ValidarCadastroAsync(despesaDTO, id);
                 await _despesaService.Update(despesaDTO, id);
 
                 _response.Code = ResponseEnum.SUCCESS;
@@ -264,6 +273,13 @@ namespace Civitas.WebAPI.Controllers
                 _response.Message = "Despesa atualizada com sucesso";
 
                 return Ok(_response);
+            }
+            catch (ArgumentException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Message = ex.Message;
+                _response.Data = null;
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {

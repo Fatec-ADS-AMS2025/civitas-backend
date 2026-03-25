@@ -4,5 +4,9 @@ namespace Civitas.WebAPI.Data.Interfaces
 {
     public interface IDespesaRepository : IGenericRepository<Despesa>
     {
+        Task<bool> ExistsByNumeroDocumentoAndFornecedorAsync(
+            string numeroDocumento,
+            int idFornecedor,
+            int? ignoreId = null);
     }
 }

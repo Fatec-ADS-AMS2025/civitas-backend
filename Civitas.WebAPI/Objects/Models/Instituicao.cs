@@ -134,7 +134,7 @@ namespace Civitas.WebAPI.Objects.Models
         /// <summary>
         /// Propriedade de navegação para despesas vinculadas.
         /// </summary>
-        public Despesa Despesa { get; set; }
+        public ICollection<Despesa> Despesas { get; set; } 
 
         /// <summary>
         /// Construtor padrão para o Entity Framework.
