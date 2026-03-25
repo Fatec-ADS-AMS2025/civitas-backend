@@ -44,6 +44,7 @@ O sistema permite o gerenciamento completo de:
 ## Recursos
 
 - API RESTful com documentacao Swagger
+- Autenticacao com JWT para emissao de token de acesso
 - Arquitetura em camadas (Controllers, Services, Repositories)
 - Entity Framework Core com PostgreSQL
 - AutoMapper para mapeamento de DTOs
@@ -67,6 +68,7 @@ O sistema permite o gerenciamento completo de:
 | **Npgsql** | 9.0.4 | Provider PostgreSQL para EF Core |
 | **AutoMapper** | 15.0.1 | Mapeamento objeto-objeto |
 | **Swashbuckle** | 9.0.6 | Documentacao Swagger/OpenAPI |
+| **JWT Bearer** | 9.0.9 | Autenticacao baseada em token |
 
 ---
 
@@ -101,6 +103,12 @@ CREATE DATABASE civitas;
 {
   "ConnectionStrings": {
     "DefaultConnection": "Host=localhost;Username=postgres;Port=5432;Password=SUA_SENHA;Database=civitas"
+  },
+  "Jwt": {
+    "Issuer": "Civitas.WebAPI",
+    "Audience": "Civitas.Client",
+    "SecretKey": "SUA_CHAVE_FORTE_DE_NO_MINIMO_32_CARACTERES",
+    "ExpirationMinutes": 60
   }
 }
 ```
@@ -126,9 +134,20 @@ Apos iniciar a aplicacao, acesse:
 
 A documentacao interativa do Swagger permite testar os endpoints diretamente no navegador.
 
+Para usar o token retornado pelo login nas proximas rotas protegidas, envie o header:
+
+```http
+Authorization: Bearer {seu_jwt}
+```
+
 ---
 
 ## API Endpoints
+
+### Autenticacao
+| Metodo | Endpoint | Descricao |
+|--------|----------|-----------|
+| `POST` | `/api/auth/login` | Autentica usuario e retorna token JWT valido por 60 minutos |
 
 ### Usuarios
 | Metodo | Endpoint | Descricao |
