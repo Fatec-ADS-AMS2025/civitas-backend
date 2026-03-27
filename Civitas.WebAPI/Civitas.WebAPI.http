@@ -1,4 +1,16 @@
 @Civitas.WebAPI_HostAddress = http://localhost:5210
+@authToken = cole-o-token-aqui
+
+### Auth - Login
+POST {{Civitas.WebAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "usuario@example.com",
+  "senha": "abc12345"
+}
+
+###
 
 ### Auditorias - Get All
 GET {{Civitas.WebAPI_HostAddress}}/api/auditorias
@@ -478,6 +490,7 @@ Accept: application/json
 ### Usuarios - Get All
 GET {{Civitas.WebAPI_HostAddress}}/api/usuarios
 Accept: application/json
+Authorization: Bearer {{authToken}}
 
 ### Usuarios - Get Inativos
 GET {{Civitas.WebAPI_HostAddress}}/api/usuarios/inativos

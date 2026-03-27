@@ -34,6 +34,12 @@ namespace Civitas.WebAPI.Data.Repositories
                 (!ignoredId.HasValue || usuario.Id != ignoredId.Value));
         }
 
+        public async Task<Usuario?> GetByEmailAsync(string email)
+        {
+            return await _context.Usuarios
+                .FirstOrDefaultAsync(usuario => usuario.Email == email);
+        }
+
         public async Task<IEnumerable<Usuario>> GetUsuarioByCpf(string cpf)
         {
             return await _context.Usuarios
