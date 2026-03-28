@@ -11,11 +11,10 @@ namespace Civitas.WebAPI.Data.Builders
 
             modelBuilder.Entity<Despesa>().Property(d => d.NumeroDocumento)
                 .IsRequired()
-                .HasMaxLength(50);
+                .HasMaxLength(100);
 
             modelBuilder.Entity<Despesa>().Property(d => d.UC)
-                .IsRequired()
-                .HasMaxLength(20);
+                .HasMaxLength(100);
 
             modelBuilder.Entity<Despesa>().Property(d => d.DataEmicao)
                 .IsRequired()
@@ -57,8 +56,8 @@ namespace Civitas.WebAPI.Data.Builders
 
             modelBuilder.Entity<Despesa>()
                 .HasOne(d => d.Instituicao)
-                .WithOne(i => i.Despesa)
-                .HasForeignKey<Despesa>(d => d.IdInstituicao)
+                .WithMany(i => i.Despesas)
+                .HasForeignKey(d => d.IdInstituicao)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

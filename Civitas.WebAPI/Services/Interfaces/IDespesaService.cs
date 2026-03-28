@@ -12,5 +12,6 @@ namespace Civitas.WebAPI.Services.Interfaces
     /// </remarks>
     public interface IDespesaService : IGenericService<Despesa, DespesaDTO>
     {
+        Task ValidarCadastroAsync(DespesaDTO entityDTO, int? id = null);
     }
 }
