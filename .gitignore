@@ -38,6 +38,7 @@ TestResults/
 # =========================
 # ASP.NET Core / .NET
 # =========================
+.dotnet/
 appsettings.Development.json
 appsettings.Local.json
 *.db
