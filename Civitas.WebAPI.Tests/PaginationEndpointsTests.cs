@@ -1,9 +1,14 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Net.Http.Headers;
+using System.Security.Claims;
+using System.Text;
 using System.Text.Json;
 using Civitas.WebAPI.Data;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Objects.Models;
 using Civitas.WebAPI.Tests.Infrastructure;
+using Microsoft.IdentityModel.Tokens;
 using Xunit;
 
 namespace Civitas.WebAPI.Tests;
@@ -31,7 +36,7 @@ public sealed class PaginationEndpointsTests : IClassFixture<TestWebApplicationF
             return Task.CompletedTask;
         });
 
-        using var client = _factory.CreateClient();
+        using var client = CreateAuthenticatedClient();
 
         var response = await client.GetAsync("/api/fornecedores?page=2&size=5&sortBy=NomeFantasia&sortDirection=desc");
 
@@ -57,7 +62,7 @@ public sealed class PaginationEndpointsTests : IClassFixture<TestWebApplicationF
             return Task.CompletedTask;
         });
 
-        using var client = _factory.CreateClient();
+        using var client = CreateAuthenticatedClient();
 
         var response = await client.GetAsync("/api/secretarias?page=0&size=500&sortBy=Inexistente&sortDirection=desc");
 
@@ -73,6 +78,28 @@ public sealed class PaginationEndpointsTests : IClassFixture<TestWebApplicationF
         Assert.Equal(100, data.GetProperty("pageSize").GetInt32());
         Assert.Equal(100, items.GetArrayLength());
         Assert.Equal(110, items[0].GetProperty("idSecretaria").GetInt32());
+    }
+
+    private System.Net.Http.HttpClient CreateAuthenticatedClient()
+    {
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", CreateTestToken());
+        return client;
+    }
+
+    private static string CreateTestToken()
+    {
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes("development-only-key-change-before-production-2026"));
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var token = new JwtSecurityToken(
+            issuer: "Civitas.WebAPI",
+            audience: "Civitas.Client",
+            claims: new[] { new Claim(JwtRegisteredClaimNames.Sub, "1") },
+            expires: DateTime.UtcNow.AddHours(1),
+            signingCredentials: credentials);
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
     private static IEnumerable<Fornecedor> CreateFornecedores(int total)

@@ -3,6 +3,7 @@ using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
@@ -25,6 +26,7 @@ namespace Civitas.WebAPI.Controllers
     /// - Erros internos são retornados como Status 500 contendo mensagem + StackTrace.
     /// - Situação usa o enum <see cref="Situacao"/>.
     /// </remarks>
+    [Authorize]
     [Route("api/despesas")]
     [ApiController]
     public class DespesaController : ControllerBase

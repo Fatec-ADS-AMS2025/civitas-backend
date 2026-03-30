@@ -2,6 +2,7 @@
 using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
@@ -17,6 +18,7 @@ namespace Civitas.WebAPI.Controllers
     /// DependÃªncias:
     /// - <see cref="IOrcamentoService"/>: Camada de serviÃ§o contendo as regras de negÃ³cio.
     /// </remarks>
+    [Authorize]
     [Route("api/orcamentos")]
     [ApiController]
     public class OrcamentoController : ControllerBase

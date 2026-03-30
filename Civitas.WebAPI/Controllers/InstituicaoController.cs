@@ -3,6 +3,7 @@ using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
@@ -26,6 +27,7 @@ namespace Civitas.WebAPI.Controllers
     /// Autenticação/Autorização:
     /// - *Não especificado*, presumidamente livre ou via políticas globais.
     /// </remarks>
+    [Authorize]
     [Route("api/instituicoes")]
     [ApiController]
     public class InstituicaoController : ControllerBase

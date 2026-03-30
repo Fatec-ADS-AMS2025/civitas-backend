@@ -4,11 +4,13 @@ using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
 {
     // Define a rota base da controller: api/Fornecedor
+    [Authorize]
     [Route("api/fornecedores")]
     [ApiController]
     public class FornecedorController : Controller

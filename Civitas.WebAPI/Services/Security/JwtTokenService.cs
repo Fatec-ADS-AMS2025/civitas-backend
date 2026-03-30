@@ -17,18 +17,21 @@ namespace Civitas.WebAPI.Services.Security
             _jwtOptions = jwtOptions.Value;
         }
 
-        public LoginResponseDTO GenerateToken(Usuario usuario)
+        public LoginResponseDTO GenerateToken(Usuario usuario, IEnumerable<Claim>? extraClaims = null)
         {
             var expiresAtUtc = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpirationMinutes);
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, usuario.Id.ToString()),
                 new Claim("name", usuario.Nome),
                 new Claim("tipousuario", usuario.TipoUsuario.ToString())
             };
+
+            if (extraClaims != null)
+                claims.AddRange(extraClaims);
 
             var tokenDescriptor = new JwtSecurityToken(
                 issuer: _jwtOptions.Issuer,

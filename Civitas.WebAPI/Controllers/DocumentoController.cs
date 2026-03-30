@@ -4,6 +4,7 @@ using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Entities;
 using Civitas.WebAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
@@ -22,6 +23,7 @@ namespace Civitas.WebAPI.Controllers
     /// - Todos os retornos seguem o padrão do objeto Response.
     /// - Erros internos retornam Status 500 com detalhes.
     /// </remarks>
+    [Authorize]
     [Route("api/documentos")]
     [ApiController]
     public class DocumentoController : ControllerBase
