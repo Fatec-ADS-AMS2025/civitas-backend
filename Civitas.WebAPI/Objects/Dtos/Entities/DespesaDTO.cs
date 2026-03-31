@@ -43,7 +43,7 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// <remarks>
         /// Formato: String. Recomenda-se o padrão ISO 8601 (AAAA-MM-DD) para facilitar a ordenação e filtros por data.
         /// </remarks>
-        public string DataEmicao { get; set; }
+        public string DataEmissao { get; set; }
 
         /// <summary>
         /// Previsão de consumo para esta fatura.

@@ -1,4 +1,4 @@
-﻿using Civitas.WebAPI.Objects.Dtos.Entities;
+using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Models;
 
 namespace Civitas.WebAPI.Services.Interfaces
@@ -13,6 +13,6 @@ namespace Civitas.WebAPI.Services.Interfaces
     /// </remarks>
     public interface IFornecedorService : IGenericService<Fornecedor, FornecedorDTO>
     {
-
+        Task ValidarCadastroAsync(FornecedorDTO entityDTO, int? id = null);
     }
 }

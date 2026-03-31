@@ -114,6 +114,11 @@ namespace Civitas.WebAPI.Services.Entities
                 throw new ArgumentException("Fornecedor informado nao foi encontrado.");
             }
 
+            if (fornecedor.Situacao != Situacao.ATIVO)
+            {
+                throw new ArgumentException("Fornecedor inativo nao pode ser utilizado em novas despesas.");
+            }
+
             var usuario = await _usuarioRepository.GetById(despesaDTO.IdUsuario);
             if (usuario is null)
             {
