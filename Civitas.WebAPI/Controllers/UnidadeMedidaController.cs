@@ -4,6 +4,7 @@ using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Objects.Models;
 using Civitas.WebAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
@@ -11,6 +12,7 @@ namespace Civitas.WebAPI.Controllers
     /// <summary>
     /// Controller responsável pelo gerenciamento das Unidades de Medida.
     /// </summary>
+    [Authorize]
     [Route("api/unidade-medida")]
     [ApiController]
     public class UnidadeMedidaController : ControllerBase

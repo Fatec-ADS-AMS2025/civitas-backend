@@ -5,6 +5,7 @@ using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
 using Civitas.WebAPI.Services.Validation;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
@@ -21,6 +22,7 @@ namespace Civitas.WebAPI.Controllers
     /// - <see cref="IUsuarioService"/>: Camada de serviço que encapsula regras de negócio.
     /// - <see cref="Response"/>: Objeto padrão utilizado para retorno de respostas.
     /// </remarks>
+    [Authorize]
     [Route("api/usuarios")]
     [ApiController]
     public class UsuarioController : Controller

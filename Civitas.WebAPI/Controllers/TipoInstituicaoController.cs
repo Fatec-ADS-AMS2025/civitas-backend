@@ -5,6 +5,7 @@ using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Entities;
 using Civitas.WebAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
@@ -12,6 +13,7 @@ namespace Civitas.WebAPI.Controllers
     /// <summary>
     /// Controller responsável pelo gerenciamento dos Tipos de Instituições.
     /// </summary>
+    [Authorize]
     [Route("api/tipo-instituicao")]
     [ApiController]
     public class TipoInstituicaoController : ControllerBase

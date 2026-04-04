@@ -3,6 +3,7 @@ using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
@@ -18,6 +19,7 @@ namespace Civitas.WebAPI.Controllers
     /// Dependências:
     /// - <see cref="ITipoDespesaService"/>: Camada de serviços que contém regras de negócio.
     /// </remarks>
+    [Authorize]
     [Route("api/tipo-despesa")]
     [ApiController]
     public class TipoDespesaController : ControllerBase

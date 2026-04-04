@@ -2,6 +2,7 @@ using Civitas.WebAPI.Objects.Contracts;
 using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
@@ -9,6 +10,7 @@ namespace Civitas.WebAPI.Controllers
     /// <summary>
     /// Controlador responsável pelo gerenciamento das auditorias do sistema.
     /// </summary>
+    [Authorize]
     [Route("api/auditorias")]
     [ApiController]
     public class AuditoriaController : Controller
