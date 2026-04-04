@@ -48,6 +48,8 @@ namespace Civitas.WebAPI.Controllers
 
             try
             {
+                await _fornecedorService.ValidarCadastroAsync(fornecedorDTO);
+
                 // Garante que o ID serï¿½ gerado pelo banco
                 fornecedorDTO.IdFornecedor = 0;
 
@@ -60,6 +62,13 @@ namespace Civitas.WebAPI.Controllers
                 _response.Message = "Fornecedor cadastrado com sucesso";
 
                 return Ok(_response);
+            }
+            catch (ArgumentException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Message = ex.Message;
+                _response.Data = null;
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
@@ -107,6 +116,8 @@ namespace Civitas.WebAPI.Controllers
                     return NotFound(_response);
                 }
 
+                await _fornecedorService.ValidarCadastroAsync(fornecedorDTO, id);
+
                 // Atualiza o fornecedor
                 await _fornecedorService.Update(fornecedorDTO, id);
 
@@ -115,6 +126,13 @@ namespace Civitas.WebAPI.Controllers
                 _response.Message = "Fornecedor atualizado com sucesso";
 
                 return Ok(_response);
+            }
+            catch (ArgumentException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Message = ex.Message;
+                _response.Data = null;
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {

@@ -24,7 +24,7 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// Nome Fantasia (Nome comercial).
         /// </summary>
         /// <example>Papelaria Central, Kalunga, Sabesp.</example>
-        public string NomeFantasia { get; set; }
+        public string NomeFantasia { get; set; } = string.Empty;
 
         /// <summary>
         /// Situação cadastral no sistema.
@@ -44,7 +44,7 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// 2. Dígitos verificadores (Algoritmo oficial).
         /// 3. Unicidade (não permitir duplicidade de CNPJ).
         /// </remarks>
-        public string Cnpj { get; set; }
+        public string Cnpj { get; set; } = string.Empty;
 
         /// <summary>
         /// Razão Social oficial.
@@ -52,46 +52,46 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// <remarks>
         /// Nome jurídico utilizado para emissão de notas fiscais.
         /// </remarks>
-        public string Nome { get; set; }
+        public string Nome { get; set; } = string.Empty;
 
         /// <summary>
         /// Logradouro do endereço da sede.
         /// </summary>
-        public string Logradouro { get; set; }
+        public string Logradouro { get; set; } = string.Empty;
 
         /// <summary>
         /// Número do imóvel.
         /// </summary>
-        public string Numero { get; set; }
+        public string Numero { get; set; } = string.Empty;
 
         /// <summary>
         /// Bairro.
         /// </summary>
-        public string Bairro { get; set; }
+        public string Bairro { get; set; } = string.Empty;
 
         /// <summary>
         /// CEP.
         /// </summary>
-        public string Cep { get; set; }
+        public string Cep { get; set; } = string.Empty;
 
         /// <summary>
         /// Telefone comercial.
         /// </summary>
-        public string Telefone { get; set; }
+        public string Telefone { get; set; } = string.Empty;
 
         /// <summary>
         /// E-mail para contato financeiro.
         /// </summary>
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         /// <summary>
         /// Cidade.
         /// </summary>
-        public string Cidade { get; set; }
+        public string Cidade { get; set; } = string.Empty;
 
         /// <summary>
         /// Estado (UF).
         /// </summary>
-        public string Estado { get; set; }
+        public string Estado { get; set; } = string.Empty;
     }
 }

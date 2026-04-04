@@ -46,7 +46,7 @@ namespace Civitas.WebAPI.Objects.Models
         /// Formato esperado: String (ex: DD/MM/AAAA) ou ISO 8601.
         /// </remarks>
         [Column("dataemissao")]
-        public string DataEmicao { get; set; }
+        public string DataEmissao { get; set; }
 
         /// <summary>
         /// Quantidade estimada de consumo para esta despesa.
@@ -143,12 +143,12 @@ namespace Civitas.WebAPI.Objects.Models
         /// <summary>
         /// Construtor para inicialização dos dados principais da Despesa.
         /// </summary>
-        public Despesa(int id, string numeroDocumento, string uc, string dataEmicao, double consumoPrevisto, DateOnly dataVencimento, Situacao situacao)
+        public Despesa(int id, string numeroDocumento, string uc, string dataEmissao, double consumoPrevisto, DateOnly dataVencimento, Situacao situacao)
         {
             Id = id;
             NumeroDocumento = numeroDocumento;
             UC = uc;
-            DataEmicao = dataEmicao;
+            DataEmissao = dataEmissao;
             ConsumoPrevisto = consumoPrevisto;
             DataVencimento = dataVencimento;
             Situacao = situacao;

@@ -16,7 +16,7 @@ namespace Civitas.WebAPI.Data.Builders
             modelBuilder.Entity<Despesa>().Property(d => d.UC)
                 .HasMaxLength(100);
 
-            modelBuilder.Entity<Despesa>().Property(d => d.DataEmicao)
+            modelBuilder.Entity<Despesa>().Property(d => d.DataEmissao)
                 .IsRequired()
                 .HasMaxLength(20);
 

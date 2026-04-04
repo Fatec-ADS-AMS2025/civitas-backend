@@ -114,6 +114,11 @@ namespace Civitas.WebAPI.Services.Entities
                 throw new ArgumentException("Fornecedor informado nao foi encontrado.");
             }
 
+            if (fornecedor.Situacao != Situacao.ATIVO)
+            {
+                throw new ArgumentException("Fornecedor inativo nao pode ser utilizado em novas despesas.");
+            }
+
             var usuario = await _usuarioRepository.GetById(despesaDTO.IdUsuario);
             if (usuario is null)
             {
@@ -138,7 +143,7 @@ namespace Civitas.WebAPI.Services.Entities
         {
             despesaDTO.NumeroDocumento = Sanitize(despesaDTO.NumeroDocumento);
             despesaDTO.UC = Sanitize(despesaDTO.UC);
-            despesaDTO.DataEmicao = Sanitize(despesaDTO.DataEmicao);
+            despesaDTO.DataEmissao = Sanitize(despesaDTO.DataEmissao);
         }
 
         private static void ValidarCamposBasicos(DespesaDTO despesaDTO)
@@ -152,9 +157,9 @@ namespace Civitas.WebAPI.Services.Entities
             ValidarTamanhoMaximo(despesaDTO.NumeroDocumento, 100, "NumeroDocumento");
             ValidarSomenteNumeros(despesaDTO.NumeroDocumento, "NumeroDocumento");
             ValidarTamanhoMaximo(despesaDTO.UC, 100, "UC");
-            ValidarObrigatorio(despesaDTO.DataEmicao, nameof(despesaDTO.DataEmicao));
+            ValidarObrigatorio(despesaDTO.DataEmissao, nameof(despesaDTO.DataEmissao));
 
-            var dataEmissao = ParseDataEmissao(despesaDTO.DataEmicao);
+            var dataEmissao = ParseDataEmissao(despesaDTO.DataEmissao);
             if (dataEmissao > DateOnly.FromDateTime(DateTime.Today))
             {
                 throw new ArgumentException("DataEmicao nao pode ser futura.");
@@ -192,7 +197,7 @@ namespace Civitas.WebAPI.Services.Entities
             ValidarIdPositivo(despesaDTO.IdFornecedor, "IdFornecedor");
             ValidarIdPositivo(despesaDTO.IdUsuario, "IdUsuario");
 
-            despesaDTO.DataEmicao = dataEmissao.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture);
+            despesaDTO.DataEmissao = dataEmissao.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture);
         }
 
         private static void ValidarObrigatorio(string valor, string campo)
