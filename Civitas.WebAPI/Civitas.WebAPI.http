@@ -1,0 +1,538 @@
+@Civitas.WebAPI_HostAddress = http://localhost:5210
+@authToken = cole-o-token-aqui
+
+### Auth - Login
+POST {{Civitas.WebAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "usuario@example.com",
+  "senha": "abc12345"
+}
+
+###
+
+### Auditorias - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/auditorias
+Accept: application/json
+
+### Auditorias - Get Inativos
+GET {{Civitas.WebAPI_HostAddress}}/api/auditorias/inativos
+Accept: application/json
+
+### Auditorias - Get by ID
+GET {{Civitas.WebAPI_HostAddress}}/api/auditorias/1
+Accept: application/json
+
+### Auditorias - Get by Usuario
+GET {{Civitas.WebAPI_HostAddress}}/api/auditorias/usuario/1
+Accept: application/json
+
+### Auditorias - Get by Entidade
+GET {{Civitas.WebAPI_HostAddress}}/api/auditorias/entidade?nomeEntidade=Usuario
+Accept: application/json
+
+### Auditorias - Get by Operacao
+GET {{Civitas.WebAPI_HostAddress}}/api/auditorias/operacao?operacao=CREATE
+Accept: application/json
+
+### Auditorias - Post
+POST {{Civitas.WebAPI_HostAddress}}/api/auditorias
+Content-Type: application/json
+
+{
+  "nomeEntidade": "Usuario",
+  "operacao": "CREATE",
+  "valoresAtingidos": "nome",
+  "novosValores": "Joao",
+  "situacao": 1,
+  "usuarioId": 1
+}
+
+### Auditorias - Change Situacao
+PATCH {{Civitas.WebAPI_HostAddress}}/api/auditorias/situacao/1
+Accept: application/json
+
+###
+
+### Despesas - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/despesas
+Accept: application/json
+
+### Despesas - Get Inativos
+GET {{Civitas.WebAPI_HostAddress}}/api/despesas/inativos
+Accept: application/json
+
+### Despesas - Get by ID
+GET {{Civitas.WebAPI_HostAddress}}/api/despesas/1
+Accept: application/json
+
+### Despesas - Post
+POST {{Civitas.WebAPI_HostAddress}}/api/despesas
+Content-Type: application/json
+
+{
+  "numeroDocumento": "123",
+  "uc": "UC001",
+  "dataEmicao": "2026-03-17",
+  "consumoPrevisto": 150,
+  "dataVencimento": "2026-04-10",
+  "situacao": 1
+}
+
+### Despesas - Put
+PUT {{Civitas.WebAPI_HostAddress}}/api/despesas/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "numeroDocumento": "123",
+  "uc": "UC001",
+  "dataEmicao": "2026-03-17",
+  "consumoPrevisto": 160,
+  "dataVencimento": "2026-04-10",
+  "situacao": 1
+}
+
+### Despesas - Change Situacao
+PATCH {{Civitas.WebAPI_HostAddress}}/api/despesas/situacao/1
+Accept: application/json
+
+###
+
+### Documentos - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/documentos
+Accept: application/json
+
+### Documentos - Get by ID
+GET {{Civitas.WebAPI_HostAddress}}/api/documentos/1
+Accept: application/json
+
+### Documentos - Post
+POST {{Civitas.WebAPI_HostAddress}}/api/documentos
+Content-Type: application/json
+
+{
+  "digitalizacao": "AQID",
+  "numeroDocumento": 12345,
+  "idFornecedor": 1,
+  "idFluxo": 1
+}
+
+### Documentos - Put
+PUT {{Civitas.WebAPI_HostAddress}}/api/documentos/1
+Content-Type: application/json
+
+{
+  "idDocumento": 1,
+  "digitalizacao": "AQID",
+  "numeroDocumento": 12345,
+  "idFornecedor": 1,
+  "idFluxo": 1
+}
+
+###
+
+### Fluxos - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/fluxos
+Accept: application/json
+
+### Fluxos - Get by ID
+GET {{Civitas.WebAPI_HostAddress}}/api/fluxos/1
+Accept: application/json
+
+### Fluxos - Post
+POST {{Civitas.WebAPI_HostAddress}}/api/fluxos
+Content-Type: application/json
+
+{
+  "valorPago": 120.5,
+  "consumo": 80,
+  "status": 1
+}
+
+### Fluxos - Put
+PUT {{Civitas.WebAPI_HostAddress}}/api/fluxos/1
+Content-Type: application/json
+
+{
+  "idFluxo": 1,
+  "valorPago": 120.5,
+  "consumo": 80,
+  "status": 1
+}
+
+### Fluxos - Change Status (with body)
+PATCH {{Civitas.WebAPI_HostAddress}}/api/fluxos/status/1
+Content-Type: application/json
+
+0
+
+###
+
+### Fornecedores - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/fornecedores
+Accept: application/json
+
+### Fornecedores - Get Inativos
+GET {{Civitas.WebAPI_HostAddress}}/api/fornecedores/inativos
+Accept: application/json
+
+### Fornecedores - Get by ID
+GET {{Civitas.WebAPI_HostAddress}}/api/fornecedores/1
+Accept: application/json
+
+### Fornecedores - Post
+POST {{Civitas.WebAPI_HostAddress}}/api/fornecedores
+Content-Type: application/json
+
+{
+  "nomeFantasia": "Fornecedor XPTO",
+  "situacao": 1,
+  "cnpj": "12345678000199",
+  "nome": "Fornecedor XPTO LTDA",
+  "logradouro": "Rua A",
+  "numero": "100",
+  "bairro": "Centro",
+  "cep": "01001000",
+  "cidade": "Sao Paulo",
+  "estado": "SP",
+  "email": "contato@fornecedor.com"
+}
+
+### Fornecedores - Put
+PUT {{Civitas.WebAPI_HostAddress}}/api/fornecedores/1
+Content-Type: application/json
+
+{
+  "idFornecedor": 1,
+  "nomeFantasia": "Fornecedor XPTO",
+  "situacao": 1,
+  "cnpj": "12345678000199",
+  "nome": "Fornecedor XPTO LTDA",
+  "logradouro": "Rua A",
+  "numero": "100",
+  "bairro": "Centro",
+  "cep": "01001000",
+  "cidade": "Sao Paulo",
+  "estado": "SP",
+  "email": "contato@fornecedor.com"
+}
+
+### Fornecedores - Change Situacao
+PATCH {{Civitas.WebAPI_HostAddress}}/api/fornecedores/situacao/1
+Accept: application/json
+
+###
+
+### Instituicoes - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/instituicoes
+Accept: application/json
+
+### Instituicoes - Get Inativos
+GET {{Civitas.WebAPI_HostAddress}}/api/instituicoes/inativos
+Accept: application/json
+
+### Instituicoes - Get by ID
+GET {{Civitas.WebAPI_HostAddress}}/api/instituicoes/1
+Accept: application/json
+
+### Instituicoes - Get by Name
+GET {{Civitas.WebAPI_HostAddress}}/api/instituicoes/nome?name=Prefeitura
+Accept: application/json
+
+### Instituicoes - Post
+POST {{Civitas.WebAPI_HostAddress}}/api/instituicoes
+Content-Type: application/json
+
+{
+  "nome": "Instituicao Central",
+  "cnpj": "12345678000199",
+  "idTipoInstituicao": 1,
+  "logradouro": "Rua B",
+  "numero": "200",
+  "bairro": "Centro",
+  "cep": "01002000",
+  "telefone": "11999999999",
+  "email": "contato@instituicao.com",
+  "cidade": "Sao Paulo",
+  "estado": "SP",
+  "situacao": 1
+}
+
+### Instituicoes - Put
+PUT {{Civitas.WebAPI_HostAddress}}/api/instituicoes/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "nome": "Instituicao Central",
+  "cnpj": "12345678000199",
+  "idTipoInstituicao": 1,
+  "logradouro": "Rua B",
+  "numero": "200",
+  "bairro": "Centro",
+  "cep": "01002000",
+  "telefone": "11999999999",
+  "email": "contato@instituicao.com",
+  "cidade": "Sao Paulo",
+  "estado": "SP",
+  "situacao": 1
+}
+
+### Instituicoes - Change Situacao
+PATCH {{Civitas.WebAPI_HostAddress}}/api/instituicoes/situacao/1
+Accept: application/json
+
+###
+
+### Orcamentos - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/orcamentos
+Accept: application/json
+
+### Orcamentos - Get by ID
+GET {{Civitas.WebAPI_HostAddress}}/api/orcamentos/1
+Accept: application/json
+
+### Orcamentos - Post
+POST {{Civitas.WebAPI_HostAddress}}/api/orcamentos
+Content-Type: application/json
+
+{
+  "anoOrcamento": 2026,
+  "valorOrcamento": 50000,
+  "idInstituicao": 1,
+  "idTipoDespesa": 1
+}
+
+### Orcamentos - Put
+PUT {{Civitas.WebAPI_HostAddress}}/api/orcamentos/1
+Content-Type: application/json
+
+{
+  "idOrcamento": 1,
+  "anoOrcamento": 2026,
+  "valorOrcamento": 60000,
+  "idInstituicao": 1,
+  "idTipoDespesa": 1
+}
+
+###
+
+### Secretarias - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/secretarias
+Accept: application/json
+
+### Secretarias - Get Inativos
+GET {{Civitas.WebAPI_HostAddress}}/api/secretarias/inativos
+Accept: application/json
+
+### Secretarias - Get by ID
+GET {{Civitas.WebAPI_HostAddress}}/api/secretarias/1
+Accept: application/json
+
+### Secretarias - Post
+POST {{Civitas.WebAPI_HostAddress}}/api/secretarias
+Content-Type: application/json
+
+{
+  "descricao": "Secretaria de Financas",
+  "cnpj": "12345678000199",
+  "nome": "Secretaria de Financas",
+  "logradouro": "Rua C",
+  "numero": "300",
+  "bairro": "Centro",
+  "cep": "01003000",
+  "cidade": "Sao Paulo",
+  "estado": "SP",
+  "situacao": 1
+}
+
+### Secretarias - Put
+PUT {{Civitas.WebAPI_HostAddress}}/api/secretarias/1
+Content-Type: application/json
+
+{
+  "idSecretaria": 1,
+  "descricao": "Secretaria de Financas",
+  "cnpj": "12345678000199",
+  "nome": "Secretaria de Financas",
+  "logradouro": "Rua C",
+  "numero": "300",
+  "bairro": "Centro",
+  "cep": "01003000",
+  "cidade": "Sao Paulo",
+  "estado": "SP",
+  "situacao": 1
+}
+
+### Secretarias - Change Situacao
+PATCH {{Civitas.WebAPI_HostAddress}}/api/secretarias/situacao/1
+Accept: application/json
+
+###
+
+### Tipo Despesa - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/tipo-despesa
+Accept: application/json
+
+### Tipo Despesa - Get Inativos
+GET {{Civitas.WebAPI_HostAddress}}/api/tipo-despesa/inativos
+Accept: application/json
+
+### Tipo Despesa - Get by ID
+GET {{Civitas.WebAPI_HostAddress}}/api/tipo-despesa/1
+Accept: application/json
+
+### Tipo Despesa - Post
+POST {{Civitas.WebAPI_HostAddress}}/api/tipo-despesa
+Content-Type: application/json
+
+{
+  "descricao": "Energia",
+  "solicitaUc": 1,
+  "situacao": 1
+}
+
+### Tipo Despesa - Put
+PUT {{Civitas.WebAPI_HostAddress}}/api/tipo-despesa/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "descricao": "Energia",
+  "solicitaUc": 1,
+  "situacao": 1
+}
+
+### Tipo Despesa - Change Situacao
+PATCH {{Civitas.WebAPI_HostAddress}}/api/tipo-despesa/situacao/1
+Accept: application/json
+
+###
+
+### Tipo Instituicao - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/tipo-instituicao
+Accept: application/json
+
+### Tipo Instituicao - Get Inativos
+GET {{Civitas.WebAPI_HostAddress}}/api/tipo-instituicao/inativos
+Accept: application/json
+
+### Tipo Instituicao - Get by ID
+GET {{Civitas.WebAPI_HostAddress}}/api/tipo-instituicao/1
+Accept: application/json
+
+### Tipo Instituicao - Post
+POST {{Civitas.WebAPI_HostAddress}}/api/tipo-instituicao
+Content-Type: application/json
+
+{
+  "descricao": "Escola",
+  "situacao": 1
+}
+
+### Tipo Instituicao - Put
+PUT {{Civitas.WebAPI_HostAddress}}/api/tipo-instituicao/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "descricao": "Escola",
+  "situacao": 1
+}
+
+### Tipo Instituicao - Change Situacao
+PATCH {{Civitas.WebAPI_HostAddress}}/api/tipo-instituicao/situacao/1
+Accept: application/json
+
+###
+
+### Unidade Medida - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/unidade-medida
+Accept: application/json
+
+### Unidade Medida - Get Inativos
+GET {{Civitas.WebAPI_HostAddress}}/api/unidade-medida/inativos
+Accept: application/json
+
+### Unidade Medida - Get by ID
+GET {{Civitas.WebAPI_HostAddress}}/api/unidade-medida/1
+Accept: application/json
+
+### Unidade Medida - Post
+POST {{Civitas.WebAPI_HostAddress}}/api/unidade-medida
+Content-Type: application/json
+
+{
+  "descricao": "Quilowatt-hora",
+  "abreviatura": "kWh",
+  "situacao": 1
+}
+
+### Unidade Medida - Put
+PUT {{Civitas.WebAPI_HostAddress}}/api/unidade-medida/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "descricao": "Quilowatt-hora",
+  "abreviatura": "kWh",
+  "situacao": 1
+}
+
+### Unidade Medida - Change Situacao
+PATCH {{Civitas.WebAPI_HostAddress}}/api/unidade-medida/situacao/1
+Accept: application/json
+
+###
+
+### Usuarios - Get All
+GET {{Civitas.WebAPI_HostAddress}}/api/usuarios
+Accept: application/json
+Authorization: Bearer {{authToken}}
+
+### Usuarios - Get Inativos
+GET {{Civitas.WebAPI_HostAddress}}/api/usuarios/inativos
+Accept: application/json
+
+### Usuarios - Get by ID
+GET {{Civitas.WebAPI_HostAddress}}/api/usuarios/1
+Accept: application/json
+
+### Usuarios - Get by CPF
+GET {{Civitas.WebAPI_HostAddress}}/api/usuarios/cpf?cpf=12345678901
+Accept: application/json
+
+### Usuarios - Post
+POST {{Civitas.WebAPI_HostAddress}}/api/usuarios
+Content-Type: application/json
+
+{
+  "nome": "Joao Silva",
+  "cpf": "12345678901",
+  "situacao": 1,
+  "matricula": "MAT001",
+  "tipoUsuario": 1,
+  "bairro": "Centro"
+}
+
+### Usuarios - Put
+PUT {{Civitas.WebAPI_HostAddress}}/api/usuarios/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "nome": "Joao Silva",
+  "cpf": "12345678901",
+  "situacao": 1,
+  "matricula": "MAT001",
+  "tipoUsuario": 1,
+  "bairro": "Centro"
+}
+
+### Usuarios - Change Situacao
+PATCH {{Civitas.WebAPI_HostAddress}}/api/usuarios/situacao/1
+Accept: application/json
+
+###
