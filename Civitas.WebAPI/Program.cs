@@ -102,6 +102,15 @@ builder.Services.AddScoped<IOrcamentoRepository, OrcamentoRepository>();
 builder.Services.AddScoped<IOrcamentoService, OrcamentoService>();
 builder.Services.AddScoped<IDespesaRepository, DespesaRepository>();
 builder.Services.AddScoped<IDespesaService, DespesaService>();
+builder.Services.AddHttpClient<ICepService, CepService>((serviceProvider, client) =>
+{
+    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+    var baseUrl = configuration["ViaCep:BaseUrl"] ?? "https://viacep.com.br/";
+    var timeoutSeconds = configuration.GetValue<int?>("ViaCep:TimeoutSeconds") ?? 10;
+
+    client.BaseAddress = new Uri(baseUrl);
+    client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
+});
 
 var app = builder.Build();
 

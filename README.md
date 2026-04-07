@@ -140,6 +140,8 @@ Para usar o token retornado pelo login nas proximas rotas protegidas, envie o he
 Authorization: Bearer {seu_jwt}
 ```
 
+O endpoint de CEP foi pensado para reutilizacao pelos formularios de Usuario, Instituicao, Fornecedor e Secretaria. O frontend pode consultar `/api/cep/{cep}` quando receber um CEP valido com 8 digitos para preencher automaticamente `logradouro`, `bairro`, `cidade` e `estado`, mantendo a edicao manual liberada para o usuario.
+
 ---
 
 ## API Endpoints
@@ -148,6 +150,11 @@ Authorization: Bearer {seu_jwt}
 | Metodo | Endpoint | Descricao |
 |--------|----------|-----------|
 | `POST` | `/api/auth/login` | Autentica usuario e retorna token JWT valido por 60 minutos |
+
+### CEP
+| Metodo | Endpoint | Descricao |
+|--------|----------|-----------|
+| `GET` | `/api/cep/{cep}` | Consulta logradouro, bairro, cidade e estado na ViaCEP para preenchimento automatico de endereco |
 
 ### Usuarios
 | Metodo | Endpoint | Descricao |
