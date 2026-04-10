@@ -102,6 +102,8 @@ builder.Services.AddScoped<IOrcamentoRepository, OrcamentoRepository>();
 builder.Services.AddScoped<IOrcamentoService, OrcamentoService>();
 builder.Services.AddScoped<IDespesaRepository, DespesaRepository>();
 builder.Services.AddScoped<IDespesaService, DespesaService>();
+builder.Services.AddScoped<ITipoCodigoRepository, TipoCodigoRepository>();
+builder.Services.AddScoped<ITipoCodigoService, TipoCodigoService>();
 
 var app = builder.Build();
 

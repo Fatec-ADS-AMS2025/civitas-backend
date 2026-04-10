@@ -16,6 +16,11 @@ namespace Civitas.WebAPI.Data.Builders
                 .WithMany(t => t.TiposDespesas)
                 .HasForeignKey(u => u.IdUnidadeMedida)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<TipoDespesa>()
+                .HasOne<TipoCodigo>(u => u.TipoCodigo)
+                .WithMany(t => t.TipoDespesas)
+                .HasForeignKey(u => u.IdTipoCodigo)
+                .IsRequired();
         }
     }
 }

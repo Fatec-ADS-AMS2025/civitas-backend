@@ -23,6 +23,7 @@ namespace Civitas.WebAPI.Objects.Dtos.Mappings
             CreateMap<TipoDespesa, TipoDespesaDTO>().ReverseMap();
             CreateMap<Orcamento, OrcamentoDTO>().ReverseMap();
             CreateMap<Despesa, DespesaDTO>().ReverseMap();
+            CreateMap<TipoCodigo, TipoCodigoDTO>().ReverseMap();
         }
     }
 }
