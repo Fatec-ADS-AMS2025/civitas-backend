@@ -429,9 +429,6 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("idtipodespesa");
 
-                    b.Property<int?>("InstituicaoId")
-                        .HasColumnType("integer");
-
                     b.Property<int?>("TipoDespesaId")
                         .HasColumnType("integer");
 
@@ -443,8 +440,6 @@ namespace Civitas.WebAPI.Migrations
                     b.HasKey("IdOrcamento");
 
                     b.HasIndex("IdInstituicao");
-
-                    b.HasIndex("InstituicaoId");
 
                     b.HasIndex("TipoDespesaId");
 
@@ -857,14 +852,10 @@ namespace Civitas.WebAPI.Migrations
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Orcamento", b =>
                 {
                     b.HasOne("Civitas.WebAPI.Objects.Models.Instituicao", "Instituicao")
-                        .WithMany()
+                        .WithMany("Orcamento")
                         .HasForeignKey("IdInstituicao")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("Civitas.WebAPI.Objects.Models.Instituicao", null)
-                        .WithMany("Orcamento")
-                        .HasForeignKey("InstituicaoId");
 
                     b.HasOne("Civitas.WebAPI.Objects.Models.TipoDespesa", "TipoDespesa")
                         .WithMany()

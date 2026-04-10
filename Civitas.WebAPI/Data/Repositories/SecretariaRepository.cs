@@ -1,4 +1,6 @@
 using Civitas.WebAPI.Data.Interfaces;
+using Civitas.WebAPI.Objects.Dtos.Entities;
+using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Objects.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,6 +43,50 @@ namespace Civitas.WebAPI.Data.Repositories
             }
 
             return await query.AnyAsync();
+        }
+
+        public async Task<SecretariaGastosDTO?> GetGastosBySecretariaIdAsync(int secretariaId)
+        {
+            return await _appDbContext.Secretarias
+                .AsNoTracking()
+                .Where(secretaria => secretaria.IdSecretaria == secretariaId)
+                .Select(secretaria => new SecretariaGastosDTO
+                {
+                    IdSecretaria = secretaria.IdSecretaria,
+                    NomeSecretaria = secretaria.Nome,
+                    QuantidadeInstituicoes = _appDbContext.Instituicoes.Count(instituicao => instituicao.IdSecretaria == secretaria.IdSecretaria),
+                    QuantidadeDespesas = _appDbContext.Despesas.Count(despesa => despesa.Instituicao.IdSecretaria == secretaria.IdSecretaria && despesa.Situacao == Situacao.ATIVO),
+                    TotalGastos = _appDbContext.Despesas
+                        .Where(despesa => despesa.Instituicao.IdSecretaria == secretaria.IdSecretaria && despesa.Situacao == Situacao.ATIVO)
+                        .Sum(despesa => despesa.ConsumoPrevisto)
+                })
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<SecretariaOrcamentoDisponivelDTO?> GetOrcamentoDisponivelBySecretariaIdAsync(int secretariaId)
+        {
+            return await _appDbContext.Secretarias
+                .AsNoTracking()
+                .Where(secretaria => secretaria.IdSecretaria == secretariaId)
+                .Select(secretaria => new SecretariaOrcamentoDisponivelDTO
+                {
+                    IdSecretaria = secretaria.IdSecretaria,
+                    NomeSecretaria = secretaria.Nome,
+                    QuantidadeInstituicoes = _appDbContext.Instituicoes.Count(instituicao => instituicao.IdSecretaria == secretaria.IdSecretaria),
+                    TotalOrcamentoDisponivel = 
+                        (
+                            _appDbContext.Orcamentos
+                                .Where(orcamento => orcamento.Instituicao.IdSecretaria == secretaria.IdSecretaria)
+                                .Sum(orcamento => (decimal?)orcamento.ValorOrcamento) ?? 0
+                        )
+                        -
+                        (
+                            _appDbContext.Despesas
+                                .Where(despesa => despesa.Instituicao.IdSecretaria == secretaria.IdSecretaria && despesa.Situacao == Situacao.ATIVO)
+                                .Sum(despesa => (decimal?)despesa.ConsumoPrevisto) ?? 0
+                        )
+                })
+                .FirstOrDefaultAsync();
         }
     }
 }
