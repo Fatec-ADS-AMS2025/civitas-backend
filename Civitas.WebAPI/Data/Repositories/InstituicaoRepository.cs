@@ -1,6 +1,5 @@
 ﻿using Civitas.WebAPI.Data.Interfaces;
 using Civitas.WebAPI.Objects.Dtos.Entities;
-using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Objects.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,9 +27,8 @@ namespace Civitas.WebAPI.Data.Repositories
                 {
                     IdInstituicao = instituicao.Id,
                     NomeInstituicao = instituicao.Nome,
-                    QuantidadeDespesas = instituicao.Despesas.Count(despesa => despesa.Situacao == Situacao.ATIVO),
+                    QuantidadeDespesas = instituicao.Despesas.Count(),
                     TotalGastos = instituicao.Despesas
-                        .Where(despesa => despesa.Situacao == Situacao.ATIVO)
                         .Sum(despesa => despesa.ConsumoPrevisto)
                 })
                 .FirstOrDefaultAsync();
@@ -46,7 +44,6 @@ namespace Civitas.WebAPI.Data.Repositories
                     IdInstituicao = instituicao.Id,
                     NomeInstituicao = instituicao.Nome,
                     TotalOrcamentoDisponivel = (instituicao.Orcamento.Sum(orcamento => orcamento.ValorOrcamento) - instituicao.Despesas
-                        .Where(despesa => despesa.Situacao == Situacao.ATIVO)
                         .Sum(despesa => despesa.ConsumoPrevisto))
                 })
                 .FirstOrDefaultAsync();

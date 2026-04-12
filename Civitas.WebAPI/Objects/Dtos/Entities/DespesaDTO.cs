@@ -64,12 +64,12 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         public DateOnly DataVencimento { get; set; }
 
         /// <summary>
-        /// Situação do registro.
+        /// Status financeiro da despesa.
         /// </summary>
         /// <remarks>
-        /// Valores: <see cref="Situacao"/>.
+        /// Valores: <see cref="Status"/> (A_PAGAR, PAGA, ATRASADO).
         /// </remarks>
-        public Situacao Situacao { get; set; }
+        public Status Status { get; set; }
 
         /// <summary>
         /// Identificador da Categoria da Despesa.

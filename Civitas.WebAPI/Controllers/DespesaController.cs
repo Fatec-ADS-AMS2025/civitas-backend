@@ -12,19 +12,19 @@ namespace Civitas.WebAPI.Controllers
     /// Controller responsável pelo gerenciamento de despesas cadastradas no sistema.
     /// </summary>
     /// <remarks>
-    /// Este controller expõe endpoints REST para operações de CRUD e alteração de situação.
-    /// 
+    /// Este controller expõe endpoints REST para operações de CRUD e alteração de status.
+    ///
     /// Funcionalidades disponíveis:
-    /// - Listar todas as despesas
+    /// - Listar todas as despesas (por status)
     /// - Consultar despesa por ID
     /// - Criar nova despesa
     /// - Atualizar uma despesa existente
-    /// - Alterar situação (Ativo/Inativo)
+    /// - Alterar status (A_PAGAR, PAGA, ATRASADO)
     ///
     /// Observações aos desenvolvedores:
     /// - Todos os retornos seguem o padrão de objeto <see cref="Response"/>.
     /// - Erros internos são retornados como Status 500 contendo mensagem + StackTrace.
-    /// - Situação usa o enum <see cref="Situacao"/>.
+    /// - Status usa o enum <see cref="Status"/>.
     /// </remarks>
     [Authorize]
     [Route("api/despesas")]
@@ -70,28 +70,45 @@ namespace Civitas.WebAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
-            var usuarioDTO = await _despesaService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.ATIVO);
+            var despesaDto = await _despesaService.GetPageByEnumValue(paginationQuery, "Status", Status.A_PAGAR);
 
             _response.Code = ResponseEnum.SUCCESS;
-            _response.Data = usuarioDTO;
-            _response.Message = "Despesas ativas listadas com sucesso";
+            _response.Data = despesaDto;
+            _response.Message = "Despesas a pagar listadas com sucesso";
 
             return Ok(_response);
         }
 
         /// <summary>
-        /// Retorna apenas as despesas inativas.
+        /// Retorna apenas as despesas pagas.
         /// </summary>
         /// <param name="paginationQuery">Parâmetros de paginação.</param>
-        /// <returns>Lista paginada de despesas inativas.</returns>
-        [HttpGet("inativos")]
-        public async Task<IActionResult> GetInactive([FromQuery] PaginationQuery paginationQuery)
+        /// <returns>Lista paginada de despesas pagas.</returns>
+        [HttpGet("pagas")]
+        public async Task<IActionResult> GetPagas([FromQuery] PaginationQuery paginationQuery)
         {
-            var despesaDto = await _despesaService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.INATIVO);
+            var despesaDto = await _despesaService.GetPageByEnumValue(paginationQuery, "Status", Status.PAGA);
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = despesaDto;
-            _response.Message = "Despesas inativas listadas com sucesso";
+            _response.Message = "Despesas pagas listadas com sucesso";
+
+            return Ok(_response);
+        }
+
+        /// <summary>
+        /// Retorna apenas as despesas atrasadas.
+        /// </summary>
+        /// <param name="paginationQuery">Parâmetros de paginação.</param>
+        /// <returns>Lista paginada de despesas atrasadas.</returns>
+        [HttpGet("atrasadas")]
+        public async Task<IActionResult> GetAtrasadas([FromQuery] PaginationQuery paginationQuery)
+        {
+            var despesaDto = await _despesaService.GetPageByEnumValue(paginationQuery, "Status", Status.ATRASADO);
+
+            _response.Code = ResponseEnum.SUCCESS;
+            _response.Data = despesaDto;
+            _response.Message = "Despesas atrasadas listadas com sucesso";
 
             return Ok(_response);
         }
@@ -190,6 +207,7 @@ namespace Civitas.WebAPI.Controllers
 
             try
             {
+                despesaDTO.Status = Status.A_PAGAR;
                 await _despesaService.ValidarCadastroAsync(despesaDTO);
                 despesaDTO.Id = 0;
                 await _despesaService.Create(despesaDTO);
@@ -297,37 +315,37 @@ namespace Civitas.WebAPI.Controllers
         }
 
         // ======================================================================================================
-        // PATCH /api/despesa/{id}/alterar-situacao
+        // PATCH /api/despesas/{id}/status
         // ======================================================================================================
 
         /// <summary>
-        /// Alterna a situação da despesa entre ATIVO e INATIVO.
+        /// Altera o status financeiro da despesa.
         /// </summary>
         /// <param name="id">ID da despesa.</param>
+        /// <param name="novoStatus">Novo status a ser atribuído (A_PAGAR, PAGA, ATRASADO).</param>
         /// <remarks>
-        /// <b>Verbo HTTP:</b> PATCH  
+        /// <b>Verbo HTTP:</b> PATCH
         ///
         /// <b>Exemplo de Request:</b>
-        /// PATCH /api/despesa/20/alterar-situacao
+        /// PATCH /api/despesas/20/status
+        /// Body: "PAGA"
         ///
         /// <b>Exemplo de Response:</b>
         /// {
         ///   "code": "SUCCESS",
-        ///   "message": "Situação alterada para INATIVO com sucesso",
+        ///   "message": "Status alterado para 'PAGA' com sucesso",
         ///   "data": {
         ///       "id": 20,
-        ///       "situacao": "INATIVO"
+        ///       "statusAtual": "PAGA"
         ///   }
         /// }
         ///
         /// Possíveis Erros:
-        /// - 404: Despesa não encontrada  
-        /// - 500: Erro interno  
-        ///
-        /// Observação: Nenhum corpo de request é necessário.
+        /// - 404: Despesa não encontrada
+        /// - 500: Erro interno
         /// </remarks>
-        [HttpPatch("situacao/{id}")]
-        public async Task<IActionResult> AlterarSituacao(int id)
+        [HttpPatch("status/{id}")]
+        public async Task<IActionResult> AlterarStatus(int id, [FromBody] Status novoStatus)
         {
             try
             {
@@ -340,10 +358,7 @@ namespace Civitas.WebAPI.Controllers
                     return NotFound(_response);
                 }
 
-                // Alterna o valor atual do enum
-                despesa.Situacao = despesa.Situacao == Situacao.ATIVO
-                    ? Situacao.INATIVO
-                    : Situacao.ATIVO;
+                despesa.Status = novoStatus;
 
                 await _despesaService.Update(despesa, id);
 
@@ -351,16 +366,16 @@ namespace Civitas.WebAPI.Controllers
                 _response.Data = new
                 {
                     despesa.Id,
-                    Situacao = despesa.Situacao.ToString()
+                    StatusAtual = despesa.Status.ToString()
                 };
-                _response.Message = $"Situação alterada para {despesa.Situacao} com sucesso";
+                _response.Message = $"Status alterado para '{despesa.Status}' com sucesso";
 
                 return Ok(_response);
             }
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao alterar a situação do fornecedor";
+                _response.Message = "Ocorreu um erro ao alterar o status da despesa";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
