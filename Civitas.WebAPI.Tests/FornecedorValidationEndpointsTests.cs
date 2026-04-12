@@ -1,10 +1,15 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Civitas.WebAPI.Data;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Objects.Models;
 using Civitas.WebAPI.Tests.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Xunit;
 
 namespace Civitas.WebAPI.Tests;
@@ -23,7 +28,7 @@ public sealed class FornecedorValidationEndpointsTests : IClassFixture<TestWebAp
     {
         await _factory.ResetDatabaseAsync(_ => Task.CompletedTask);
 
-        using var client = _factory.CreateClient();
+        using var client = CreateAuthenticatedClient();
         var request = CreateFornecedorPayload(
             nomeFantasia: "  Fornecedor XPTO  ",
             nome: "  Fornecedor XPTO LTDA  ",
@@ -55,7 +60,7 @@ public sealed class FornecedorValidationEndpointsTests : IClassFixture<TestWebAp
     {
         await _factory.ResetDatabaseAsync(_ => Task.CompletedTask);
 
-        using var client = _factory.CreateClient();
+        using var client = CreateAuthenticatedClient();
         var request = CreateFornecedorPayload(cnpj: "11.111.111/1111-11");
 
         var response = await client.PostAsJsonAsync("/api/fornecedores", request);
@@ -88,7 +93,7 @@ public sealed class FornecedorValidationEndpointsTests : IClassFixture<TestWebAp
             return Task.CompletedTask;
         });
 
-        using var client = _factory.CreateClient();
+        using var client = CreateAuthenticatedClient();
         var request = CreateFornecedorPayload(cnpj: "11.222.333/0001-81");
 
         var response = await client.PostAsJsonAsync("/api/fornecedores", request);
@@ -188,12 +193,12 @@ public sealed class FornecedorValidationEndpointsTests : IClassFixture<TestWebAp
             return Task.CompletedTask;
         });
 
-        using var client = _factory.CreateClient();
+        using var client = CreateAuthenticatedClient();
         var request = new Dictionary<string, object?>
         {
             ["numeroDocumento"] = "123456",
             ["uc"] = "",
-            ["dataEmicao"] = "2026-03-10",
+            ["dataEmissao"] = "2026-03-10",
             ["consumoPrevisto"] = 12.5,
             ["dataVencimento"] = "2026-03-20",
             ["situacao"] = (int)Situacao.ATIVO,
@@ -240,5 +245,27 @@ public sealed class FornecedorValidationEndpointsTests : IClassFixture<TestWebAp
             ["cidade"] = cidade,
             ["estado"] = estado
         };
+    }
+
+    private System.Net.Http.HttpClient CreateAuthenticatedClient()
+    {
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", CreateTestToken());
+        return client;
+    }
+
+    private static string CreateTestToken()
+    {
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes("development-only-key-change-before-production-2026"));
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var token = new JwtSecurityToken(
+            issuer: "Civitas.WebAPI",
+            audience: "Civitas.Client",
+            claims: new[] { new Claim(JwtRegisteredClaimNames.Sub, "1") },
+            expires: DateTime.UtcNow.AddHours(1),
+            signingCredentials: credentials);
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
