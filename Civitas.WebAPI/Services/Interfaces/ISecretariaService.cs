@@ -14,5 +14,7 @@ namespace Civitas.WebAPI.Services.Interfaces
     public interface ISecretariaService : IGenericService<Secretaria, SecretariaDTO>
     {
     Task ValidarCadastroAsync(SecretariaDTO entityDTO, int? id = null);
+    Task<SecretariaGastosDTO?> GetGastosBySecretariaIdAsync(int secretariaId);
+    Task<SecretariaOrcamentoDisponivelDTO?> GetOrcamentoDisponivelBySecretariaIdAsync(int secretariaId);
     }
 }

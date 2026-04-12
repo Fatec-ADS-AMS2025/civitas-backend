@@ -52,5 +52,6 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// O front-end utiliza este ID para buscar a sigla correta (ex: kWh) e exibi-la ao lado do campo de "Consumo".
         /// </remarks>
         public int IdUnidadeMedida { get; set; }
+        public int IdTipoCodigo { get; set; }
     }
 }

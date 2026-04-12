@@ -29,6 +29,10 @@ namespace Civitas.WebAPI.Objects.Models
         [Column("numerodocumento")]
         public string NumeroDocumento { get; set; }
 
+        [Column("codigo")]
+        public int Codigo { get; set; }
+
+
         /// <summary>
         /// Código da Unidade Consumidora (UC) ou Instalação.
         /// </summary>

@@ -28,6 +28,8 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// </remarks>
         public string NumeroDocumento { get; set; }
 
+        public int Codigo { get; set; }
+
         /// <summary>
         /// Código da Unidade Consumidora (UC).
         /// </summary>

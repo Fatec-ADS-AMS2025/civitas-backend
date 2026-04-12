@@ -51,5 +51,15 @@ namespace Civitas.WebAPI.Services.Entities
             var isntituicao = await _instituicaoRepository.GetInstituicaoByName(name);
             return _mapper.Map<IEnumerable<InstituicaoDTO>>(isntituicao);
         }
+
+        public async Task<InstituicaoGastosDTO?> GetGastosByInstituicaoIdAsync(int instituicaoId)
+        {
+            return await _instituicaoRepository.GetGastosByInstituicaoIdAsync(instituicaoId);
+        }
+
+        public async Task<InstituicaoOrcamentoDisponivelDTO?> GetOrcamentoDisponivelByInstituicaoIdAsync(int instituicaoId)
+        {
+            return await _instituicaoRepository.GetOrcamentoDisponivelByInstituicaoIdAsync(instituicaoId);
+        }
     }
 }

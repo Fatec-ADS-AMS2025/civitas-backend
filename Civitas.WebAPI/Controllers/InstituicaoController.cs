@@ -183,6 +183,42 @@ namespace Civitas.WebAPI.Controllers
             return Ok(_response);
         }
 
+        [HttpGet("{id}/gastos")]
+        public async Task<IActionResult> GetGastosByInstituicao(int id)
+        {
+            var gastosInstituicao = await _instituicaoService.GetGastosByInstituicaoIdAsync(id);
+            if (gastosInstituicao is null)
+            {
+                _response.Code = ResponseEnum.NOT_FOUND;
+                _response.Data = null;
+                _response.Message = "Instituição não encontrada";
+                return NotFound(_response);
+            }
+
+            _response.Code = ResponseEnum.SUCCESS;
+            _response.Data = gastosInstituicao;
+            _response.Message = "Gastos da instituição obtidos com sucesso";
+            return Ok(_response);
+        }
+
+        [HttpGet("{id}/orcamento-disponivel")]
+        public async Task<IActionResult> GetOrcamentoDisponivelByInstituicao(int id)
+        {
+            var orcamentoInstituicao = await _instituicaoService.GetOrcamentoDisponivelByInstituicaoIdAsync(id);
+            if (orcamentoInstituicao is null)
+            {
+                _response.Code = ResponseEnum.NOT_FOUND;
+                _response.Data = null;
+                _response.Message = "Instituição não encontrada";
+                return NotFound(_response);
+            }
+
+            _response.Code = ResponseEnum.SUCCESS;
+            _response.Data = orcamentoInstituicao;
+            _response.Message = "Orçamento disponível da instituição obtido com sucesso";
+            return Ok(_response);
+        }
+
         // ============================================================================================
         // POST: api/Instituicao
         // ============================================================================================
