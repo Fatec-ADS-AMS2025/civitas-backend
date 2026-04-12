@@ -249,6 +249,70 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        [HttpGet("{id}/gastos")]
+        public async Task<IActionResult> GetGastosBySecretaria(int id)
+        {
+            try
+            {
+                var gastosSecretaria = await _secretariaService.GetGastosBySecretariaIdAsync(id);
+                if (gastosSecretaria is null)
+                {
+                    _response.Code = ResponseEnum.NOT_FOUND;
+                    _response.Data = null;
+                    _response.Message = "Secretaria não encontrada";
+                    return NotFound(_response);
+                }
+
+                _response.Code = ResponseEnum.SUCCESS;
+                _response.Data = gastosSecretaria;
+                _response.Message = "Gastos da secretaria obtidos com sucesso";
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.Code = ResponseEnum.ERROR;
+                _response.Message = "Ocorreu um erro ao obter os gastos da secretaria";
+                _response.Data = new
+                {
+                    ErrorMessage = ex.Message,
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, _response);
+            }
+        }
+
+        [HttpGet("{id}/orcamento-disponivel")]
+        public async Task<IActionResult> GetOrcamentoDisponivelBySecretaria(int id)
+        {
+            try
+            {
+                var orcamentoSecretaria = await _secretariaService.GetOrcamentoDisponivelBySecretariaIdAsync(id);
+                if (orcamentoSecretaria is null)
+                {
+                    _response.Code = ResponseEnum.NOT_FOUND;
+                    _response.Data = null;
+                    _response.Message = "Secretaria não encontrada";
+                    return NotFound(_response);
+                }
+
+                _response.Code = ResponseEnum.SUCCESS;
+                _response.Data = orcamentoSecretaria;
+                _response.Message = "Orçamento disponível da secretaria obtido com sucesso";
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.Code = ResponseEnum.ERROR;
+                _response.Message = "Ocorreu um erro ao obter o orçamento disponível da secretaria";
+                _response.Data = new
+                {
+                    ErrorMessage = ex.Message,
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, _response);
+            }
+        }
+
         /// <summary>
         /// Alterna a situaÃ§Ã£o (Ativo/Inativo) de uma Secretaria.
         /// </summary>

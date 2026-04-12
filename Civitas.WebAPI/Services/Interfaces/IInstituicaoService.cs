@@ -21,5 +21,7 @@ namespace Civitas.WebAPI.Services.Interfaces
         /// Contrato utilizado para implementar barras de pesquisa ou autocomplete.
         /// </remarks>
         Task<IEnumerable<InstituicaoDTO>> GetInstituicaoByName(string nome);
+        Task<InstituicaoGastosDTO?> GetGastosByInstituicaoIdAsync(int instituicaoId);
+        Task<InstituicaoOrcamentoDisponivelDTO?> GetOrcamentoDisponivelByInstituicaoIdAsync(int instituicaoId);
     }
 }

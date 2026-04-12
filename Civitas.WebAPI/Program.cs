@@ -111,6 +111,8 @@ builder.Services.AddHttpClient<ICepService, CepService>((serviceProvider, client
     client.BaseAddress = new Uri(baseUrl);
     client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
 });
+builder.Services.AddScoped<ITipoCodigoRepository, TipoCodigoRepository>();
+builder.Services.AddScoped<ITipoCodigoService, TipoCodigoService>();
 
 var app = builder.Build();
 

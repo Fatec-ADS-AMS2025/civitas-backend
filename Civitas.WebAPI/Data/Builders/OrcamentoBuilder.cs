@@ -10,12 +10,12 @@ namespace Civitas.WebAPI.Data.Builders
             modelBuilder.Entity<Orcamento>().HasKey(o => o.IdOrcamento);
             modelBuilder.Entity<Orcamento>().Property(o => o.AnoOrcamento).IsRequired();
             modelBuilder.Entity<Orcamento>().Property(o => o.ValorOrcamento).IsRequired().HasPrecision(18, 2);
-            modelBuilder.Entity<Orcamento>().Property(o => o.IdInstituicao).IsRequired();
+            modelBuilder.Entity<Orcamento>().Property(o => o.IdInstituicao).IsRequired().HasColumnName("idinstituicao"); ;
 
             // Relacionamento com Instituicao
             modelBuilder.Entity<Orcamento>()
                 .HasOne<Instituicao>(o => o.Instituicao)
-                .WithMany()
+                .WithMany(i => i.Orcamento)
                 .HasForeignKey(o => o.IdInstituicao)
                 .OnDelete(DeleteBehavior.Restrict);
 

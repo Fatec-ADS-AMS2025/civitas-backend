@@ -59,6 +59,11 @@ namespace Civitas.WebAPI.Objects.Models
         [Column("situacao")]
         public Situacao Situacao { get; set; }
 
+        [Column("idtipocodigo")]
+        public int IdTipoCodigo { get; set; }
+
+        public TipoCodigo TipoCodigo { get; set; }
+
         /// <summary>
         /// Coleção de todas as despesas lançadas sob esta classificação.
         /// </summary>
@@ -74,5 +79,7 @@ namespace Civitas.WebAPI.Objects.Models
             SolicitaUc = solicitaUc;
             Situacao = situacao;
         }
+
+
     }
 }

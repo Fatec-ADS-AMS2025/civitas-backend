@@ -1,6 +1,7 @@
 ﻿using Civitas.WebAPI.Data.Builders;
 using Civitas.WebAPI.Objects.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using System.Runtime.ConstrainedExecution;
 using System.Text.RegularExpressions;
 
@@ -21,8 +22,8 @@ namespace Civitas.WebAPI.Data
         public DbSet<UnidadeMedida> UnidadesMedida { get; set; }
         public DbSet<TipoDespesa> TiposDespesa { get; set; }
         public DbSet<Orcamento> Orcamentos { get; set; }
-
         public DbSet<Despesa> Despesas { get; set; }
+        public DbSet<TipoCodigo> TipoCodigos { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

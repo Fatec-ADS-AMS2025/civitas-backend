@@ -240,5 +240,15 @@ namespace Civitas.WebAPI.Services.Entities
 
             return cnpj[12] - '0' == digito13 && cnpj[13] - '0' == digito14;
         }
+
+        public async Task<SecretariaGastosDTO?> GetGastosBySecretariaIdAsync(int secretariaId)
+        {
+            return await _secretariaRepository.GetGastosBySecretariaIdAsync(secretariaId);
+        }
+
+        public async Task<SecretariaOrcamentoDisponivelDTO?> GetOrcamentoDisponivelBySecretariaIdAsync(int secretariaId)
+        {
+            return await _secretariaRepository.GetOrcamentoDisponivelBySecretariaIdAsync(secretariaId);
+        }
     }
 }
