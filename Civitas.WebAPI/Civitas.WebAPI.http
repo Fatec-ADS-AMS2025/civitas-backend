@@ -59,8 +59,12 @@ Accept: application/json
 GET {{Civitas.WebAPI_HostAddress}}/api/despesas
 Accept: application/json
 
-### Despesas - Get Inativos
-GET {{Civitas.WebAPI_HostAddress}}/api/despesas/inativos
+### Despesas - Get Pagas
+GET {{Civitas.WebAPI_HostAddress}}/api/despesas/pagas
+Accept: application/json
+
+### Despesas - Get Atrasadas
+GET {{Civitas.WebAPI_HostAddress}}/api/despesas/atrasadas
 Accept: application/json
 
 ### Despesas - Get by ID
@@ -77,7 +81,7 @@ Content-Type: application/json
   "dataEmicao": "2026-03-17",
   "consumoPrevisto": 150,
   "dataVencimento": "2026-04-10",
-  "situacao": 1
+  "status": 1
 }
 
 ### Despesas - Put
@@ -91,12 +95,14 @@ Content-Type: application/json
   "dataEmicao": "2026-03-17",
   "consumoPrevisto": 160,
   "dataVencimento": "2026-04-10",
-  "situacao": 1
+  "status": 1
 }
 
-### Despesas - Change Situacao
-PATCH {{Civitas.WebAPI_HostAddress}}/api/despesas/situacao/1
-Accept: application/json
+### Despesas - Change Status
+PATCH {{Civitas.WebAPI_HostAddress}}/api/despesas/status/1
+Content-Type: application/json
+
+2
 
 ###
 

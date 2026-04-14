@@ -2,8 +2,8 @@
 {
     public enum Status
     {
-        a_pagar = 1,
-        paga = 2,
-        atrasado = 3,
+        A_PAGAR = 1,
+        PAGA = 2,
+        ATRASADO = 3,
     }
 }

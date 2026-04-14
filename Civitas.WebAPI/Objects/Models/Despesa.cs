@@ -69,14 +69,16 @@ namespace Civitas.WebAPI.Objects.Models
         public DateOnly DataVencimento { get; set; }
 
         /// <summary>
-        /// Estado de ativação do registro de despesa.
+        /// Status financeiro da despesa.
         /// </summary>
         /// <remarks>
-        /// Controlado pelo Enum <see cref="Situacao"/>. 
-        /// Despesas INATIVAS (excluídas logicamente) não devem entrar nos relatórios de soma orçamentária.
+        /// Controlado pelo Enum <see cref="Status"/>.
+        /// Valores possíveis: A_PAGAR, PAGA, ATRASADO.
+        /// Uma despesa recém-criada inicia como A_PAGAR.
+        /// O status ATRASADO é definido automaticamente com base na data de vencimento.
         /// </remarks>
-        [Column("situacao")]
-        public Situacao Situacao { get; set; }
+        [Column("status")]
+        public Status Status { get; set; }
 
         /// <summary>
         /// Chave estrangeira para a Categoria da Despesa.
@@ -147,7 +149,7 @@ namespace Civitas.WebAPI.Objects.Models
         /// <summary>
         /// Construtor para inicialização dos dados principais da Despesa.
         /// </summary>
-        public Despesa(int id, string numeroDocumento, string uc, string dataEmissao, double consumoPrevisto, DateOnly dataVencimento, Situacao situacao)
+        public Despesa(int id, string numeroDocumento, string uc, string dataEmissao, double consumoPrevisto, DateOnly dataVencimento, Status status)
         {
             Id = id;
             NumeroDocumento = numeroDocumento;
@@ -155,7 +157,7 @@ namespace Civitas.WebAPI.Objects.Models
             DataEmissao = dataEmissao;
             ConsumoPrevisto = consumoPrevisto;
             DataVencimento = dataVencimento;
-            Situacao = situacao;
+            Status = status;
         }
     }
 }

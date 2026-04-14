@@ -185,10 +185,10 @@ namespace Civitas.WebAPI.Services.Entities
                 throw new ArgumentException("ConsumoPrevisto nao pode ser negativo.");
             }
 
-            var valorSituacao = (int)despesaDTO.Situacao;
-            if (valorSituacao is not ((int)Situacao.ATIVO) and not ((int)Situacao.INATIVO))
+            var valorStatus = (int)despesaDTO.Status;
+            if (valorStatus is not ((int)Status.A_PAGAR) and not ((int)Status.PAGA) and not ((int)Status.ATRASADO))
             {
-                throw new ArgumentException("Situacao invalida. Valores permitidos: 1 (Ativo) ou 2 (Inativo).");
+                throw new ArgumentException("Status invalido. Valores permitidos: 1 (A_PAGAR), 2 (PAGA) ou 3 (ATRASADO).");
             }
 
             ValidarIdPositivo(despesaDTO.IdTipoDespesa, "IdTipoDespesa");
