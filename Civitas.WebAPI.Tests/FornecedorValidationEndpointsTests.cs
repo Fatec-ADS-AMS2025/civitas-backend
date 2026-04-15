@@ -110,10 +110,12 @@ public sealed class FornecedorValidationEndpointsTests : IClassFixture<TestWebAp
         await _factory.ResetDatabaseAsync(context =>
         {
             context.UnidadesMedida.Add(new UnidadeMedida(1, "Quilowatt-hora", "kWh", Situacao.ATIVO));
+            context.TipoCodigos.Add(new TipoCodigo(1, "Consumo", "Tipo de codigo de teste"));
 
             context.TiposDespesa.Add(new TipoDespesa(1, "Energia", SolicitaUc.Não, Situacao.ATIVO)
             {
-                IdUnidadeMedida = 1
+                IdUnidadeMedida = 1,
+                IdTipoCodigo = 1
             });
 
             context.Secretarias.Add(new Secretaria(

@@ -98,6 +98,11 @@ namespace Civitas.WebAPI.Services.Entities
                 throw new ArgumentException("Instituicao informada nao foi encontrada.");
             }
 
+            if (instituicao.Situacao != Situacao.ATIVO)
+            {
+                throw new ArgumentException("Instituicao inativa nao pode receber novas despesas.");
+            }
+
             if (orcamento.IdInstituicao != despesaDTO.IdInstituicao)
             {
                 throw new ArgumentException("O orcamento informado nao pertence a instituicao selecionada.");

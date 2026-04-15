@@ -137,9 +137,9 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("numerodocumento");
 
-                    b.Property<int>("Situacao")
+                    b.Property<int>("Status")
                         .HasColumnType("integer")
-                        .HasColumnName("situacao");
+                        .HasColumnName("status");
 
                     b.Property<string>("UC")
                         .IsRequired()
@@ -347,14 +347,14 @@ namespace Civitas.WebAPI.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("email");
 
                     b.Property<string>("Estado")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)")
                         .HasColumnName("estado");
 
                     b.Property<int>("IdSecretaria")
@@ -367,20 +367,20 @@ namespace Civitas.WebAPI.Migrations
 
                     b.Property<string>("Logradouro")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("logradouro");
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)")
                         .HasColumnName("nome");
 
                     b.Property<string>("NomeRazaoSocial")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("nomerazaosocial");
 
                     b.Property<string>("Numero")
