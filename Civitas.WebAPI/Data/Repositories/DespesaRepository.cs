@@ -34,5 +34,20 @@ namespace Civitas.WebAPI.Data.Repositories
 
             return await query.AnyAsync();
         }
+
+        public async Task<decimal> SumConsumoByOrcamentoAsync(int idOrcamento, int? ignoreId = null)
+        {
+            var query = _context.Despesas
+                .AsNoTracking()
+                .Where(despesa => despesa.IdOrcamento == idOrcamento);
+
+            if (ignoreId.HasValue)
+            {
+                query = query.Where(despesa => despesa.Id != ignoreId.Value);
+            }
+
+            var total = await query.SumAsync(despesa => (decimal?)despesa.ConsumoPrevisto) ?? 0m;
+            return Math.Round(total, 2, MidpointRounding.AwayFromZero);
+        }
     }
 }

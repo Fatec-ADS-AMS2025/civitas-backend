@@ -137,9 +137,9 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("numerodocumento");
 
-                    b.Property<int>("Situacao")
+                    b.Property<int>("Status")
                         .HasColumnType("integer")
-                        .HasColumnName("situacao");
+                        .HasColumnName("status");
 
                     b.Property<string>("UC")
                         .IsRequired()
@@ -425,23 +425,14 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("idinstituicao");
 
-                    b.Property<int>("IdTipoDespesa")
-                        .HasColumnType("integer")
-                        .HasColumnName("idtipodespesa");
-
-                    b.Property<int?>("TipoDespesaId")
-                        .HasColumnType("integer");
-
-                    b.Property<double>("ValorOrcamento")
+                    b.Property<decimal>("ValorOrcamento")
                         .HasPrecision(18, 2)
-                        .HasColumnType("double precision")
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("valororcamento");
 
                     b.HasKey("IdOrcamento");
 
                     b.HasIndex("IdInstituicao");
-
-                    b.HasIndex("TipoDespesaId");
 
                     b.ToTable("orcamento");
                 });
@@ -857,13 +848,7 @@ namespace Civitas.WebAPI.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Civitas.WebAPI.Objects.Models.TipoDespesa", "TipoDespesa")
-                        .WithMany()
-                        .HasForeignKey("TipoDespesaId");
-
                     b.Navigation("Instituicao");
-
-                    b.Navigation("TipoDespesa");
                 });
 
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.TipoDespesa", b =>

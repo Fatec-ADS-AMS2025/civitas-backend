@@ -1,55 +1,47 @@
 namespace Civitas.WebAPI.Objects.Dtos.Entities
 {
     /// <summary>
-    /// Objeto de transferência para gestão dos tetos orçamentários (Previsão de Gastos).
+    /// Objeto de transferï¿½ncia para gestï¿½o dos tetos orï¿½amentï¿½rios (Previsï¿½o de Gastos).
     /// </summary>
     /// <remarks>
     /// Finalidade:
-    /// - Input: Cadastrar ou ajustar o limite de gastos de uma instituição para um determinado ano e tipo de despesa.
+    /// - Input: Cadastrar ou ajustar o limite de gastos de uma instituiï¿½ï¿½o para um determinado ano e tipo de despesa.
     /// - Output: Exibir o planejamento financeiro aprovado.
     /// </remarks>
     public class OrcamentoDTO
     {
         /// <summary>
-        /// Identificador único do orçamento.
+        /// Identificador ï¿½nico do orï¿½amento.
         /// </summary>
         /// <remarks>
-        /// Input: Ignorado na criação. Obrigatório na edição.
+        /// Input: Ignorado na criaï¿½ï¿½o. Obrigatï¿½rio na ediï¿½ï¿½o.
         /// </remarks>
         public int IdOrcamento { get; set; }
 
         /// <summary>
-        /// Ano fiscal de referência (Exercício).
+        /// Ano fiscal de referï¿½ncia (Exercï¿½cio).
         /// </summary>
         /// <example>2024, 2025.</example>
         /// <remarks>
-        /// Validação: Deve ser um ano válido (4 dígitos). Geralmente não se permite cadastrar orçamentos para anos passados.
+        /// Validaï¿½ï¿½o: Deve ser um ano vï¿½lido (4 dï¿½gitos). Geralmente nï¿½o se permite cadastrar orï¿½amentos para anos passados.
         /// </remarks>
         public int AnoOrcamento { get; set; }
 
         /// <summary>
-        /// Valor monetário total disponível (Teto).
+        /// Valor monetï¿½rio total disponï¿½vel (Teto).
         /// </summary>
         /// <remarks>
         /// Regra: Deve ser maior que zero.
-        /// Este valor será o limite usado para validar se as despesas lançadas estouraram o orçamento.
+        /// Este valor serï¿½ o limite usado para validar se as despesas lanï¿½adas estouraram o orï¿½amento.
         /// </remarks>
-        public double ValorOrcamento { get; set; }
+        public decimal ValorOrcamento { get; set; }
 
         /// <summary>
-        /// Identificador da Instituição dona deste orçamento.
+        /// Identificador da Instituiï¿½ï¿½o dona deste orï¿½amento.
         /// </summary>
         /// <remarks>
-        /// Obrigatório. Define qual unidade (escola, posto, secretaria) poderá usar este recurso.
+        /// Obrigatï¿½rio. Define qual unidade (escola, posto, secretaria) poderï¿½ usar este recurso.
         /// </remarks>
         public int IdInstituicao { get; set; }
-
-        /// <summary>
-        /// Identificador do Tipo de Despesa coberto por este orçamento.
-        /// </summary>
-        /// <remarks>
-        /// Obrigatório. O orçamento é segregado por categoria (ex: "Verba apenas para Energia Elétrica").
-        /// </remarks>
-        public int IdTipoDespesa { get; set; }
     }
 }
