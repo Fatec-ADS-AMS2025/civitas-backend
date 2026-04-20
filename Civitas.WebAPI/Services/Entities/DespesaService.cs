@@ -81,6 +81,11 @@ namespace Civitas.WebAPI.Services.Entities
                 throw new ArgumentException("TipoDespesa informado nao foi encontrado.");
             }
 
+            if (tipoDespesa.Situacao != Situacao.ATIVO)
+            {
+                throw new ArgumentException("TipoDespesa inativo nao pode ser utilizado em novos lancamentos.");
+            }
+
             if (tipoDespesa.SolicitaUc == SolicitaUc.Sim && string.IsNullOrWhiteSpace(despesaDTO.UC))
             {
                 throw new ArgumentException("UC e obrigatoria para o tipo de despesa informado.");

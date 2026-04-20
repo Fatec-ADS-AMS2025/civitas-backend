@@ -137,9 +137,9 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("numerodocumento");
 
-                    b.Property<int>("Situacao")
+                    b.Property<int>("Status")
                         .HasColumnType("integer")
-                        .HasColumnName("situacao");
+                        .HasColumnName("status");
 
                     b.Property<string>("UC")
                         .IsRequired()

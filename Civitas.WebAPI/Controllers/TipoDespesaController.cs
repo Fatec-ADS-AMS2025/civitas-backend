@@ -2,6 +2,7 @@
 using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
+using Civitas.WebAPI.Services.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -121,6 +122,13 @@ namespace Civitas.WebAPI.Controllers
 
                 return Ok(_response);
             }
+            catch (TipoDespesaValidationException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = ex.Errors;
+                _response.Message = "Os dados informados para o tipo de despesa são inválidos";
+                return BadRequest(_response);
+            }
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
@@ -171,6 +179,13 @@ namespace Civitas.WebAPI.Controllers
 
                 return Ok(_response);
             }
+            catch (TipoDespesaValidationException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = ex.Errors;
+                _response.Message = "Os dados informados para o tipo de despesa são inválidos";
+                return BadRequest(_response);
+            }
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
@@ -210,12 +225,12 @@ namespace Civitas.WebAPI.Controllers
 
                 if (tipoDespesa.Situacao == Situacao.ATIVO)
                 {
-                    var possuiAtivas = await _tipoDespesaService.ExisteUnidadesDeMedidaAtivas(id);
-                    if (possuiAtivas)
+                    var possuiDespesasVinculadas = await _tipoDespesaService.HasDespesasVinculadas(id);
+                    if (possuiDespesasVinculadas)
                     {
                         _response.Code = ResponseEnum.INVALID;
                         _response.Data = null;
-                        _response.Message = "Não é possível desativar este tipo de despesa, pois existem unidades de medida ativas vinculadas.";
+                        _response.Message = "Não é possível desativar este tipo de despesa, pois existem despesas vinculadas.";
                         return BadRequest(_response);
                     }
 
