@@ -8,5 +8,7 @@ namespace Civitas.WebAPI.Data.Interfaces
             string numeroDocumento,
             int idFornecedor,
             int? ignoreId = null);
+
+        Task<decimal> SumConsumoByOrcamentoAsync(int idOrcamento, int? ignoreId = null);
     }
 }

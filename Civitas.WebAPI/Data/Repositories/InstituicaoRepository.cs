@@ -82,8 +82,9 @@ namespace Civitas.WebAPI.Data.Repositories
                 {
                     IdInstituicao = instituicao.Id,
                     NomeInstituicao = instituicao.Nome,
-                    TotalOrcamentoDisponivel = instituicao.Orcamento.Sum(orcamento => orcamento.ValorOrcamento)
-                        - instituicao.Despesas.Sum(despesa => despesa.ConsumoPrevisto)
+                    TotalOrcamentoDisponivel =
+                        (instituicao.Orcamento.Sum(orcamento => (decimal?)orcamento.ValorOrcamento) ?? 0m)
+                        - (instituicao.Despesas.Sum(despesa => (decimal?)despesa.ConsumoPrevisto) ?? 0m)
                 })
                 .FirstOrDefaultAsync();
         }

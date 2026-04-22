@@ -2,6 +2,7 @@
 using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
+using Civitas.WebAPI.Services.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -90,42 +91,8 @@ namespace Civitas.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(OrcamentoDTO orcamentoDTO)
         {
-            if (orcamentoDTO is null)
-            {
-                _response.Code = ResponseEnum.INVALID;
-                _response.Data = null;
-                _response.Message = "Dados invÃ¡lidos";
-
-                return BadRequest(_response);
-            }
-
             try
             {
-                if (orcamentoDTO.AnoOrcamento <= 0)
-                {
-                    _response.Code = ResponseEnum.INVALID;
-                    _response.Data = null;
-                    _response.Message = "Ano do orÃ§amento invÃ¡lido";
-                    return BadRequest(_response);
-                }
-
-                if (orcamentoDTO.ValorOrcamento <= 0)
-                {
-                    _response.Code = ResponseEnum.INVALID;
-                    _response.Data = null;
-                    _response.Message = "Valor do orÃ§amento deve ser maior que zero";
-                    return BadRequest(_response);
-                }
-
-                if (orcamentoDTO.IdInstituicao <= 0)
-                {
-                    _response.Code = ResponseEnum.INVALID;
-                    _response.Data = null;
-                    _response.Message = "InstituiÃ§Ã£o invÃ¡lida";
-                    return BadRequest(_response);
-                }
-
-                orcamentoDTO.IdOrcamento = 0;
                 await _orcamentoService.Create(orcamentoDTO);
 
                 _response.Code = ResponseEnum.SUCCESS;
@@ -133,6 +100,13 @@ namespace Civitas.WebAPI.Controllers
                 _response.Message = "OrÃ§amento cadastrado com sucesso";
 
                 return Ok(_response);
+            }
+            catch (OrcamentoValidationException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = ex.Errors;
+                _response.Message = ex.Message;
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
@@ -156,50 +130,8 @@ namespace Civitas.WebAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, OrcamentoDTO orcamentoDTO)
         {
-            if (orcamentoDTO is null)
-            {
-                _response.Code = ResponseEnum.INVALID;
-                _response.Data = null;
-                _response.Message = "Dados invÃ¡lidos";
-
-                return BadRequest(_response);
-            }
-
             try
             {
-                var existingOrcamentoDTO = await _orcamentoService.GetById(id);
-                if (existingOrcamentoDTO is null)
-                {
-                    _response.Code = ResponseEnum.NOT_FOUND;
-                    _response.Data = null;
-                    _response.Message = "O orÃ§amento informado nÃ£o existe";
-                    return NotFound(_response);
-                }
-
-                if (orcamentoDTO.AnoOrcamento <= 0)
-                {
-                    _response.Code = ResponseEnum.INVALID;
-                    _response.Data = null;
-                    _response.Message = "Ano do orÃ§amento invÃ¡lido";
-                    return BadRequest(_response);
-                }
-
-                if (orcamentoDTO.ValorOrcamento <= 0)
-                {
-                    _response.Code = ResponseEnum.INVALID;
-                    _response.Data = null;
-                    _response.Message = "Valor do orÃ§amento deve ser maior que zero";
-                    return BadRequest(_response);
-                }
-
-                if (orcamentoDTO.IdInstituicao <= 0)
-                {
-                    _response.Code = ResponseEnum.INVALID;
-                    _response.Data = null;
-                    _response.Message = "InstituiÃ§Ã£o invÃ¡lida";
-                    return BadRequest(_response);
-                }
-
                 await _orcamentoService.Update(orcamentoDTO, id);
 
                 _response.Code = ResponseEnum.SUCCESS;
@@ -207,6 +139,20 @@ namespace Civitas.WebAPI.Controllers
                 _response.Message = "OrÃ§amento atualizado com sucesso";
 
                 return Ok(_response);
+            }
+            catch (KeyNotFoundException)
+            {
+                _response.Code = ResponseEnum.NOT_FOUND;
+                _response.Data = null;
+                _response.Message = "O orÃ§amento informado nÃ£o existe";
+                return NotFound(_response);
+            }
+            catch (OrcamentoValidationException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = ex.Errors;
+                _response.Message = ex.Message;
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
@@ -221,6 +167,47 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Remove um orÃ§amento caso nÃ£o possua despesas vinculadas.
+        /// </summary>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                await _orcamentoService.RemoverAsync(id);
+
+                _response.Code = ResponseEnum.SUCCESS;
+                _response.Data = null;
+                _response.Message = "OrÃ§amento removido com sucesso";
+                return Ok(_response);
+            }
+            catch (KeyNotFoundException)
+            {
+                _response.Code = ResponseEnum.NOT_FOUND;
+                _response.Data = null;
+                _response.Message = "O orÃ§amento informado nÃ£o existe";
+                return NotFound(_response);
+            }
+            catch (OrcamentoValidationException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = ex.Errors;
+                _response.Message = ex.Message;
+                return BadRequest(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.Code = ResponseEnum.ERROR;
+                _response.Message = "Ocorreu um erro ao tentar remover o orÃ§amento";
+                _response.Data = new
+                {
+                    ErrorMessage = ex.Message,
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, _response);
+            }
+        }
     }
 }
 

@@ -155,10 +155,7 @@ public sealed class FornecedorValidationEndpointsTests : IClassFixture<TestWebAp
                 IdTipoInstituicao = 1
             });
 
-            context.Orcamentos.Add(new Orcamento(1, 2026, 5000, 1)
-            {
-                IdTipoDespesa = 1
-            });
+            context.Orcamentos.Add(new Orcamento(1, 2026, 5000m, 1));
 
             context.Usuarios.Add(new Usuario(
                 1,
