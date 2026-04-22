@@ -1,5 +1,6 @@
-﻿using Civitas.WebAPI.Data.Interfaces;
+using Civitas.WebAPI.Data.Interfaces;
 using Civitas.WebAPI.Objects.Dtos.Entities;
+using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Objects.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,7 @@ namespace Civitas.WebAPI.Data.Repositories
     public class InstituicaoRepository : GenericRepository<Instituicao>, IInstituicaoRepository
     {
         private readonly AppDbContext _context;
+
         public InstituicaoRepository(AppDbContext context) : base(context)
         {
             _context = context;
@@ -16,6 +18,43 @@ namespace Civitas.WebAPI.Data.Repositories
         public async Task<IEnumerable<Instituicao>> GetInstituicaoByName(string name)
         {
             return await _context.Instituicoes.Where(m => m.Nome.Contains(name)).ToListAsync();
+        }
+
+        public async Task<bool> ExistsByCnpjAsync(string cnpj, int? ignoreId = null)
+        {
+            var query = _context.Instituicoes
+                .AsNoTracking()
+                .Where(instituicao => instituicao.CNPJ == cnpj);
+
+            if (ignoreId.HasValue)
+            {
+                query = query.Where(instituicao => instituicao.Id != ignoreId.Value);
+            }
+
+            return await query.AnyAsync();
+        }
+
+        public async Task<bool> ExistsByEmailAsync(string email, int? ignoreId = null)
+        {
+            var normalizedEmail = email.ToLowerInvariant();
+
+            var query = _context.Instituicoes
+                .AsNoTracking()
+                .Where(instituicao => instituicao.Email.ToLower() == normalizedEmail);
+
+            if (ignoreId.HasValue)
+            {
+                query = query.Where(instituicao => instituicao.Id != ignoreId.Value);
+            }
+
+            return await query.AnyAsync();
+        }
+
+        public async Task<bool> HasDespesasPendentesAsync(int instituicaoId)
+        {
+            return await _context.Despesas
+                .AsNoTracking()
+                .AnyAsync(despesa => despesa.IdInstituicao == instituicaoId && despesa.Status == Status.A_PAGAR);
         }
 
         public async Task<InstituicaoGastosDTO?> GetGastosByInstituicaoIdAsync(int instituicaoId)
