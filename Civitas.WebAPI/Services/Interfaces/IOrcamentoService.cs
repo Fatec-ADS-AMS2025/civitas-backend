@@ -4,25 +4,27 @@ using Civitas.WebAPI.Objects.Models;
 namespace Civitas.WebAPI.Services.Interfaces
 {
     /// <summary>
-    /// Interface que define o contrato para o serviço de gerenciamento de Orçamentos (Tetos de Gastos).
+    /// Interface que define o contrato para o serviï¿½o de gerenciamento de Orï¿½amentos (Tetos de Gastos).
     /// </summary>
     /// <remarks>
-    /// Extende <see cref="IGenericService{Orcamento, OrcamentoDTO}"/> para incluir validações de integridade financeira.
-    /// É o ponto de injeção para regras de negócio referentes ao planejamento de verbas.
+    /// Extende <see cref="IGenericService{Orcamento, OrcamentoDTO}"/> para incluir validaï¿½ï¿½es de integridade financeira.
+    /// ï¿½ o ponto de injeï¿½ï¿½o para regras de negï¿½cio referentes ao planejamento de verbas.
     /// </remarks>
     public interface IOrcamentoService : IGenericService<Orcamento, OrcamentoDTO>
     {
         /// <summary>
-        /// Verifica a existência de despesas vinculadas a um orçamento específico.
+        /// Verifica a existï¿½ncia de despesas vinculadas a um orï¿½amento especï¿½fico.
         /// </summary>
-        /// <param name="idOrcamento">O identificador do orçamento a ser checado.</param>
+        /// <param name="idOrcamento">O identificador do orï¿½amento a ser checado.</param>
         /// <returns>
-        /// Uma tarefa contendo <c>true</c> se houver despesas utilizando este orçamento, ou <c>false</c> se estiver livre.
+        /// Uma tarefa contendo <c>true</c> se houver despesas utilizando este orï¿½amento, ou <c>false</c> se estiver livre.
         /// </returns>
         /// <remarks>
         /// Contrato de Integridade:
-        /// Deve ser invocado antes de permitir a exclusão de um orçamento. Se retornar verdadeiro, a interface do usuário deve bloquear a ação de deletar.
+        /// Deve ser invocado antes de permitir a exclusï¿½o de um orï¿½amento. Se retornar verdadeiro, a interface do usuï¿½rio deve bloquear a aï¿½ï¿½o de deletar.
         /// </remarks>
         Task<bool> ExisteDespesaVinculada(int idOrcamento);
+
+        Task RemoverAsync(int id);
     }
 }

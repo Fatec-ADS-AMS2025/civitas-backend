@@ -208,7 +208,6 @@ namespace Civitas.WebAPI.Controllers
             try
             {
                 despesaDTO.Status = Status.A_PAGAR;
-                await _despesaService.ValidarCadastroAsync(despesaDTO);
                 despesaDTO.Id = 0;
                 await _despesaService.Create(despesaDTO);
 
@@ -285,7 +284,6 @@ namespace Civitas.WebAPI.Controllers
                     return NotFound(_response);
                 }
 
-                await _despesaService.ValidarCadastroAsync(despesaDTO, id);
                 await _despesaService.Update(despesaDTO, id);
 
                 _response.Code = ResponseEnum.SUCCESS;

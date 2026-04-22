@@ -20,6 +20,14 @@ namespace Civitas.WebAPI.Data.Repositories
                 .AnyAsync(d => d.IdOrcamento == idOrcamento);
         }
 
+        public async Task<decimal> SumConsumoByOrcamentoAsync(int idOrcamento)
+        {
+            var total = await _context.Despesas
+                .AsNoTracking()
+                .Where(despesa => despesa.IdOrcamento == idOrcamento)
+                .SumAsync(despesa => (decimal?)despesa.ConsumoPrevisto) ?? 0m;
 
+            return Math.Round(total, 2, MidpointRounding.AwayFromZero);
+        }
     }
 }

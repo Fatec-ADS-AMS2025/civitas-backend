@@ -1,9 +1,12 @@
 using AutoMapper;
+using Civitas.WebAPI.Data;
 using Civitas.WebAPI.Data.Interfaces;
 using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Objects.Models;
 using Civitas.WebAPI.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
 using System.Globalization;
 
 namespace Civitas.WebAPI.Services.Entities
@@ -22,6 +25,7 @@ namespace Civitas.WebAPI.Services.Entities
         private readonly IInstituicaoRepository _instituicaoRepository;
         private readonly IFornecedorRepository _fornecedorRepository;
         private readonly IUsuarioRepository _usuarioRepository;
+        private readonly AppDbContext _context;
 
         /// <summary>
         /// Inicializa uma nova instancia do servico de Despesas com as dependencias necessarias.
@@ -33,6 +37,7 @@ namespace Civitas.WebAPI.Services.Entities
             IInstituicaoRepository instituicaoRepository,
             IFornecedorRepository fornecedorRepository,
             IUsuarioRepository usuarioRepository,
+            AppDbContext context,
             IMapper mapper)
             : base(despesaRepository, mapper)
         {
@@ -42,6 +47,41 @@ namespace Civitas.WebAPI.Services.Entities
             _instituicaoRepository = instituicaoRepository;
             _fornecedorRepository = fornecedorRepository;
             _usuarioRepository = usuarioRepository;
+            _context = context;
+        }
+
+        public override async Task Create(DespesaDTO entityDTO)
+        {
+            await ExecuteEmTransacaoAsync(async () =>
+            {
+                await ValidarCadastroAsync(entityDTO);
+                entityDTO.Id = 0;
+                await base.Create(entityDTO);
+            });
+        }
+
+        public override async Task Update(DespesaDTO entityDTO, int id)
+        {
+            await ExecuteEmTransacaoAsync(async () =>
+            {
+                await ValidarCadastroAsync(entityDTO, id);
+                await base.Update(entityDTO, id);
+            });
+        }
+
+        private async Task ExecuteEmTransacaoAsync(Func<Task> acao)
+        {
+            await using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+            try
+            {
+                await acao();
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task ValidarCadastroAsync(DespesaDTO entityDTO, int? id = null)
@@ -103,10 +143,7 @@ namespace Civitas.WebAPI.Services.Entities
                 throw new ArgumentException("O orcamento informado nao pertence a instituicao selecionada.");
             }
 
-            if (orcamento.IdTipoDespesa > 0 && orcamento.IdTipoDespesa != despesaDTO.IdTipoDespesa)
-            {
-                throw new ArgumentException("O orcamento informado nao esta vinculado ao tipo de despesa selecionado.");
-            }
+            await ValidarLimiteOrcamentarioAsync(despesaDTO, orcamento);
 
             var fornecedor = await _fornecedorRepository.GetById(despesaDTO.IdFornecedor);
             if (fornecedor is null)
@@ -123,6 +160,23 @@ namespace Civitas.WebAPI.Services.Entities
             if (usuario is null)
             {
                 throw new ArgumentException("Usuario informado nao foi encontrado.");
+            }
+        }
+
+        private async Task ValidarLimiteOrcamentarioAsync(DespesaDTO despesaDTO, Orcamento orcamento)
+        {
+            var novoValor = Math.Round((decimal)despesaDTO.ConsumoPrevisto, 2, MidpointRounding.AwayFromZero);
+            var totalExistente = await _despesaRepository.SumConsumoByOrcamentoAsync(
+                orcamento.IdOrcamento,
+                despesaDTO.Id > 0 ? despesaDTO.Id : null);
+
+            var totalApos = totalExistente + novoValor;
+            if (totalApos > orcamento.ValorOrcamento)
+            {
+                var excedente = totalApos - orcamento.ValorOrcamento;
+                throw new ArgumentException(
+                    $"A despesa ultrapassa o limite do orcamento em {excedente:F2}. " +
+                    $"Orcamento: {orcamento.ValorOrcamento:F2}, Ja comprometido: {totalExistente:F2}, Nova despesa: {novoValor:F2}.");
             }
         }
 
