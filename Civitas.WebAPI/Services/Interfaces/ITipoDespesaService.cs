@@ -24,5 +24,6 @@ namespace Civitas.WebAPI.Services.Interfaces
         /// Utilizado para garantir que novas despesas não sejam criadas utilizando unidades de medida depreciadas (Inativas).
         /// </remarks>
         Task<bool> ExisteUnidadesDeMedidaAtivas(int idTipoDespesa);
+        Task<bool> HasDespesasVinculadas(int idTipoDespesa);
     }
 }
