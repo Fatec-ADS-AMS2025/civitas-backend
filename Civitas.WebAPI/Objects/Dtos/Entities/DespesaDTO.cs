@@ -1,4 +1,4 @@
-﻿using Civitas.WebAPI.Objects.Enums;
+using Civitas.WebAPI.Objects.Enums;
 
 namespace Civitas.WebAPI.Objects.Dtos.Entities
 {
@@ -28,7 +28,7 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// </remarks>
         public string NumeroDocumento { get; set; }
 
-        public int Codigo { get; set; }
+        public string Codigo { get; set; }
 
         /// <summary>
         /// Código da Unidade Consumidora (UC).

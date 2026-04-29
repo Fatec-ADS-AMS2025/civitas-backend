@@ -1,6 +1,7 @@
 using Civitas.WebAPI.Data;
 using Civitas.WebAPI.Data.Interfaces;
 using Civitas.WebAPI.Data.Repositories;
+using Civitas.WebAPI.Data.Seeding;
 using Civitas.WebAPI.Services.Entities;
 using Civitas.WebAPI.Services.Interfaces;
 using Civitas.WebAPI.Services.Security;
@@ -113,11 +114,19 @@ builder.Services.AddHttpClient<ICepService, CepService>((serviceProvider, client
 });
 builder.Services.AddScoped<ITipoCodigoRepository, TipoCodigoRepository>();
 builder.Services.AddScoped<ITipoCodigoService, TipoCodigoService>();
+builder.Services.AddScoped<AppDbSeeder>();
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var seeder = scope.ServiceProvider.GetRequiredService<AppDbSeeder>();
+
+    await dbContext.Database.MigrateAsync();
+    await seeder.SeedAsync();
+
     app.UseSwagger();
     app.UseSwaggerUI(opt =>
     {

@@ -1,4 +1,4 @@
-﻿using Civitas.WebAPI.Objects.Enums;
+using Civitas.WebAPI.Objects.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Civitas.WebAPI.Objects.Models
@@ -30,7 +30,7 @@ namespace Civitas.WebAPI.Objects.Models
         public string NumeroDocumento { get; set; }
 
         [Column("codigo")]
-        public int Codigo { get; set; }
+        public string Codigo { get; set; }
 
 
         /// <summary>

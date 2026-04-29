@@ -91,9 +91,10 @@ namespace Civitas.WebAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Codigo")
+                    b.Property<string>("Codigo")
+                        .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("integer")
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("codigo");
 
                     b.Property<double>("ConsumoPrevisto")
