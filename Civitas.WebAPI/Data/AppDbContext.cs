@@ -24,6 +24,7 @@ namespace Civitas.WebAPI.Data
         public DbSet<Orcamento> Orcamentos { get; set; }
         public DbSet<Despesa> Despesas { get; set; }
         public DbSet<TipoCodigo> TipoCodigos { get; set; }
+        public DbSet<UnidadeConsumidora> UnidadesConsumidoras { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -42,6 +43,7 @@ namespace Civitas.WebAPI.Data
             TipoDespesaBuilder.Build(modelBuilder);
             OrcamentoBuilder.Build(modelBuilder);
             DespesaBuilder.Build(modelBuilder);
+            UnidadeConsumidoraBuilder.Build(modelBuilder);
         }
     }
 }
