@@ -100,6 +100,7 @@ builder.Services.AddScoped<ITipoDespesaRepository, TipoDespesaRepository>();
 builder.Services.AddScoped<ITipoDespesaService, TipoDespesaService>();
 builder.Services.AddScoped<IOrcamentoRepository, OrcamentoRepository>();
 builder.Services.AddScoped<IOrcamentoService, OrcamentoService>();
+builder.Services.AddScoped<IUnidadeConsumidoraRepository, UnidadeConsumidoraRepository>();
 builder.Services.AddScoped<IDespesaRepository, DespesaRepository>();
 builder.Services.AddScoped<IDespesaService, DespesaService>();
 builder.Services.AddHttpClient<ICepService, CepService>((serviceProvider, client) =>

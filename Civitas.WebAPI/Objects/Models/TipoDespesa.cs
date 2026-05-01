@@ -65,9 +65,9 @@ namespace Civitas.WebAPI.Objects.Models
         public TipoCodigo TipoCodigo { get; set; }
 
         /// <summary>
-        /// Coleção de todas as despesas lançadas sob esta classificação.
+        /// Coleção de unidades consumidoras vinculadas a este tipo de despesa.
         /// </summary>
-        public ICollection<Despesa> Despesas { get; set; }
+        public ICollection<UnidadeConsumidora> UnidadesConsumidoras { get; set; }
 
         /// <summary>
         /// Construtor para inicialização da entidade TipoDespesa.

@@ -6,6 +6,6 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         public string NomeSecretaria { get; set; }
         public int QuantidadeInstituicoes { get; set; }
         public int QuantidadeDespesas { get; set; }
-        public double TotalGastos { get; set; }
+        public decimal TotalGastos { get; set; }
     }
 }
