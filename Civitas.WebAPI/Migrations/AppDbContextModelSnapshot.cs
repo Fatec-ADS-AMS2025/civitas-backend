@@ -624,6 +624,9 @@ namespace Civitas.WebAPI.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("excluido");
 
+                    b.Property<int?>("FornecedorIdFornecedor")
+                        .HasColumnType("integer");
+
                     b.Property<int>("IdFornecedor")
                         .HasColumnType("integer")
                         .HasColumnName("idfornecedor");
@@ -650,7 +653,18 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("identificador");
 
+                    b.Property<int?>("InstituicaoId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("OrcamentoIdOrcamento")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("TipoDespesaId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("FornecedorIdFornecedor");
 
                     b.HasIndex("IdFornecedor");
 
@@ -658,14 +672,18 @@ namespace Civitas.WebAPI.Migrations
 
                     b.HasIndex("IdOrcamento");
 
-                    b.HasIndex("IdTipoDespesa");
-
                     b.HasIndex("IdSecretaria");
 
                     b.HasIndex("IdTipoDespesa");
 
                     b.HasIndex("Identificador")
                         .IsUnique();
+
+                    b.HasIndex("InstituicaoId");
+
+                    b.HasIndex("OrcamentoIdOrcamento");
+
+                    b.HasIndex("TipoDespesaId");
 
                     b.ToTable("unidadeconsumidora");
                 });
@@ -903,29 +921,28 @@ namespace Civitas.WebAPI.Migrations
 
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.UnidadeConsumidora", b =>
                 {
-                    b.HasOne("Civitas.WebAPI.Objects.Models.Fornecedor", "Fornecedor")
+                    b.HasOne("Civitas.WebAPI.Objects.Models.Fornecedor", null)
                         .WithMany("UnidadesConsumidoras")
+                        .HasForeignKey("FornecedorIdFornecedor");
+
+                    b.HasOne("Civitas.WebAPI.Objects.Models.Fornecedor", "Fornecedor")
                         .WithMany()
                         .HasForeignKey("IdFornecedor")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Civitas.WebAPI.Objects.Models.Instituicao", "Instituicao")
-                        .WithMany("UnidadesConsumidoras")
                         .WithMany()
                         .HasForeignKey("IdInstituicao")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Civitas.WebAPI.Objects.Models.Orcamento", "Orcamento")
-                        .WithMany("UnidadesConsumidoras")
                         .WithMany()
                         .HasForeignKey("IdOrcamento")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Civitas.WebAPI.Objects.Models.TipoDespesa", "TipoDespesa")
-                        .WithMany("UnidadesConsumidoras")
                     b.HasOne("Civitas.WebAPI.Objects.Models.Secretaria", "Secretaria")
                         .WithMany()
                         .HasForeignKey("IdSecretaria")
@@ -937,6 +954,18 @@ namespace Civitas.WebAPI.Migrations
                         .HasForeignKey("IdTipoDespesa")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Civitas.WebAPI.Objects.Models.Instituicao", null)
+                        .WithMany("UnidadesConsumidoras")
+                        .HasForeignKey("InstituicaoId");
+
+                    b.HasOne("Civitas.WebAPI.Objects.Models.Orcamento", null)
+                        .WithMany("UnidadesConsumidoras")
+                        .HasForeignKey("OrcamentoIdOrcamento");
+
+                    b.HasOne("Civitas.WebAPI.Objects.Models.TipoDespesa", null)
+                        .WithMany("UnidadesConsumidoras")
+                        .HasForeignKey("TipoDespesaId");
 
                     b.Navigation("Fornecedor");
 

@@ -214,11 +214,6 @@ namespace Civitas.WebAPI.Services.Entities
                 return;
             }
 
-            if (unidadeConsumidora.Situacao != Situacao.ATIVO)
-            {
-                errors.Add("UnidadeConsumidora inativa nao pode ser utilizada em despesas.");
-            }
-
             TipoDespesa? tipoDespesa = null;
             if (unidadeConsumidora.IdTipoDespesa <= 0)
             {

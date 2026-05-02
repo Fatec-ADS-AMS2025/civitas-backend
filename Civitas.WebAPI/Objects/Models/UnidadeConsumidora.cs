@@ -101,6 +101,8 @@ namespace Civitas.WebAPI.Objects.Models
         [Column("dataexclusao")]
         public DateTime? DataExclusao { get; set; }
 
+        public ICollection<Despesa>? Despesas { get; set; }
+
         public UnidadeConsumidora() { }
 
         public UnidadeConsumidora(
