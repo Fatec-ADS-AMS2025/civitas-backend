@@ -614,11 +614,15 @@ namespace Civitas.WebAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Codigo")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("codigo");
+                    b.Property<DateTime?>("DataExclusao")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("dataexclusao");
+
+                    b.Property<bool>("Excluido")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("excluido");
 
                     b.Property<int>("IdFornecedor")
                         .HasColumnType("integer")
@@ -632,13 +636,19 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("idorcamento");
 
+                    b.Property<int>("IdSecretaria")
+                        .HasColumnType("integer")
+                        .HasColumnName("idsecretaria");
+
                     b.Property<int>("IdTipoDespesa")
                         .HasColumnType("integer")
                         .HasColumnName("idtipodespesa");
 
-                    b.Property<int>("Situacao")
-                        .HasColumnType("integer")
-                        .HasColumnName("situacao");
+                    b.Property<string>("Identificador")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("identificador");
 
                     b.HasKey("Id");
 
@@ -649,6 +659,13 @@ namespace Civitas.WebAPI.Migrations
                     b.HasIndex("IdOrcamento");
 
                     b.HasIndex("IdTipoDespesa");
+
+                    b.HasIndex("IdSecretaria");
+
+                    b.HasIndex("IdTipoDespesa");
+
+                    b.HasIndex("Identificador")
+                        .IsUnique();
 
                     b.ToTable("unidadeconsumidora");
                 });
@@ -888,24 +905,35 @@ namespace Civitas.WebAPI.Migrations
                 {
                     b.HasOne("Civitas.WebAPI.Objects.Models.Fornecedor", "Fornecedor")
                         .WithMany("UnidadesConsumidoras")
+                        .WithMany()
                         .HasForeignKey("IdFornecedor")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Civitas.WebAPI.Objects.Models.Instituicao", "Instituicao")
                         .WithMany("UnidadesConsumidoras")
+                        .WithMany()
                         .HasForeignKey("IdInstituicao")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Civitas.WebAPI.Objects.Models.Orcamento", "Orcamento")
                         .WithMany("UnidadesConsumidoras")
+                        .WithMany()
                         .HasForeignKey("IdOrcamento")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Civitas.WebAPI.Objects.Models.TipoDespesa", "TipoDespesa")
                         .WithMany("UnidadesConsumidoras")
+                    b.HasOne("Civitas.WebAPI.Objects.Models.Secretaria", "Secretaria")
+                        .WithMany()
+                        .HasForeignKey("IdSecretaria")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Civitas.WebAPI.Objects.Models.TipoDespesa", "TipoDespesa")
+                        .WithMany()
                         .HasForeignKey("IdTipoDespesa")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -915,6 +943,8 @@ namespace Civitas.WebAPI.Migrations
                     b.Navigation("Instituicao");
 
                     b.Navigation("Orcamento");
+
+                    b.Navigation("Secretaria");
 
                     b.Navigation("TipoDespesa");
                 });

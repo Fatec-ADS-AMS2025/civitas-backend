@@ -9,50 +9,57 @@ namespace Civitas.WebAPI.Data.Builders
         {
             modelBuilder.Entity<UnidadeConsumidora>().HasKey(uc => uc.Id);
 
-            modelBuilder.Entity<UnidadeConsumidora>().Property(uc => uc.Codigo)
+            modelBuilder.Entity<UnidadeConsumidora>()
+                .Property(uc => uc.Identificador)
                 .IsRequired()
                 .HasMaxLength(100);
 
-            modelBuilder.Entity<UnidadeConsumidora>().Property(uc => uc.Situacao)
-                .IsRequired();
+            modelBuilder.Entity<UnidadeConsumidora>()
+                .HasIndex(uc => uc.Identificador)
+                .IsUnique();
 
-            modelBuilder.Entity<UnidadeConsumidora>().Property(uc => uc.IdTipoDespesa)
-                .IsRequired()
-                .HasColumnName("idtipodespesa");
-
-            modelBuilder.Entity<UnidadeConsumidora>().Property(uc => uc.IdOrcamento)
-                .IsRequired()
-                .HasColumnName("idorcamento");
-
-            modelBuilder.Entity<UnidadeConsumidora>().Property(uc => uc.IdInstituicao)
-                .IsRequired()
-                .HasColumnName("idinstituicao");
-
-            modelBuilder.Entity<UnidadeConsumidora>().Property(uc => uc.IdFornecedor)
-                .IsRequired()
-                .HasColumnName("idfornecedor");
+            modelBuilder.Entity<UnidadeConsumidora>().Property(uc => uc.IdInstituicao).IsRequired();
+            modelBuilder.Entity<UnidadeConsumidora>().Property(uc => uc.IdTipoDespesa).IsRequired();
+            modelBuilder.Entity<UnidadeConsumidora>().Property(uc => uc.IdSecretaria).IsRequired();
+            modelBuilder.Entity<UnidadeConsumidora>().Property(uc => uc.IdOrcamento).IsRequired();
+            modelBuilder.Entity<UnidadeConsumidora>().Property(uc => uc.IdFornecedor).IsRequired();
 
             modelBuilder.Entity<UnidadeConsumidora>()
-                .HasOne(uc => uc.TipoDespesa)
-                .WithMany(td => td.UnidadesConsumidoras)
-                .HasForeignKey(uc => uc.IdTipoDespesa)
-                .OnDelete(DeleteBehavior.Restrict);
+                .Property(uc => uc.Excluido)
+                .IsRequired()
+                .HasDefaultValue(false);
 
             modelBuilder.Entity<UnidadeConsumidora>()
-                .HasOne(uc => uc.Orcamento)
-                .WithMany(o => o.UnidadesConsumidoras)
-                .HasForeignKey(uc => uc.IdOrcamento)
-                .OnDelete(DeleteBehavior.Restrict);
+                .Property(uc => uc.DataExclusao)
+                .IsRequired(false);
 
             modelBuilder.Entity<UnidadeConsumidora>()
                 .HasOne(uc => uc.Instituicao)
-                .WithMany(i => i.UnidadesConsumidoras)
+                .WithMany()
                 .HasForeignKey(uc => uc.IdInstituicao)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<UnidadeConsumidora>()
+                .HasOne(uc => uc.TipoDespesa)
+                .WithMany()
+                .HasForeignKey(uc => uc.IdTipoDespesa)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UnidadeConsumidora>()
+                .HasOne(uc => uc.Secretaria)
+                .WithMany()
+                .HasForeignKey(uc => uc.IdSecretaria)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UnidadeConsumidora>()
+                .HasOne(uc => uc.Orcamento)
+                .WithMany()
+                .HasForeignKey(uc => uc.IdOrcamento)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UnidadeConsumidora>()
                 .HasOne(uc => uc.Fornecedor)
-                .WithMany(f => f.UnidadesConsumidoras)
+                .WithMany()
                 .HasForeignKey(uc => uc.IdFornecedor)
                 .OnDelete(DeleteBehavior.Restrict);
         }
