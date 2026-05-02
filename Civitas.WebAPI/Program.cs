@@ -113,6 +113,8 @@ builder.Services.AddHttpClient<ICepService, CepService>((serviceProvider, client
 });
 builder.Services.AddScoped<ITipoCodigoRepository, TipoCodigoRepository>();
 builder.Services.AddScoped<ITipoCodigoService, TipoCodigoService>();
+builder.Services.AddScoped<IUnidadeConsumidoraRepository, UnidadeConsumidoraRepository>();
+builder.Services.AddScoped<IUnidadeConsumidoraService, UnidadeConsumidoraService>();
 
 var app = builder.Build();
 
