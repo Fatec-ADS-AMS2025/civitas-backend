@@ -1,4 +1,4 @@
-using Civitas.WebAPI.Objects.Models;
+﻿using Civitas.WebAPI.Objects.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Civitas.WebAPI.Data.Builders
@@ -17,22 +17,14 @@ namespace Civitas.WebAPI.Data.Builders
                 .IsRequired()
                 .HasMaxLength(100);
 
+            modelBuilder.Entity<Despesa>().Property(d => d.UC)
+                .HasMaxLength(100);
+
             modelBuilder.Entity<Despesa>().Property(d => d.DataEmissao)
-                .IsRequired();
-
-            modelBuilder.Entity<Despesa>().Property(d => d.ValorPrevisto)
                 .IsRequired()
-                .HasPrecision(18, 2);
-
-            modelBuilder.Entity<Despesa>().Property(d => d.ValorPago)
-                .IsRequired()
-                .HasPrecision(18, 2);
+                .HasMaxLength(20);
 
             modelBuilder.Entity<Despesa>().Property(d => d.ConsumoPrevisto)
-                .IsRequired()
-                .HasPrecision(18, 2);
-
-            modelBuilder.Entity<Despesa>().Property(d => d.ConsumoReal)
                 .IsRequired()
                 .HasPrecision(18, 2);
 
@@ -42,13 +34,23 @@ namespace Civitas.WebAPI.Data.Builders
             modelBuilder.Entity<Despesa>().Property(d => d.Status)
                 .IsRequired();
 
-            modelBuilder.Entity<Despesa>().Property(d => d.IdUsuario)
-                .IsRequired()
-                .HasColumnName("idusuario");
+            modelBuilder.Entity<Despesa>()
+                .HasOne(d => d.TipoDespesa)
+                .WithMany(td => td.Despesas)
+                .HasForeignKey(d => d.IdTipoDespesa)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Despesa>().Property(d => d.IdUnidadeConsumidora)
-                .IsRequired()
-                .HasColumnName("idunidadeconsumidora");
+            modelBuilder.Entity<Despesa>()
+                .HasOne(d => d.Orcamento)
+                .WithMany(o => o.Despesas)
+                .HasForeignKey(d => d.IdOrcamento)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Despesa>()
+                .HasOne(d => d.Fornecedor)
+                .WithMany(f => f.Despesas)
+                .HasForeignKey(d => d.IdFornecedor)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Despesa>()
                 .HasOne(d => d.Usuario)
@@ -57,9 +59,9 @@ namespace Civitas.WebAPI.Data.Builders
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Despesa>()
-                .HasOne(d => d.UnidadeConsumidora)
-                .WithMany(uc => uc.Despesas)
-                .HasForeignKey(d => d.IdUnidadeConsumidora)
+                .HasOne(d => d.Instituicao)
+                .WithMany(i => i.Despesas)
+                .HasForeignKey(d => d.IdInstituicao)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

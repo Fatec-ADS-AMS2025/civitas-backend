@@ -138,7 +138,7 @@ namespace Civitas.WebAPI.Services.Entities
 
             if (existente is not null && entityDTO.ValorOrcamento > 0)
             {
-                var totalComprometido = await _orcamentoRepository.SumValorPrevistoByOrcamentoAsync(existente.IdOrcamento);
+                var totalComprometido = await _orcamentoRepository.SumConsumoByOrcamentoAsync(existente.IdOrcamento);
                 var novoValor = Math.Round(entityDTO.ValorOrcamento, 2, MidpointRounding.AwayFromZero);
                 if (novoValor < totalComprometido)
                 {

@@ -1,8 +1,8 @@
-using Civitas.WebAPI.Objects.Contracts;
+﻿using Civitas.WebAPI.Objects.Contracts;
 using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
-using Civitas.WebAPI.Services.Validation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +11,21 @@ namespace Civitas.WebAPI.Controllers
     /// <summary>
     /// Controller responsável pelo gerenciamento de despesas cadastradas no sistema.
     /// </summary>
+    /// <remarks>
+    /// Este controller expõe endpoints REST para operações de CRUD e alteração de status.
+    ///
+    /// Funcionalidades disponíveis:
+    /// - Listar todas as despesas (por status)
+    /// - Consultar despesa por ID
+    /// - Criar nova despesa
+    /// - Atualizar uma despesa existente
+    /// - Alterar status (A_PAGAR, PAGA, ATRASADO)
+    ///
+    /// Observações aos desenvolvedores:
+    /// - Todos os retornos seguem o padrão de objeto <see cref="Response"/>.
+    /// - Erros internos são retornados como Status 500 contendo mensagem + StackTrace.
+    /// - Status usa o enum <see cref="Status"/>.
+    /// </remarks>
     [Authorize]
     [Route("api/despesas")]
     [ApiController]
@@ -19,23 +34,47 @@ namespace Civitas.WebAPI.Controllers
         private readonly IDespesaService _despesaService;
         private readonly Response _response;
 
+        /// <summary>
+        /// Inicializa o controller com suas dependências.
+        /// </summary>
+        /// <param name="despesaService">Serviço de regras de negócio e persistência de despesas.</param>
         public DespesaController(IDespesaService despesaService)
         {
             _despesaService = despesaService;
             _response = new Response();
         }
 
+        // ======================================================================================================
+        // GET /api/despesa
+        // ======================================================================================================
+
         /// <summary>
         /// Retorna todas as despesas cadastradas.
         /// </summary>
+        /// <remarks>
+        /// <b>Verbo HTTP:</b> GET  
+        ///
+        /// <b>Exemplo de Request:</b>  
+        /// GET /api/despesa
+        ///
+        /// <b>Exemplo de Response:</b>
+        /// {
+        ///   "code": "SUCCESS",
+        ///   "message": "Despesas listadas com sucesso",
+        ///   "data": [ ... ]
+        /// }
+        /// 
+        /// Possíveis Erros:
+        /// - 500: Erro interno inesperado.
+        /// </remarks>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
-            var despesas = await _despesaService.GetAll();
+            var despesaDto = await _despesaService.GetPageByEnumValue(paginationQuery, "Status", Status.A_PAGAR);
 
             _response.Code = ResponseEnum.SUCCESS;
-            _response.Data = despesas;
-            _response.Message = "Despesas listadas com sucesso";
+            _response.Data = despesaDto;
+            _response.Message = "Despesas a pagar listadas com sucesso";
 
             return Ok(_response);
         }
@@ -43,13 +82,15 @@ namespace Civitas.WebAPI.Controllers
         /// <summary>
         /// Retorna apenas as despesas pagas.
         /// </summary>
+        /// <param name="paginationQuery">Parâmetros de paginação.</param>
+        /// <returns>Lista paginada de despesas pagas.</returns>
         [HttpGet("pagas")]
-        public async Task<IActionResult> GetPagas()
+        public async Task<IActionResult> GetPagas([FromQuery] PaginationQuery paginationQuery)
         {
-            var despesas = await _despesaService.GetByStatusAsync(Status.PAGA);
+            var despesaDto = await _despesaService.GetPageByEnumValue(paginationQuery, "Status", Status.PAGA);
 
             _response.Code = ResponseEnum.SUCCESS;
-            _response.Data = despesas;
+            _response.Data = despesaDto;
             _response.Message = "Despesas pagas listadas com sucesso";
 
             return Ok(_response);
@@ -58,131 +99,116 @@ namespace Civitas.WebAPI.Controllers
         /// <summary>
         /// Retorna apenas as despesas atrasadas.
         /// </summary>
+        /// <param name="paginationQuery">Parâmetros de paginação.</param>
+        /// <returns>Lista paginada de despesas atrasadas.</returns>
         [HttpGet("atrasadas")]
-        public async Task<IActionResult> GetAtrasadas()
+        public async Task<IActionResult> GetAtrasadas([FromQuery] PaginationQuery paginationQuery)
         {
-            var despesas = await _despesaService.GetByStatusAsync(Status.ATRASADO);
+            var despesaDto = await _despesaService.GetPageByEnumValue(paginationQuery, "Status", Status.ATRASADO);
 
             _response.Code = ResponseEnum.SUCCESS;
-            _response.Data = despesas;
+            _response.Data = despesaDto;
             _response.Message = "Despesas atrasadas listadas com sucesso";
 
             return Ok(_response);
         }
 
-        /// <summary>
-        /// Retorna despesas pelo número do documento.
-        /// </summary>
-        [HttpGet("numero-documento/{numeroDocumento}")]
-        public async Task<IActionResult> GetByNumeroDocumento(string numeroDocumento)
-        {
-            var despesas = await _despesaService.GetByNumeroDocumentoAsync(numeroDocumento);
-
-            _response.Code = ResponseEnum.SUCCESS;
-            _response.Data = despesas;
-            _response.Message = "Despesas listadas por número do documento com sucesso";
-
-            return Ok(_response);
-        }
-
-        /// <summary>
-        /// Retorna despesas pelo código.
-        /// </summary>
-        [HttpGet("codigo/{codigo}")]
-        public async Task<IActionResult> GetByCodigo(string codigo)
-        {
-            var despesas = await _despesaService.GetByCodigoAsync(codigo);
-
-            _response.Code = ResponseEnum.SUCCESS;
-            _response.Data = despesas;
-            _response.Message = "Despesas listadas por código com sucesso";
-
-            return Ok(_response);
-        }
-
-        /// <summary>
-        /// Retorna despesas vinculadas a uma unidade consumidora.
-        /// </summary>
-        [HttpGet("unidade-consumidora/{idUnidadeConsumidora}")]
-        public async Task<IActionResult> GetByUnidadeConsumidora(int idUnidadeConsumidora)
-        {
-            var despesas = await _despesaService.GetByUnidadeConsumidoraAsync(idUnidadeConsumidora);
-
-            _response.Code = ResponseEnum.SUCCESS;
-            _response.Data = despesas;
-            _response.Message = "Despesas da unidade consumidora listadas com sucesso";
-
-            return Ok(_response);
-        }
-
-        /// <summary>
-        /// Retorna despesas cadastradas por um usuário.
-        /// </summary>
-        [HttpGet("usuario/{idUsuario}")]
-        public async Task<IActionResult> GetByUsuario(int idUsuario)
-        {
-            var despesas = await _despesaService.GetByUsuarioAsync(idUsuario);
-
-            _response.Code = ResponseEnum.SUCCESS;
-            _response.Data = despesas;
-            _response.Message = "Despesas do usuário listadas com sucesso";
-
-            return Ok(_response);
-        }
-
-        /// <summary>
-        /// Retorna despesas filtradas pelo status.
-        /// </summary>
-        [HttpGet("status/{status}")]
-        public async Task<IActionResult> GetByStatus(Status status)
-        {
-            if (!StatusValido(status))
-            {
-                _response.Code = ResponseEnum.INVALID;
-                _response.Data = null;
-                _response.Message = "Status inválido";
-                return BadRequest(_response);
-            }
-
-            var despesas = await _despesaService.GetByStatusAsync(status);
-
-            _response.Code = ResponseEnum.SUCCESS;
-            _response.Data = despesas;
-            _response.Message = "Despesas listadas por status com sucesso";
-
-            return Ok(_response);
-        }
+        // ======================================================================================================
+        // GET /api/despesa/{id}
+        // ======================================================================================================
 
         /// <summary>
         /// Retorna uma despesa específica pelo seu ID.
         /// </summary>
+        /// <param name="id">ID da despesa.</param>
+        /// <remarks>
+        /// <b>Verbo HTTP:</b> GET
+        ///
+        /// <b>Exemplo de Request:</b>  
+        /// GET /api/despesa/10
+        ///
+        /// <b>Exemplo de Response (200):</b>
+        /// {
+        ///   "code": "SUCCESS",
+        ///   "message": "Despesas listadas com sucesso",
+        ///   "data": { ... }
+        /// }
+        ///
+        /// <b>Exemplo de Response (404):</b>
+        /// {
+        ///   "code": "SUCCESS",
+        ///   "message": "Nenhuma despesa encontrada",
+        ///   "data": null
+        /// }
+        ///
+        /// Possíveis Erros:
+        /// - 404: Não encontrado.
+        /// - 500: Erro interno.
+        /// </remarks>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetUsuarioById(int id)
         {
-            var despesa = await _despesaService.GetById(id);
-            if (despesa is null)
+            var despesaDto = await _despesaService.GetById(id);
+            if (despesaDto is null)
             {
-                _response.Code = ResponseEnum.NOT_FOUND;
+                _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = null;
-                _response.Message = "Despesa não encontrada";
+                _response.Message = "Nenhuma despesa encontrada";
+
                 return NotFound(_response);
             }
 
             _response.Code = ResponseEnum.SUCCESS;
-            _response.Data = despesa;
-            _response.Message = "Despesa encontrada com sucesso";
-
+            _response.Data = despesaDto;
+            _response.Message = "Despesas listadas com sucesso";
             return Ok(_response);
         }
+
+        // ======================================================================================================
+        // POST /api/despesa
+        // ======================================================================================================
 
         /// <summary>
         /// Cria uma nova despesa no sistema.
         /// </summary>
+        /// <param name="despesaDTO">Objeto contendo os dados da despesa.</param>
+        /// <remarks>
+        /// <b>Verbo HTTP:</b> POST
+        ///
+        /// <b>Exemplo de Request:</b>
+        /// {
+        ///   "descricao": "Conta de luz",
+        ///   "valor": 150.75,
+        ///   "situacao": "ATIVO"
+        /// }
+        ///
+        /// <b>Exemplo de Response:</b>
+        /// {
+        ///   "code": "SUCCESS",
+        ///   "message": "Despesa cadastrada com sucesso",
+        ///   "data": { ... }
+        /// }
+        ///
+        /// Possíveis Erros:
+        /// - 400: Dados inválidos
+        /// - 500: Erro ao salvar no banco
+        /// </remarks>
         [HttpPost]
         public async Task<IActionResult> Post(DespesaDTO despesaDTO)
         {
+            if (despesaDTO is null)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = null;
+                _response.Message = "Dados inválidos";
+
+                return BadRequest(_response);
+            }
+
             try
             {
+                despesaDTO.Status = Status.A_PAGAR;
+                despesaDTO.Id = 0;
                 await _despesaService.Create(despesaDTO);
 
                 _response.Code = ResponseEnum.SUCCESS;
@@ -191,11 +217,11 @@ namespace Civitas.WebAPI.Controllers
 
                 return Ok(_response);
             }
-            catch (DespesaValidationException ex)
+            catch (ArgumentException ex)
             {
                 _response.Code = ResponseEnum.INVALID;
                 _response.Message = ex.Message;
-                _response.Data = ex.Errors;
+                _response.Data = null;
                 return BadRequest(_response);
             }
             catch (Exception ex)
@@ -211,14 +237,53 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        // ======================================================================================================
+        // PUT /api/despesa/{id}
+        // ======================================================================================================
+
         /// <summary>
         /// Atualiza uma despesa existente.
         /// </summary>
+        /// <param name="id">ID da despesa.</param>
+        /// <param name="despesaDTO">Dados atualizados.</param>
+        /// <remarks>
+        /// <b>Verbo HTTP:</b> PUT
+        ///
+        /// <b>Exemplo de Request:</b>
+        /// {
+        ///   "descricao": "Conta de luz - mês atual",
+        ///   "valor": 180.00,
+        ///   "situacao": "ATIVO"
+        /// }
+        ///
+        /// Possíveis Erros:
+        /// - 400: Dados inválidos
+        /// - 404: Despesa não encontrada
+        /// - 500: Erro interno
+        /// </remarks>
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, DespesaDTO despesaDTO)
         {
+            if (despesaDTO is null)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = null;
+                _response.Message = "Dados inválidos";
+
+                return BadRequest(_response);
+            }
+
             try
             {
+                var existingDespesaDTO = await _despesaService.GetById(id);
+                if (existingDespesaDTO is null)
+                {
+                    _response.Code = ResponseEnum.NOT_FOUND;
+                    _response.Data = null;
+                    _response.Message = "A despesa informada não existe";
+                    return NotFound(_response);
+                }
+
                 await _despesaService.Update(despesaDTO, id);
 
                 _response.Code = ResponseEnum.SUCCESS;
@@ -227,19 +292,12 @@ namespace Civitas.WebAPI.Controllers
 
                 return Ok(_response);
             }
-            catch (DespesaValidationException ex)
+            catch (ArgumentException ex)
             {
                 _response.Code = ResponseEnum.INVALID;
                 _response.Message = ex.Message;
-                _response.Data = ex.Errors;
-                return BadRequest(_response);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                _response.Code = ResponseEnum.NOT_FOUND;
-                _response.Message = ex.Message;
                 _response.Data = null;
-                return NotFound(_response);
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
@@ -254,16 +312,53 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
+        // ======================================================================================================
+        // PATCH /api/despesas/{id}/status
+        // ======================================================================================================
+
         /// <summary>
         /// Altera o status financeiro da despesa.
         /// </summary>
-        [HttpPatch("{id}/status")]
+        /// <param name="id">ID da despesa.</param>
+        /// <param name="novoStatus">Novo status a ser atribuído (A_PAGAR, PAGA, ATRASADO).</param>
+        /// <remarks>
+        /// <b>Verbo HTTP:</b> PATCH
+        ///
+        /// <b>Exemplo de Request:</b>
+        /// PATCH /api/despesas/20/status
+        /// Body: "PAGA"
+        ///
+        /// <b>Exemplo de Response:</b>
+        /// {
+        ///   "code": "SUCCESS",
+        ///   "message": "Status alterado para 'PAGA' com sucesso",
+        ///   "data": {
+        ///       "id": 20,
+        ///       "statusAtual": "PAGA"
+        ///   }
+        /// }
+        ///
+        /// Possíveis Erros:
+        /// - 404: Despesa não encontrada
+        /// - 500: Erro interno
+        /// </remarks>
         [HttpPatch("status/{id}")]
         public async Task<IActionResult> AlterarStatus(int id, [FromBody] Status novoStatus)
         {
             try
             {
-                var despesa = await _despesaService.AlterarStatusAsync(id, novoStatus);
+                var despesa = await _despesaService.GetById(id);
+                if (despesa == null)
+                {
+                    _response.Code = ResponseEnum.NOT_FOUND;
+                    _response.Data = null;
+                    _response.Message = "Despesa não encontrada";
+                    return NotFound(_response);
+                }
+
+                despesa.Status = novoStatus;
+
+                await _despesaService.Update(despesa, id);
 
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = new
@@ -274,20 +369,6 @@ namespace Civitas.WebAPI.Controllers
                 _response.Message = $"Status alterado para '{despesa.Status}' com sucesso";
 
                 return Ok(_response);
-            }
-            catch (DespesaValidationException ex)
-            {
-                _response.Code = ResponseEnum.INVALID;
-                _response.Message = ex.Message;
-                _response.Data = ex.Errors;
-                return BadRequest(_response);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                _response.Code = ResponseEnum.NOT_FOUND;
-                _response.Message = ex.Message;
-                _response.Data = null;
-                return NotFound(_response);
             }
             catch (Exception ex)
             {
@@ -301,10 +382,7 @@ namespace Civitas.WebAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
         }
-
-        private static bool StatusValido(Status status)
-        {
-            return status is Status.A_PAGAR or Status.PAGA or Status.ATRASADO;
-        }
     }
 }
+    
+

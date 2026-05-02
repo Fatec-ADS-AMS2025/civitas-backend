@@ -132,9 +132,9 @@ namespace Civitas.WebAPI.Objects.Models
         public ICollection<Orcamento> Orcamento { get; set; }
 
         /// <summary>
-        /// Propriedade de navegação para unidades consumidoras vinculadas.
+        /// Propriedade de navegação para despesas vinculadas.
         /// </summary>
-        public ICollection<UnidadeConsumidora> UnidadesConsumidoras { get; set; }
+        public ICollection<Despesa> Despesas { get; set; } 
 
         /// <summary>
         /// Construtor padrão para o Entity Framework.

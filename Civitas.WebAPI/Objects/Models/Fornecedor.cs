@@ -110,9 +110,9 @@ namespace Civitas.WebAPI.Objects.Models
         public ICollection<Documento> Documentos { get; set; }
 
         /// <summary>
-        /// Unidades consumidoras vinculadas a este fornecedor.
+        /// Histórico de despesas e pagamentos realizados para este fornecedor.
         /// </summary>
-        public ICollection<UnidadeConsumidora> UnidadesConsumidoras { get; set; }
+        public ICollection<Despesa> Despesas { get; set; }
 
         /// <summary>
         /// Construtor para inicialização completa da entidade Fornecedor.

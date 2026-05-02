@@ -54,10 +54,10 @@ namespace Civitas.WebAPI.Data.Repositories
                     IdSecretaria = secretaria.IdSecretaria,
                     NomeSecretaria = secretaria.Nome,
                     QuantidadeInstituicoes = _appDbContext.Instituicoes.Count(instituicao => instituicao.IdSecretaria == secretaria.IdSecretaria),
-                    QuantidadeDespesas = _appDbContext.Despesas.Count(despesa => despesa.UnidadeConsumidora.Instituicao.IdSecretaria == secretaria.IdSecretaria),
+                    QuantidadeDespesas = _appDbContext.Despesas.Count(despesa => despesa.Instituicao.IdSecretaria == secretaria.IdSecretaria),
                     TotalGastos = _appDbContext.Despesas
-                        .Where(despesa => despesa.UnidadeConsumidora.Instituicao.IdSecretaria == secretaria.IdSecretaria)
-                        .Sum(despesa => despesa.ValorPrevisto)
+                        .Where(despesa => despesa.Instituicao.IdSecretaria == secretaria.IdSecretaria)
+                        .Sum(despesa => despesa.ConsumoPrevisto)
                 })
                 .FirstOrDefaultAsync();
         }
@@ -81,8 +81,8 @@ namespace Civitas.WebAPI.Data.Repositories
                         -
                         (
                             _appDbContext.Despesas
-                                .Where(despesa => despesa.UnidadeConsumidora.Instituicao.IdSecretaria == secretaria.IdSecretaria)
-                                .Sum(despesa => (decimal?)despesa.ValorPrevisto) ?? 0
+                                .Where(despesa => despesa.Instituicao.IdSecretaria == secretaria.IdSecretaria)
+                                .Sum(despesa => (decimal?)despesa.ConsumoPrevisto) ?? 0
                         )
                 })
                 .FirstOrDefaultAsync();

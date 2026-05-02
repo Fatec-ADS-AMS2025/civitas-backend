@@ -17,15 +17,15 @@ namespace Civitas.WebAPI.Data.Repositories
         public async Task<bool> ExisteDespesaVinculada(int idOrcamento)
         {
             return await _context.Despesas
-                .AnyAsync(d => d.UnidadeConsumidora.IdOrcamento == idOrcamento);
+                .AnyAsync(d => d.IdOrcamento == idOrcamento);
         }
 
-        public async Task<decimal> SumValorPrevistoByOrcamentoAsync(int idOrcamento)
+        public async Task<decimal> SumConsumoByOrcamentoAsync(int idOrcamento)
         {
             var total = await _context.Despesas
                 .AsNoTracking()
-                .Where(despesa => despesa.UnidadeConsumidora.IdOrcamento == idOrcamento)
-                .SumAsync(despesa => (decimal?)despesa.ValorPrevisto) ?? 0m;
+                .Where(despesa => despesa.IdOrcamento == idOrcamento)
+                .SumAsync(despesa => (decimal?)despesa.ConsumoPrevisto) ?? 0m;
 
             return Math.Round(total, 2, MidpointRounding.AwayFromZero);
         }

@@ -42,7 +42,6 @@ namespace Civitas.WebAPI.Data
             UnidadeMedidaBuilder.Build(modelBuilder);
             TipoDespesaBuilder.Build(modelBuilder);
             OrcamentoBuilder.Build(modelBuilder);
-            UnidadeConsumidoraBuilder.Build(modelBuilder);
             DespesaBuilder.Build(modelBuilder);
             UnidadeConsumidoraBuilder.Build(modelBuilder);
         }

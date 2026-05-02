@@ -6,6 +6,6 @@ namespace Civitas.WebAPI.Data.Interfaces
     {
         Task<bool> ExisteDespesaVinculada(int idOrcamento);
 
-        Task<decimal> SumValorPrevistoByOrcamentoAsync(int idOrcamento);
+        Task<decimal> SumConsumoByOrcamentoAsync(int idOrcamento);
     }
 }

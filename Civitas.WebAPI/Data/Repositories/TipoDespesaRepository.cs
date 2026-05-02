@@ -38,7 +38,7 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             return await _context.Despesas
                 .AsNoTracking()
-                .AnyAsync(d => d.UnidadeConsumidora.IdTipoDespesa == idTipoDespesa);
+                .AnyAsync(d => d.IdTipoDespesa == idTipoDespesa);
         }
     }
 }

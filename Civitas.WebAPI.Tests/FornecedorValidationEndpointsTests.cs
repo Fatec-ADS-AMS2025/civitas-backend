@@ -189,15 +189,6 @@ public sealed class FornecedorValidationEndpointsTests : IClassFixture<TestWebAp
                 "Maringa",
                 "PR"));
 
-            context.UnidadesConsumidoras.Add(new UnidadeConsumidora(
-                1,
-                "UC-001",
-                Situacao.ATIVO,
-                1,
-                1,
-                1,
-                1));
-
             return Task.CompletedTask;
         });
 
@@ -205,15 +196,16 @@ public sealed class FornecedorValidationEndpointsTests : IClassFixture<TestWebAp
         var request = new Dictionary<string, object?>
         {
             ["numeroDocumento"] = "123456",
-            ["codigo"] = "DESP-001",
+            ["uc"] = "",
             ["dataEmissao"] = "2026-03-10",
-            ["valorPrevisto"] = 12.5m,
-            ["valorPago"] = 0m,
             ["consumoPrevisto"] = 12.5,
-            ["consumoReal"] = 0m,
             ["dataVencimento"] = "2026-03-20",
-            ["idUsuario"] = 1,
-            ["idUnidadeConsumidora"] = 1
+            ["situacao"] = (int)Situacao.ATIVO,
+            ["idTipoDespesa"] = 1,
+            ["idOrcamento"] = 1,
+            ["idInstituicao"] = 1,
+            ["idFornecedor"] = 1,
+            ["idUsuario"] = 1
         };
 
         var response = await client.PostAsJsonAsync("/api/despesas", request);

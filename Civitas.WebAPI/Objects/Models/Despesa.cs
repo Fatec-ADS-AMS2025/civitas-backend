@@ -1,4 +1,4 @@
-using Civitas.WebAPI.Objects.Enums;
+﻿using Civitas.WebAPI.Objects.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Civitas.WebAPI.Objects.Models
@@ -7,6 +7,10 @@ namespace Civitas.WebAPI.Objects.Models
     /// Entidade central que representa uma obrigação financeira, conta ou fatura a ser paga.
     /// Mapeia a tabela 'despesa' do banco de dados.
     /// </summary>
+    /// <remarks>
+    /// A Despesa conecta a execução financeira (Instituição) ao planejamento (Orçamento) e ao credor (Fornecedor).
+    /// É o registro "pai" dos pagamentos que serão efetuados na entidade Fluxo.
+    /// </remarks>
     [Table("despesa")]
     public class Despesa
     {
@@ -19,44 +23,44 @@ namespace Civitas.WebAPI.Objects.Models
         /// <summary>
         /// Número de identificação impresso no documento fiscal (NF, Fatura, Boleto).
         /// </summary>
+        /// <remarks>
+        /// Usado para rastreabilidade e para evitar pagamentos em duplicidade.
+        /// </remarks>
         [Column("numerodocumento")]
         public string NumeroDocumento { get; set; }
 
-        /// <summary>
-        /// Código identificador da despesa.
-        /// </summary>
         [Column("codigo")]
-        public string Codigo { get; set; }
+        public int Codigo { get; set; }
+
 
         /// <summary>
-        /// Data em que o documento foi emitido.
+        /// Código da Unidade Consumidora (UC) ou Instalação.
         /// </summary>
+        /// <remarks>
+        /// Regra de Negócio: A obrigatoriedade deste campo é definida pelo <see cref="TipoDespesa"/> vinculado.
+        /// Se TipoDespesa.SolicitaUc for 'Sim', este campo é mandatório (comum em contas de Energia/Água).
+        /// </remarks>
+        [Column("uc")]
+        public string UC { get; set; }
+
+        /// <summary>
+        /// Data em que o documento foi emitido pelo fornecedor.
+        /// </summary>
+        /// <remarks>
+        /// Formato esperado: String (ex: DD/MM/AAAA) ou ISO 8601.
+        /// </remarks>
         [Column("dataemissao")]
-        public DateOnly DataEmissao { get; set; }
+        public string DataEmissao { get; set; }
 
         /// <summary>
-        /// Valor previsto para a despesa.
+        /// Quantidade estimada de consumo para esta despesa.
         /// </summary>
-        [Column("valorprevisto")]
-        public decimal ValorPrevisto { get; set; }
-
-        /// <summary>
-        /// Valor realmente pago.
-        /// </summary>
-        [Column("valorpago")]
-        public decimal ValorPago { get; set; }
-
-        /// <summary>
-        /// Consumo previsto para esta despesa.
-        /// </summary>
+        /// <remarks>
+        /// A unidade de medida (kWh, m³, etc) é determinada pelo <see cref="TipoDespesa"/>.
+        /// Importante para relatórios de previsão versus realizado.
+        /// </remarks>
         [Column("consumoprevisto")]
-        public decimal ConsumoPrevisto { get; set; }
-
-        /// <summary>
-        /// Consumo real registrado para esta despesa.
-        /// </summary>
-        [Column("consumoreal")]
-        public decimal ConsumoReal { get; set; }
+        public double ConsumoPrevisto { get; set; }
 
         /// <summary>
         /// Data limite para o pagamento sem incidência de juros ou multas.
@@ -67,8 +71,61 @@ namespace Civitas.WebAPI.Objects.Models
         /// <summary>
         /// Status financeiro da despesa.
         /// </summary>
+        /// <remarks>
+        /// Controlado pelo Enum <see cref="Status"/>.
+        /// Valores possíveis: A_PAGAR, PAGA, ATRASADO.
+        /// Uma despesa recém-criada inicia como A_PAGAR.
+        /// O status ATRASADO é definido automaticamente com base na data de vencimento.
+        /// </remarks>
         [Column("status")]
         public Status Status { get; set; }
+
+        /// <summary>
+        /// Chave estrangeira para a Categoria da Despesa.
+        /// </summary>
+        [Column("idtipodespesa")]
+        public int IdTipoDespesa { get; set; }
+
+        /// <summary>
+        /// Objeto de navegação do Tipo de Despesa. Define regras como Unidade de Medida e uso de UC.
+        /// </summary>
+        public TipoDespesa TipoDespesa { get; set; }
+
+        /// <summary>
+        /// Chave estrangeira do Orçamento que cobrirá este gasto.
+        /// </summary>
+        [Column("idorcamento")]
+        public int IdOrcamento { get; set; }
+
+        /// <summary>
+        /// Objeto de navegação do Orçamento.
+        /// </summary>
+        /// <remarks>
+        /// Regra: O valor desta despesa deve ser abatido do saldo deste Orçamento.
+        /// </remarks>
+        public Orcamento Orcamento { get; set; }
+
+        /// <summary>
+        /// Chave estrangeira da Instituição responsável pelo pagamento.
+        /// </summary>
+        [Column("idinstituicao")]
+        public int IdInstituicao { get; set; }
+
+        /// <summary>
+        /// Objeto de navegação da Instituição.
+        /// </summary>
+        public Instituicao Instituicao { get; set; }
+
+        /// <summary>
+        /// Chave estrangeira do Fornecedor que receberá o pagamento.
+        /// </summary>
+        [Column("idfornecedor")]
+        public int IdFornecedor { get; set; }
+
+        /// <summary>
+        /// Objeto de navegação do Fornecedor.
+        /// </summary>
+        public Fornecedor Fornecedor { get; set; }
 
         /// <summary>
         /// Chave estrangeira do Usuário que cadastrou esta despesa.
@@ -77,51 +134,30 @@ namespace Civitas.WebAPI.Objects.Models
         public int IdUsuario { get; set; }
 
         /// <summary>
-        /// Objeto de navegação do Usuário.
+        /// Objeto de navegação do Usuário (Audit Trail).
         /// </summary>
         public Usuario Usuario { get; set; }
 
         /// <summary>
-        /// Chave estrangeira da unidade consumidora vinculada.
+        /// Construtor padrão.
         /// </summary>
-        [Column("idunidadeconsumidora")]
-        public int IdUnidadeConsumidora { get; set; }
-
-        /// <summary>
-        /// Objeto de navegação da unidade consumidora.
-        /// </summary>
-        public UnidadeConsumidora UnidadeConsumidora { get; set; }
-
         public Despesa()
         {
+
         }
 
-        public Despesa(
-            int id,
-            string numeroDocumento,
-            string codigo,
-            DateOnly dataEmissao,
-            decimal valorPrevisto,
-            decimal valorPago,
-            decimal consumoPrevisto,
-            decimal consumoReal,
-            DateOnly dataVencimento,
-            Status status,
-            int idUsuario,
-            int idUnidadeConsumidora)
+        /// <summary>
+        /// Construtor para inicialização dos dados principais da Despesa.
+        /// </summary>
+        public Despesa(int id, string numeroDocumento, string uc, string dataEmissao, double consumoPrevisto, DateOnly dataVencimento, Status status)
         {
             Id = id;
             NumeroDocumento = numeroDocumento;
-            Codigo = codigo;
+            UC = uc;
             DataEmissao = dataEmissao;
-            ValorPrevisto = valorPrevisto;
-            ValorPago = valorPago;
             ConsumoPrevisto = consumoPrevisto;
-            ConsumoReal = consumoReal;
             DataVencimento = dataVencimento;
             Status = status;
-            IdUsuario = idUsuario;
-            IdUnidadeConsumidora = idUnidadeConsumidora;
         }
     }
 }
