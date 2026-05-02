@@ -50,9 +50,9 @@ namespace Civitas.WebAPI.Objects.Models
         public Instituicao? Instituicao { get; set; }
 
         /// <summary>
-        /// Relacionamento: Lista de despesas reais que est�o consumindo este or�amento.
+        /// Relacionamento: unidades consumidoras que utilizam este orcamento.
         /// </summary>
-        public ICollection<Despesa> Despesas { get; set; }
+        public ICollection<UnidadeConsumidora> UnidadesConsumidoras { get; set; }
 
         /// <summary>
         /// Construtor vazio para uso do Entity Framework.

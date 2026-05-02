@@ -217,18 +217,16 @@ public sealed class InstituicaoValidationEndpointsTests : IClassFixture<TestWebA
             context.Despesas.Add(new Despesa(
                 1,
                 "123456",
-                string.Empty,
-                "10-03-2026",
-                12.5,
+                "DESP-001",
+                new DateOnly(2026, 3, 10),
+                12.5m,
+                0m,
+                12.5m,
+                0m,
                 new DateOnly(2026, 3, 20),
-                Status.A_PAGAR)
-            {
-                IdTipoDespesa = 1,
-                IdOrcamento = 1,
-                IdInstituicao = 1,
-                IdFornecedor = 1,
-                IdUsuario = 1
-            });
+                Status.A_PAGAR,
+                1,
+                1));
 
             return Task.CompletedTask;
         });
@@ -254,16 +252,15 @@ public sealed class InstituicaoValidationEndpointsTests : IClassFixture<TestWebA
         var request = new Dictionary<string, object?>
         {
             ["numeroDocumento"] = "123456",
-            ["uc"] = "",
+            ["codigo"] = "DESP-001",
             ["dataEmissao"] = "2026-03-10",
+            ["valorPrevisto"] = 12.5m,
+            ["valorPago"] = 0m,
             ["consumoPrevisto"] = 12.5,
+            ["consumoReal"] = 0m,
             ["dataVencimento"] = "2026-03-20",
-            ["situacao"] = (int)Situacao.ATIVO,
-            ["idTipoDespesa"] = 1,
-            ["idOrcamento"] = 1,
-            ["idInstituicao"] = 1,
-            ["idFornecedor"] = 1,
-            ["idUsuario"] = 1
+            ["idUsuario"] = 1,
+            ["idUnidadeConsumidora"] = 1
         };
 
         var response = await client.PostAsJsonAsync("/api/despesas", request);
@@ -361,10 +358,7 @@ public sealed class InstituicaoValidationEndpointsTests : IClassFixture<TestWebA
             IdTipoInstituicao = 1
         });
 
-        context.Orcamentos.Add(new Orcamento(1, 2026, 5000, 1)
-        {
-            IdTipoDespesa = 1
-        });
+        context.Orcamentos.Add(new Orcamento(1, 2026, 5000, 1));
 
         context.Usuarios.Add(new Usuario(
             1,
@@ -397,6 +391,15 @@ public sealed class InstituicaoValidationEndpointsTests : IClassFixture<TestWebA
             "fornecedor@example.com",
             "Maringa",
             "PR"));
+
+        context.UnidadesConsumidoras.Add(new UnidadeConsumidora(
+            1,
+            "UC-001",
+            Situacao.ATIVO,
+            1,
+            1,
+            1,
+            1));
     }
 
     private static Instituicao CreateInstituicao(int id, string cnpj, string email)
