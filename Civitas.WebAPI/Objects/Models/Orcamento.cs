@@ -49,6 +49,11 @@ namespace Civitas.WebAPI.Objects.Models
         /// </summary>
         public Instituicao? Instituicao { get; set; }
 
+
+        [Column("idtipodespesa")]
+        public int IdTipoDespesa { get; set; }
+
+        public TipoDespesa TipoDespesa { get; set; }
         /// <summary>
         /// Relacionamento: unidades consumidoras que utilizam este orcamento.
         /// </summary>

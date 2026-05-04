@@ -43,5 +43,6 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// Obrigat�rio. Define qual unidade (escola, posto, secretaria) poder� usar este recurso.
         /// </remarks>
         public int IdInstituicao { get; set; }
+        public int IdTipoDespesa { get; set; }
     }
 }

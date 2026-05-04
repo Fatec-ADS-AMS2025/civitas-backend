@@ -68,6 +68,7 @@ namespace Civitas.WebAPI.Objects.Models
         /// Coleção de unidades consumidoras vinculadas a este tipo de despesa.
         /// </summary>
         public ICollection<UnidadeConsumidora> UnidadesConsumidoras { get; set; }
+        public ICollection<Orcamento> Orcamento { get; set; }
 
         /// <summary>
         /// Construtor para inicialização da entidade TipoDespesa.
