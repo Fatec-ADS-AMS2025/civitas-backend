@@ -70,12 +70,13 @@ namespace Civitas.WebAPI.Objects.Models
         /// <summary>
         /// Construtor para inicializa��o b�sica da entidade Orcamento.
         /// </summary>
-        public Orcamento(int idOrcamento, int anoOrcamento, decimal valorOrcamento, int idInstituicao)
+        public Orcamento(int idOrcamento, int anoOrcamento, decimal valorOrcamento, int idInstituicao, int idTipoDespesa)
         {
             IdOrcamento = idOrcamento;
             AnoOrcamento = anoOrcamento;
             ValorOrcamento = valorOrcamento;
             IdInstituicao = idInstituicao;
+            IdTipoDespesa = idTipoDespesa;
         }
     }
 }

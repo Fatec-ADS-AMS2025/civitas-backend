@@ -190,8 +190,8 @@ namespace Civitas.WebAPI.Data.Seeding
             await _context.Fluxos.AddRangeAsync([fluxoPago, fluxoAberto], cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
-            var orcamentoEscola = new Orcamento(0, DateTime.UtcNow.Year, 350000.00m, escola.Id);
-            var orcamentoUbs = new Orcamento(0, DateTime.UtcNow.Year, 420000.00m, ubs.Id);
+            var orcamentoEscola = new Orcamento(0, DateTime.UtcNow.Year, 350000.00m, escola.Id, tipoDespesaEnergia.Id);
+            var orcamentoUbs = new Orcamento(0, DateTime.UtcNow.Year, 420000.00m, ubs.Id, tipoDespesaManutencao.Id);
 
             await _context.Orcamentos.AddRangeAsync([orcamentoEscola, orcamentoUbs], cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
