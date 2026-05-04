@@ -31,6 +31,7 @@ namespace Civitas.WebAPI.Data.Seeding
                 await _context.Secretarias.AnyAsync(cancellationToken) ||
                 await _context.Instituicoes.AnyAsync(cancellationToken) ||
                 await _context.Orcamentos.AnyAsync(cancellationToken) ||
+                await _context.UnidadesConsumidoras.AnyAsync(cancellationToken) ||
                 await _context.Despesas.AnyAsync(cancellationToken) ||
                 await _context.Documento.AnyAsync(cancellationToken) ||
                 await _context.Auditorias.AnyAsync(cancellationToken) ||
@@ -195,25 +196,58 @@ namespace Civitas.WebAPI.Data.Seeding
             await _context.Orcamentos.AddRangeAsync([orcamentoEscola, orcamentoUbs], cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
-            var despesaEnergia = new Despesa(0, "NF-2026-0001", "UC-998877", "2026-04-10", 1320.50, new DateOnly(2026, 4, 25), Status.PAGA)
-            {
-                Codigo = "1001",
-                IdTipoDespesa = tipoDespesaEnergia.Id,
-                IdOrcamento = orcamentoEscola.IdOrcamento,
-                IdInstituicao = escola.Id,
-                IdFornecedor = fornecedorEnergia.IdFornecedor,
-                IdUsuario = admin.Id
-            };
+            var unidadeConsumidoraEscola = new UnidadeConsumidora(
+                0,
+                "UC-998877",
+                escola.Id,
+                tipoDespesaEnergia.Id,
+                secretariaEducacao.IdSecretaria,
+                orcamentoEscola.IdOrcamento,
+                fornecedorEnergia.IdFornecedor,
+                false,
+                null);
 
-            var despesaManutencao = new Despesa(0, "OS-2026-0042", "NAO_APLICA", "2026-04-15", 18, new DateOnly(2026, 5, 5), Status.A_PAGAR)
-            {
-                Codigo = "2001",
-                IdTipoDespesa = tipoDespesaManutencao.Id,
-                IdOrcamento = orcamentoUbs.IdOrcamento,
-                IdInstituicao = ubs.Id,
-                IdFornecedor = fornecedorManutencao.IdFornecedor,
-                IdUsuario = funcionario.Id
-            };
+            var unidadeConsumidoraUbs = new UnidadeConsumidora(
+                0,
+                "UC-776655",
+                ubs.Id,
+                tipoDespesaManutencao.Id,
+                secretariaSaude.IdSecretaria,
+                orcamentoUbs.IdOrcamento,
+                fornecedorManutencao.IdFornecedor,
+                false,
+                null);
+
+            await _context.UnidadesConsumidoras.AddRangeAsync([unidadeConsumidoraEscola, unidadeConsumidoraUbs], cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            var despesaEnergia = new Despesa(
+                0,
+                "NF-2026-0001",
+                "1001",
+                new DateOnly(2026, 4, 10),
+                18450.75m,
+                18450.75m,
+                1320.50m,
+                1320.50m,
+                new DateOnly(2026, 4, 25),
+                Status.PAGA,
+                admin.Id,
+                unidadeConsumidoraEscola.Id);
+
+            var despesaManutencao = new Despesa(
+                0,
+                "OS-2026-0042",
+                "2001",
+                new DateOnly(2026, 4, 15),
+                9200.00m,
+                0m,
+                18m,
+                0m,
+                new DateOnly(2026, 5, 5),
+                Status.A_PAGAR,
+                funcionario.Id,
+                unidadeConsumidoraUbs.Id);
 
             await _context.Despesas.AddRangeAsync([despesaEnergia, despesaManutencao], cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
