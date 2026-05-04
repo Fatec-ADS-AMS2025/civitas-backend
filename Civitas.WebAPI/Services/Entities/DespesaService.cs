@@ -5,9 +5,9 @@ using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Objects.Models;
 using Civitas.WebAPI.Services.Interfaces;
+using Civitas.WebAPI.Services.Validation;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Globalization;
 
 namespace Civitas.WebAPI.Services.Entities
 {
@@ -16,57 +16,160 @@ namespace Civitas.WebAPI.Services.Entities
     /// </summary>
     public class DespesaService : GenericService<Despesa, DespesaDTO>, IDespesaService
     {
-        private static readonly CultureInfo PtBrCulture = new("pt-BR");
-        private static readonly string[] SupportedDateFormats = ["yyyy-MM-dd", "dd/MM/yyyy", "yyyy/MM/dd", "dd-MM-yyyy"];
-
         private readonly IDespesaRepository _despesaRepository;
+        private readonly IUnidadeConsumidoraRepository _unidadeConsumidoraRepository;
+        private readonly IUsuarioRepository _usuarioRepository;
         private readonly ITipoDespesaRepository _tipoDespesaRepository;
         private readonly IOrcamentoRepository _orcamentoRepository;
         private readonly IInstituicaoRepository _instituicaoRepository;
         private readonly IFornecedorRepository _fornecedorRepository;
-        private readonly IUsuarioRepository _usuarioRepository;
         private readonly AppDbContext _context;
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// Inicializa uma nova instancia do servico de Despesas com as dependencias necessarias.
         /// </summary>
         public DespesaService(
             IDespesaRepository despesaRepository,
+            IUnidadeConsumidoraRepository unidadeConsumidoraRepository,
+            IUsuarioRepository usuarioRepository,
             ITipoDespesaRepository tipoDespesaRepository,
             IOrcamentoRepository orcamentoRepository,
             IInstituicaoRepository instituicaoRepository,
             IFornecedorRepository fornecedorRepository,
-            IUsuarioRepository usuarioRepository,
             AppDbContext context,
             IMapper mapper)
             : base(despesaRepository, mapper)
         {
             _despesaRepository = despesaRepository;
+            _unidadeConsumidoraRepository = unidadeConsumidoraRepository;
+            _usuarioRepository = usuarioRepository;
             _tipoDespesaRepository = tipoDespesaRepository;
             _orcamentoRepository = orcamentoRepository;
             _instituicaoRepository = instituicaoRepository;
             _fornecedorRepository = fornecedorRepository;
-            _usuarioRepository = usuarioRepository;
             _context = context;
+            _mapper = mapper;
         }
 
         public override async Task Create(DespesaDTO entityDTO)
         {
+            if (entityDTO is null)
+            {
+                throw new DespesaValidationException(["O corpo da requisicao e obrigatorio."]);
+            }
+
+            entityDTO.Status = Status.A_PAGAR;
+
             await ExecuteEmTransacaoAsync(async () =>
             {
                 await ValidarCadastroAsync(entityDTO);
                 entityDTO.Id = 0;
-                await base.Create(entityDTO);
+
+                var entity = _mapper.Map<Despesa>(entityDTO);
+                await _despesaRepository.Add(entity);
+                entityDTO.Id = entity.Id;
             });
         }
 
         public override async Task Update(DespesaDTO entityDTO, int id)
         {
+            if (entityDTO is null)
+            {
+                throw new DespesaValidationException(["O corpo da requisicao e obrigatorio."]);
+            }
+
             await ExecuteEmTransacaoAsync(async () =>
             {
+                var existingEntity = await _despesaRepository.GetById(id);
+                if (existingEntity is null)
+                {
+                    throw new KeyNotFoundException($"Despesa com id {id} nao encontrada.");
+                }
+
+                entityDTO.Id = id;
                 await ValidarCadastroAsync(entityDTO, id);
-                await base.Update(entityDTO, id);
+
+                var entity = _mapper.Map<Despesa>(entityDTO);
+                entity.Id = id;
+                await _despesaRepository.Update(entity);
             });
+        }
+
+        public async Task<IEnumerable<DespesaDTO>> GetByNumeroDocumentoAsync(string numeroDocumento)
+        {
+            var entities = await _despesaRepository.GetByNumeroDocumentoAsync(Sanitize(numeroDocumento));
+            return _mapper.Map<IEnumerable<DespesaDTO>>(entities);
+        }
+
+        public async Task<IEnumerable<DespesaDTO>> GetByCodigoAsync(string codigo)
+        {
+            var entities = await _despesaRepository.GetByCodigoAsync(Sanitize(codigo));
+            return _mapper.Map<IEnumerable<DespesaDTO>>(entities);
+        }
+
+        public async Task<IEnumerable<DespesaDTO>> GetByUnidadeConsumidoraAsync(int idUnidadeConsumidora)
+        {
+            var entities = await _despesaRepository.GetByUnidadeConsumidoraAsync(idUnidadeConsumidora);
+            return _mapper.Map<IEnumerable<DespesaDTO>>(entities);
+        }
+
+        public async Task<IEnumerable<DespesaDTO>> GetByUsuarioAsync(int idUsuario)
+        {
+            var entities = await _despesaRepository.GetByUsuarioAsync(idUsuario);
+            return _mapper.Map<IEnumerable<DespesaDTO>>(entities);
+        }
+
+        public async Task<IEnumerable<DespesaDTO>> GetByStatusAsync(Status status)
+        {
+            var entities = await _despesaRepository.GetByStatusAsync(status);
+            return _mapper.Map<IEnumerable<DespesaDTO>>(entities);
+        }
+
+        public async Task<DespesaDTO> AlterarStatusAsync(int id, Status novoStatus)
+        {
+            if (!StatusValido(novoStatus))
+            {
+                throw new DespesaValidationException(["Status invalido. Valores permitidos: 1 (A_PAGAR), 2 (PAGA) ou 3 (ATRASADO)."]);
+            }
+
+            var despesa = await _despesaRepository.GetById(id);
+            if (despesa is null)
+            {
+                throw new KeyNotFoundException($"Despesa com id {id} nao encontrada.");
+            }
+
+            var dto = _mapper.Map<DespesaDTO>(despesa);
+            dto.Status = novoStatus;
+            await Update(dto, id);
+
+            return dto;
+        }
+
+        public async Task ValidarCadastroAsync(DespesaDTO entityDTO, int? id = null)
+        {
+            if (entityDTO is null)
+            {
+                throw new DespesaValidationException(["O corpo da requisicao e obrigatorio."]);
+            }
+
+            var errors = new List<string>();
+
+            if (id.HasValue && id.Value <= 0)
+            {
+                errors.Add("Id da despesa invalido.");
+            }
+
+            NormalizarCampos(entityDTO);
+            ValidarCamposBasicos(entityDTO, errors);
+            await ValidarRelacionamentosAsync(entityDTO, errors);
+
+            if (errors.Count > 0)
+            {
+                throw new DespesaValidationException(errors);
+            }
+
+            ArredondarCampos(entityDTO);
         }
 
         private async Task ExecuteEmTransacaoAsync(Func<Task> acao)
@@ -84,99 +187,118 @@ namespace Civitas.WebAPI.Services.Entities
             }
         }
 
-        public async Task ValidarCadastroAsync(DespesaDTO entityDTO, int? id = null)
+        private async Task ValidarRelacionamentosAsync(DespesaDTO despesaDTO, ICollection<string> errors)
         {
-            if (entityDTO is null)
+            if (despesaDTO.IdUsuario > 0)
             {
-                throw new ArgumentException("Dados da despesa sao obrigatorios.");
-            }
-
-            if (id.HasValue && id.Value <= 0)
-            {
-                throw new ArgumentException("Id da despesa invalido.");
-            }
-
-            if (id.HasValue)
-            {
-                var existingEntity = await _despesaRepository.GetById(id.Value);
-                if (existingEntity is null)
+                var usuario = await _usuarioRepository.GetById(despesaDTO.IdUsuario);
+                if (usuario is null)
                 {
-                    throw new KeyNotFoundException($"Entidade com id {id.Value} nao encontrada.");
+                    errors.Add("Usuario informado nao foi encontrado.");
+                }
+                else if (usuario.Situacao != Situacao.ATIVO)
+                {
+                    errors.Add("Usuario inativo nao pode cadastrar despesas.");
                 }
             }
 
-            entityDTO.Id = id ?? 0;
+            if (despesaDTO.IdUnidadeConsumidora <= 0)
+            {
+                return;
+            }
 
-            NormalizarCampos(entityDTO);
-            ValidarCamposBasicos(entityDTO);
-            await ValidarRelacionamentosAsync(entityDTO);
-            await ValidarUnicidadeAsync(entityDTO, id);
+            var unidadeConsumidora = await _unidadeConsumidoraRepository.GetById(despesaDTO.IdUnidadeConsumidora);
+            if (unidadeConsumidora is null)
+            {
+                errors.Add("UnidadeConsumidora informada nao foi encontrada.");
+                return;
+            }
+
+            TipoDespesa? tipoDespesa = null;
+            if (unidadeConsumidora.IdTipoDespesa <= 0)
+            {
+                errors.Add("UnidadeConsumidora nao possui TipoDespesa valido.");
+            }
+            else
+            {
+                tipoDespesa = await _tipoDespesaRepository.GetById(unidadeConsumidora.IdTipoDespesa);
+                if (tipoDespesa is null)
+                {
+                    errors.Add("TipoDespesa vinculado a UnidadeConsumidora nao foi encontrado.");
+                }
+                else if (tipoDespesa.Situacao != Situacao.ATIVO)
+                {
+                    errors.Add("TipoDespesa vinculado a UnidadeConsumidora esta inativo.");
+                }
+            }
+
+            Orcamento? orcamento = null;
+            if (unidadeConsumidora.IdOrcamento <= 0)
+            {
+                errors.Add("UnidadeConsumidora nao possui Orcamento valido.");
+            }
+            else
+            {
+                orcamento = await _orcamentoRepository.GetById(unidadeConsumidora.IdOrcamento);
+                if (orcamento is null)
+                {
+                    errors.Add("Orcamento vinculado a UnidadeConsumidora nao foi encontrado.");
+                }
+            }
+
+            Instituicao? instituicao = null;
+            if (unidadeConsumidora.IdInstituicao <= 0)
+            {
+                errors.Add("UnidadeConsumidora nao possui Instituicao valida.");
+            }
+            else
+            {
+                instituicao = await _instituicaoRepository.GetById(unidadeConsumidora.IdInstituicao);
+                if (instituicao is null)
+                {
+                    errors.Add("Instituicao vinculada a UnidadeConsumidora nao foi encontrada.");
+                }
+                else if (instituicao.Situacao != Situacao.ATIVO)
+                {
+                    errors.Add("Instituicao vinculada a UnidadeConsumidora esta inativa.");
+                }
+            }
+
+            if (orcamento is not null && instituicao is not null && orcamento.IdInstituicao != instituicao.Id)
+            {
+                errors.Add("O orcamento vinculado a UnidadeConsumidora nao pertence a instituicao vinculada.");
+            }
+
+            if (unidadeConsumidora.IdFornecedor <= 0)
+            {
+                errors.Add("UnidadeConsumidora nao possui Fornecedor valido.");
+            }
+            else
+            {
+                var fornecedor = await _fornecedorRepository.GetById(unidadeConsumidora.IdFornecedor);
+                if (fornecedor is null)
+                {
+                    errors.Add("Fornecedor vinculado a UnidadeConsumidora nao foi encontrado.");
+                }
+                else if (fornecedor.Situacao != Situacao.ATIVO)
+                {
+                    errors.Add("Fornecedor vinculado a UnidadeConsumidora esta inativo.");
+                }
+            }
+
+            if (orcamento is not null && despesaDTO.ValorPrevisto >= 0)
+            {
+                await ValidarLimiteOrcamentarioAsync(despesaDTO, orcamento, errors);
+            }
         }
 
-        private async Task ValidarRelacionamentosAsync(DespesaDTO despesaDTO)
+        private async Task ValidarLimiteOrcamentarioAsync(
+            DespesaDTO despesaDTO,
+            Orcamento orcamento,
+            ICollection<string> errors)
         {
-            var tipoDespesa = await _tipoDespesaRepository.GetById(despesaDTO.IdTipoDespesa);
-            if (tipoDespesa is null)
-            {
-                throw new ArgumentException("TipoDespesa informado nao foi encontrado.");
-            }
-
-            if (tipoDespesa.Situacao != Situacao.ATIVO)
-            {
-                throw new ArgumentException("TipoDespesa inativo nao pode ser utilizado em novos lancamentos.");
-            }
-
-            if (tipoDespesa.SolicitaUc == SolicitaUc.Sim && string.IsNullOrWhiteSpace(despesaDTO.UC))
-            {
-                throw new ArgumentException("UC e obrigatoria para o tipo de despesa informado.");
-            }
-
-            var orcamento = await _orcamentoRepository.GetById(despesaDTO.IdOrcamento);
-            if (orcamento is null)
-            {
-                throw new ArgumentException("Orcamento informado nao foi encontrado.");
-            }
-
-            var instituicao = await _instituicaoRepository.GetById(despesaDTO.IdInstituicao);
-            if (instituicao is null)
-            {
-                throw new ArgumentException("Instituicao informada nao foi encontrada.");
-            }
-
-            if (instituicao.Situacao != Situacao.ATIVO)
-            {
-                throw new ArgumentException("Instituicao inativa nao pode receber novas despesas.");
-            }
-
-            if (orcamento.IdInstituicao != despesaDTO.IdInstituicao)
-            {
-                throw new ArgumentException("O orcamento informado nao pertence a instituicao selecionada.");
-            }
-
-            await ValidarLimiteOrcamentarioAsync(despesaDTO, orcamento);
-
-            var fornecedor = await _fornecedorRepository.GetById(despesaDTO.IdFornecedor);
-            if (fornecedor is null)
-            {
-                throw new ArgumentException("Fornecedor informado nao foi encontrado.");
-            }
-
-            if (fornecedor.Situacao != Situacao.ATIVO)
-            {
-                throw new ArgumentException("Fornecedor inativo nao pode ser utilizado em novas despesas.");
-            }
-
-            var usuario = await _usuarioRepository.GetById(despesaDTO.IdUsuario);
-            if (usuario is null)
-            {
-                throw new ArgumentException("Usuario informado nao foi encontrado.");
-            }
-        }
-
-        private async Task ValidarLimiteOrcamentarioAsync(DespesaDTO despesaDTO, Orcamento orcamento)
-        {
-            var novoValor = Math.Round((decimal)despesaDTO.ConsumoPrevisto, 2, MidpointRounding.AwayFromZero);
-            var totalExistente = await _despesaRepository.SumConsumoByOrcamentoAsync(
+            var novoValor = Math.Round(despesaDTO.ValorPrevisto, 2, MidpointRounding.AwayFromZero);
+            var totalExistente = await _despesaRepository.SumValorPrevistoByOrcamentoAsync(
                 orcamento.IdOrcamento,
                 despesaDTO.Id > 0 ? despesaDTO.Id : null);
 
@@ -184,136 +306,105 @@ namespace Civitas.WebAPI.Services.Entities
             if (totalApos > orcamento.ValorOrcamento)
             {
                 var excedente = totalApos - orcamento.ValorOrcamento;
-                throw new ArgumentException(
+                errors.Add(
                     $"A despesa ultrapassa o limite do orcamento em {excedente:F2}. " +
                     $"Orcamento: {orcamento.ValorOrcamento:F2}, Ja comprometido: {totalExistente:F2}, Nova despesa: {novoValor:F2}.");
-            }
-        }
-
-        private async Task ValidarUnicidadeAsync(DespesaDTO despesaDTO, int? ignoreId)
-        {
-            var documentoDuplicado = await _despesaRepository.ExistsByNumeroDocumentoAndFornecedorAsync(
-                despesaDTO.NumeroDocumento,
-                despesaDTO.IdFornecedor,
-                ignoreId);
-
-            if (documentoDuplicado)
-            {
-                throw new ArgumentException("Ja existe uma despesa cadastrada para este fornecedor com o mesmo numero de documento.");
             }
         }
 
         private static void NormalizarCampos(DespesaDTO despesaDTO)
         {
             despesaDTO.NumeroDocumento = Sanitize(despesaDTO.NumeroDocumento);
-            despesaDTO.UC = Sanitize(despesaDTO.UC);
-            despesaDTO.DataEmissao = Sanitize(despesaDTO.DataEmissao);
+            despesaDTO.Codigo = Sanitize(despesaDTO.Codigo);
         }
 
-        private static void ValidarCamposBasicos(DespesaDTO despesaDTO)
+        private static void ArredondarCampos(DespesaDTO despesaDTO)
+        {
+            despesaDTO.ValorPrevisto = Math.Round(despesaDTO.ValorPrevisto, 2, MidpointRounding.AwayFromZero);
+            despesaDTO.ValorPago = Math.Round(despesaDTO.ValorPago, 2, MidpointRounding.AwayFromZero);
+            despesaDTO.ConsumoPrevisto = Math.Round(despesaDTO.ConsumoPrevisto, 2, MidpointRounding.AwayFromZero);
+            despesaDTO.ConsumoReal = Math.Round(despesaDTO.ConsumoReal, 2, MidpointRounding.AwayFromZero);
+        }
+
+        private static void ValidarCamposBasicos(DespesaDTO despesaDTO, ICollection<string> errors)
         {
             if (despesaDTO.Id < 0)
             {
-                throw new ArgumentException("Id da despesa nao pode ser negativo.");
+                errors.Add("Id da despesa nao pode ser negativo.");
             }
 
-            ValidarObrigatorio(despesaDTO.NumeroDocumento, nameof(despesaDTO.NumeroDocumento));
-            ValidarTamanhoMaximo(despesaDTO.NumeroDocumento, 100, "NumeroDocumento");
-            ValidarSomenteNumeros(despesaDTO.NumeroDocumento, "NumeroDocumento");
-            ValidarTamanhoMaximo(despesaDTO.UC, 100, "UC");
-            ValidarObrigatorio(despesaDTO.DataEmissao, nameof(despesaDTO.DataEmissao));
+            ValidarObrigatorio(despesaDTO.NumeroDocumento, nameof(despesaDTO.NumeroDocumento), errors);
+            ValidarTamanhoMaximo(despesaDTO.NumeroDocumento, 100, "NumeroDocumento", errors);
 
-            var dataEmissao = ParseDataEmissao(despesaDTO.DataEmissao);
-            if (dataEmissao > DateOnly.FromDateTime(DateTime.Today))
+            ValidarObrigatorio(despesaDTO.Codigo, nameof(despesaDTO.Codigo), errors);
+            ValidarTamanhoMaximo(despesaDTO.Codigo, 100, "Codigo", errors);
+
+            if (despesaDTO.DataEmissao == default)
             {
-                throw new ArgumentException("DataEmicao nao pode ser futura.");
+                errors.Add("Campo obrigatorio nao preenchido: DataEmissao.");
             }
 
             if (despesaDTO.DataVencimento == default)
             {
-                throw new ArgumentException("Campo obrigatorio nao preenchido: DataVencimento.");
+                errors.Add("Campo obrigatorio nao preenchido: DataVencimento.");
             }
 
-            if (despesaDTO.DataVencimento < dataEmissao)
+            if (despesaDTO.DataEmissao != default
+                && despesaDTO.DataVencimento != default
+                && despesaDTO.DataVencimento < despesaDTO.DataEmissao)
             {
-                throw new ArgumentException("DataVencimento nao pode ser anterior a DataEmicao.");
+                errors.Add("DataVencimento nao pode ser anterior a DataEmissao.");
             }
 
-            if (double.IsNaN(despesaDTO.ConsumoPrevisto) || double.IsInfinity(despesaDTO.ConsumoPrevisto))
+            ValidarValorNaoNegativo(despesaDTO.ValorPrevisto, nameof(despesaDTO.ValorPrevisto), errors);
+            ValidarValorNaoNegativo(despesaDTO.ValorPago, nameof(despesaDTO.ValorPago), errors);
+            ValidarValorNaoNegativo(despesaDTO.ConsumoPrevisto, nameof(despesaDTO.ConsumoPrevisto), errors);
+            ValidarValorNaoNegativo(despesaDTO.ConsumoReal, nameof(despesaDTO.ConsumoReal), errors);
+
+            if (!StatusValido(despesaDTO.Status))
             {
-                throw new ArgumentException("ConsumoPrevisto invalido.");
+                errors.Add("Status invalido. Valores permitidos: 1 (A_PAGAR), 2 (PAGA) ou 3 (ATRASADO).");
             }
 
-            if (despesaDTO.ConsumoPrevisto < 0)
-            {
-                throw new ArgumentException("ConsumoPrevisto nao pode ser negativo.");
-            }
-
-            var valorStatus = (int)despesaDTO.Status;
-            if (valorStatus is not ((int)Status.A_PAGAR) and not ((int)Status.PAGA) and not ((int)Status.ATRASADO))
-            {
-                throw new ArgumentException("Status invalido. Valores permitidos: 1 (A_PAGAR), 2 (PAGA) ou 3 (ATRASADO).");
-            }
-
-            ValidarIdPositivo(despesaDTO.IdTipoDespesa, "IdTipoDespesa");
-            ValidarIdPositivo(despesaDTO.IdOrcamento, "IdOrcamento");
-            ValidarIdPositivo(despesaDTO.IdInstituicao, "IdInstituicao");
-            ValidarIdPositivo(despesaDTO.IdFornecedor, "IdFornecedor");
-            ValidarIdPositivo(despesaDTO.IdUsuario, "IdUsuario");
-
-            despesaDTO.DataEmissao = dataEmissao.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture);
+            ValidarIdPositivo(despesaDTO.IdUsuario, "IdUsuario", errors);
+            ValidarIdPositivo(despesaDTO.IdUnidadeConsumidora, "IdUnidadeConsumidora", errors);
         }
 
-        private static void ValidarObrigatorio(string valor, string campo)
+        private static void ValidarObrigatorio(string valor, string campo, ICollection<string> errors)
         {
             if (string.IsNullOrWhiteSpace(valor))
             {
-                throw new ArgumentException($"Campo obrigatorio nao preenchido: {campo}.");
+                errors.Add($"Campo obrigatorio nao preenchido: {campo}.");
             }
         }
 
-        private static void ValidarTamanhoMaximo(string valor, int maximo, string campo)
+        private static void ValidarTamanhoMaximo(string valor, int maximo, string campo, ICollection<string> errors)
         {
-            if (valor.Length > maximo)
+            if (!string.IsNullOrEmpty(valor) && valor.Length > maximo)
             {
-                throw new ArgumentException($"Campo {campo} deve conter no maximo {maximo} caracteres.");
+                errors.Add($"Campo {campo} deve conter no maximo {maximo} caracteres.");
             }
         }
 
-        private static void ValidarIdPositivo(int valor, string campo)
+        private static void ValidarValorNaoNegativo(decimal valor, string campo, ICollection<string> errors)
+        {
+            if (valor < 0)
+            {
+                errors.Add($"{campo} nao pode ser menor que zero.");
+            }
+        }
+
+        private static void ValidarIdPositivo(int valor, string campo, ICollection<string> errors)
         {
             if (valor <= 0)
             {
-                throw new ArgumentException($"{campo} deve ser maior que zero.");
+                errors.Add($"{campo} deve ser maior que zero.");
             }
         }
 
-        private static void ValidarSomenteNumeros(string valor, string campo)
+        private static bool StatusValido(Status status)
         {
-            if (!valor.All(char.IsDigit))
-            {
-                throw new ArgumentException($"{campo} deve conter apenas numeros.");
-            }
-        }
-
-        private static DateOnly ParseDataEmissao(string dataEmissao)
-        {
-            if (DateOnly.TryParseExact(
-                    dataEmissao,
-                    SupportedDateFormats,
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.None,
-                    out var data))
-            {
-                return data;
-            }
-
-            if (DateOnly.TryParse(dataEmissao, PtBrCulture, DateTimeStyles.None, out data))
-            {
-                return data;
-            }
-
-            throw new ArgumentException("DataEmicao invalida.");
+            return status is Status.A_PAGAR or Status.PAGA or Status.ATRASADO;
         }
 
         private static string Sanitize(string? valor)

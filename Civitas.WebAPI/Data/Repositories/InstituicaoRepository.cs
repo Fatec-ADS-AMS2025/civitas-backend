@@ -54,7 +54,9 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             return await _context.Despesas
                 .AsNoTracking()
-                .AnyAsync(despesa => despesa.IdInstituicao == instituicaoId && despesa.Status == Status.A_PAGAR);
+                .AnyAsync(despesa =>
+                    despesa.UnidadeConsumidora.IdInstituicao == instituicaoId &&
+                    despesa.Status == Status.A_PAGAR);
         }
 
         public async Task<InstituicaoGastosDTO?> GetGastosByInstituicaoIdAsync(int instituicaoId)
@@ -66,9 +68,10 @@ namespace Civitas.WebAPI.Data.Repositories
                 {
                     IdInstituicao = instituicao.Id,
                     NomeInstituicao = instituicao.Nome,
-                    QuantidadeDespesas = instituicao.Despesas.Count(),
-                    TotalGastos = instituicao.Despesas
-                        .Sum(despesa => despesa.ConsumoPrevisto)
+                    QuantidadeDespesas = _context.Despesas.Count(despesa => despesa.UnidadeConsumidora.IdInstituicao == instituicao.Id),
+                    TotalGastos = _context.Despesas
+                        .Where(despesa => despesa.UnidadeConsumidora.IdInstituicao == instituicao.Id)
+                        .Sum(despesa => despesa.ValorPrevisto)
                 })
                 .FirstOrDefaultAsync();
         }
@@ -84,7 +87,9 @@ namespace Civitas.WebAPI.Data.Repositories
                     NomeInstituicao = instituicao.Nome,
                     TotalOrcamentoDisponivel =
                         (instituicao.Orcamento.Sum(orcamento => (decimal?)orcamento.ValorOrcamento) ?? 0m)
-                        - (instituicao.Despesas.Sum(despesa => (decimal?)despesa.ConsumoPrevisto) ?? 0m)
+                        - (_context.Despesas
+                            .Where(despesa => despesa.UnidadeConsumidora.IdInstituicao == instituicao.Id)
+                            .Sum(despesa => (decimal?)despesa.ValorPrevisto) ?? 0m)
                 })
                 .FirstOrDefaultAsync();
         }

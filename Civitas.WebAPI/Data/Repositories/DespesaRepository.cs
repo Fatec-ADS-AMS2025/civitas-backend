@@ -1,4 +1,5 @@
 using Civitas.WebAPI.Data.Interfaces;
+using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Objects.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,40 +14,66 @@ namespace Civitas.WebAPI.Data.Repositories
             _context = context;
         }
 
-        public async Task<bool> ExistsByNumeroDocumentoAndFornecedorAsync(
-            string numeroDocumento,
-            int idFornecedor,
-            int? ignoreId = null)
+        public async Task<IEnumerable<Despesa>> GetByNumeroDocumentoAsync(string numeroDocumento)
         {
             var normalizedNumeroDocumento = numeroDocumento.Trim().ToUpperInvariant();
 
-            var query = _context.Despesas
+            return await _context.Despesas
                 .AsNoTracking()
                 .Where(despesa =>
-                    despesa.IdFornecedor == idFornecedor &&
                     despesa.NumeroDocumento != null &&
-                    despesa.NumeroDocumento.Trim().ToUpper() == normalizedNumeroDocumento);
-
-            if (ignoreId.HasValue)
-            {
-                query = query.Where(despesa => despesa.Id != ignoreId.Value);
-            }
-
-            return await query.AnyAsync();
+                    despesa.NumeroDocumento.Trim().ToUpper() == normalizedNumeroDocumento)
+                .ToListAsync();
         }
 
-        public async Task<decimal> SumConsumoByOrcamentoAsync(int idOrcamento, int? ignoreId = null)
+        public async Task<IEnumerable<Despesa>> GetByCodigoAsync(string codigo)
+        {
+            var normalizedCodigo = codigo.Trim().ToUpperInvariant();
+
+            return await _context.Despesas
+                .AsNoTracking()
+                .Where(despesa =>
+                    despesa.Codigo != null &&
+                    despesa.Codigo.Trim().ToUpper() == normalizedCodigo)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Despesa>> GetByUnidadeConsumidoraAsync(int idUnidadeConsumidora)
+        {
+            return await _context.Despesas
+                .AsNoTracking()
+                .Where(despesa => despesa.IdUnidadeConsumidora == idUnidadeConsumidora)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Despesa>> GetByUsuarioAsync(int idUsuario)
+        {
+            return await _context.Despesas
+                .AsNoTracking()
+                .Where(despesa => despesa.IdUsuario == idUsuario)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Despesa>> GetByStatusAsync(Status status)
+        {
+            return await _context.Despesas
+                .AsNoTracking()
+                .Where(despesa => despesa.Status == status)
+                .ToListAsync();
+        }
+
+        public async Task<decimal> SumValorPrevistoByOrcamentoAsync(int idOrcamento, int? ignoreId = null)
         {
             var query = _context.Despesas
                 .AsNoTracking()
-                .Where(despesa => despesa.IdOrcamento == idOrcamento);
+                .Where(despesa => despesa.UnidadeConsumidora.IdOrcamento == idOrcamento);
 
             if (ignoreId.HasValue)
             {
                 query = query.Where(despesa => despesa.Id != ignoreId.Value);
             }
 
-            var total = await query.SumAsync(despesa => (decimal?)despesa.ConsumoPrevisto) ?? 0m;
+            var total = await query.SumAsync(despesa => (decimal?)despesa.ValorPrevisto) ?? 0m;
             return Math.Round(total, 2, MidpointRounding.AwayFromZero);
         }
     }

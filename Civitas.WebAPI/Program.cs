@@ -101,6 +101,7 @@ builder.Services.AddScoped<ITipoDespesaRepository, TipoDespesaRepository>();
 builder.Services.AddScoped<ITipoDespesaService, TipoDespesaService>();
 builder.Services.AddScoped<IOrcamentoRepository, OrcamentoRepository>();
 builder.Services.AddScoped<IOrcamentoService, OrcamentoService>();
+builder.Services.AddScoped<IUnidadeConsumidoraRepository, UnidadeConsumidoraRepository>();
 builder.Services.AddScoped<IDespesaRepository, DespesaRepository>();
 builder.Services.AddScoped<IDespesaService, DespesaService>();
 builder.Services.AddHttpClient<ICepService, CepService>((serviceProvider, client) =>
@@ -115,6 +116,8 @@ builder.Services.AddHttpClient<ICepService, CepService>((serviceProvider, client
 builder.Services.AddScoped<ITipoCodigoRepository, TipoCodigoRepository>();
 builder.Services.AddScoped<ITipoCodigoService, TipoCodigoService>();
 builder.Services.AddScoped<AppDbSeeder>();
+builder.Services.AddScoped<IUnidadeConsumidoraRepository, UnidadeConsumidoraRepository>();
+builder.Services.AddScoped<IUnidadeConsumidoraService, UnidadeConsumidoraService>();
 
 var app = builder.Build();
 
