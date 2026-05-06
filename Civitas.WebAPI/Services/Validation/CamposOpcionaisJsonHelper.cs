@@ -177,7 +177,7 @@ namespace Civitas.WebAPI.Services.Validation
         }
 
         /// <summary>
-        /// Valida que todas as chaves de <paramref name="valores"/> existem em <paramref name="declarados"/>.
+        /// Valida que todas as chaves de <paramref name="valoresChaves"/> existem em <paramref name="declarados"/>.
         /// Retorna lista de chaves desconhecidas (case-sensitive). Vazia = OK.
         /// </summary>
         public static IReadOnlyList<string> EncontrarChavesDesconhecidas(
