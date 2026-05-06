@@ -181,6 +181,8 @@ namespace Civitas.WebAPI.Services.Entities
                 errors.Add("Situação inválida. Valores permitidos: 1 (Ativo) ou 2 (Inativo).");
             }
 
+            ValidarCamposOpcionais(tipoDespesaDTO, errors);
+
             return errors;
         }
 
@@ -233,6 +235,24 @@ namespace Civitas.WebAPI.Services.Entities
         private static string NormalizeForComparison(string descricao)
         {
             return Regex.Replace(descricao.Trim(), "\\s+", " ").ToUpperInvariant();
+        }
+
+        private static void ValidarCamposOpcionais(TipoDespesaDTO dto, ICollection<string> errors)
+        {
+            if (dto.CamposOpcionais is null || dto.CamposOpcionais.Count == 0)
+            {
+                return;
+            }
+
+            try
+            {
+                // Reutiliza a regra de unicidade/limite/comprimento.
+                _ = CamposOpcionaisJsonHelper.SerializeCamposDeclarados(dto.CamposOpcionais);
+            }
+            catch (ArgumentException ex)
+            {
+                errors.Add($"CamposOpcionais inválidos: {ex.Message}");
+            }
         }
     }
 }
