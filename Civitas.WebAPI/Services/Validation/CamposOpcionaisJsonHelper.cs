@@ -178,8 +178,15 @@ namespace Civitas.WebAPI.Services.Validation
 
         /// <summary>
         /// Valida que todas as chaves de <paramref name="valoresChaves"/> existem em <paramref name="declarados"/>.
-        /// Retorna lista de chaves desconhecidas (case-sensitive). Vazia = OK.
+        /// Retorna lista de chaves desconhecidas. Vazia = OK.
         /// </summary>
+        /// <remarks>
+        /// Comparacao deliberadamente case-sensitive (StringComparer.Ordinal): "numeroNota" e
+        /// "NumeroNota" sao tratados como chaves distintas. A dedup de nomes em
+        /// <see cref="ParseCamposDeclarados"/> e <see cref="SerializeCamposDeclarados"/> e
+        /// case-insensitive para evitar declaracoes ambiguas, mas o pareamento entre Despesa
+        /// e TipoDespesa exige match exato porque sao chaves JSON.
+        /// </remarks>
         public static IReadOnlyList<string> EncontrarChavesDesconhecidas(
             IEnumerable<string> valoresChaves,
             IEnumerable<string> declarados)
