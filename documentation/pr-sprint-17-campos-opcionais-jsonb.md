@@ -1,87 +1,163 @@
-# Pull Request: Sprint 17 - Campos Opcionais Dinâmicos com JSONB
+# 📌 Pull Request: Implementação de Campos Opcionais Dinâmicos com JSONB
 
-## Objetivo
+## 🎯 Objetivo
 
-Permitir que cada `TipoDespesa` declare uma lista de campos opcionais configuráveis dinamicamente, e que cada `Despesa` armazene valores correspondentes para esses campos, ambos persistidos como `JSONB` no PostgreSQL. A entrega flexibiliza o cadastro sem exigir alteração estrutural no banco a cada novo campo, mantém compatibilidade total com a estrutura atual do sistema, garante integridade entre os campos declarados e os valores preenchidos, e centraliza as validações na camada de Service.
+Permitir que cada `TipoDespesa` declare uma lista de campos opcionais configuráveis dinamicamente, e que cada `Despesa` armazene valores correspondentes para esses campos, ambos persistidos como `JSONB` no PostgreSQL.
 
-## Critérios de Aceite
+A entrega flexibiliza o cadastro sem exigir alteração estrutural no banco a cada novo campo, mantém compatibilidade total com a estrutura atual do sistema, garante integridade entre os campos declarados e os valores preenchidos, e centraliza as validações na camada de Service.
 
-- Adição de coluna JSONB em `TipoDespesa` para armazenar a definição dos campos opcionais (estrutura/configuração).
-- Adição de coluna JSONB em `Despesa` para armazenar os valores opcionais preenchidos, permitindo preenchimento parcial, total ou ausente.
-- DTOs de `TipoDespesa` e `Despesa` ajustados para expor os novos campos com serialização e desserialização JSON corretas.
-- Endpoints de criação (`POST`), atualização (`PUT`) e listagem/busca (`GET`) de `TipoDespesa` aceitando e retornando os campos opcionais configurados.
-- Endpoints de criação (`POST`), atualização (`PUT`) e listagem/busca (`GET`) de `Despesa` aceitando e retornando os valores opcionais associados.
-- Validação centralizada na camada Service, sem dependência exclusiva de `DataAnnotations`.
-- Validação de subset entre os campos declarados em `TipoDespesa` e os valores enviados em `Despesa`, considerando o relacionamento atual `Despesa → UnidadeConsumidora → TipoDespesa`.
-- Não permitir campos desconhecidos em `Despesa.ValoresOpcionais`, com mensagem clara listando as chaves rejeitadas.
-- Validação de estrutura JSON antes da persistência, com tratamento de payloads malformados, valores nulos e atualização parcial.
-- Migration / DDL adicionando as colunas JSONB com retrocompatibilidade (NULL como padrão para registros antigos).
-- Mapeamentos AutoMapper entre Model e DTO, com leitura defensiva (registros corrompidos no banco não derrubam o GET) e escrita estrita (validação upstream no Service).
-- Padronização da nomenclatura dos campos JSON em `camelCase` via `JsonNamingPolicy.CamelCase`.
-- Mensagens de erro claras ao usuário, retornadas no formato padrão `Response.Data` da API.
-- Documentação Swagger atualizada automaticamente via XML doc nos DTOs.
+---
 
-## Alterações Realizadas
+## 📖 Descrição
 
-- Nova funcionalidade
-- Refatoração de código
-- Testes automatizados
-- Documentação
+Implementadas duas colunas `JSONB` (`tipodespesa.camposopcionais` e `despesa.valoresopcionais`), DTOs com superfície limpa (`IList<string>?` e `IDictionary<string, JsonElement>?`), helper estático puro `CamposOpcionaisJsonHelper` isolando parsing/serialização/validação, AutoMapper customizado com leitura defensiva e escrita estrita, validações dedicadas em `TipoDespesaService` (estrutura) e `DespesaService` (subset via `Despesa → UnidadeConsumidora → TipoDespesa`), além de DDL standalone alinhado à política do repositório de não versionar migrations EF.
 
-A entidade `TipoDespesa` ganhou a propriedade `CamposOpcionais` (`string?`, mapeada para coluna `camposopcionais` JSONB) que armazena o envelope `{"camposOpcionais":[...]}`. A entidade `Despesa` ganhou `ValoresOpcionais` (`string?`, coluna `valoresopcionais` JSONB) que armazena o objeto JSON plano com pares chave/valor. Os DTOs expõem essas propriedades como `IList<string>?` e `IDictionary<string, JsonElement>?` respectivamente, com tradução transparente para JSON via AutoMapper customizado e helper estático puro `CamposOpcionaisJsonHelper`. As validações de estrutura, unicidade e subset rodam na camada Service e produzem mensagens de erro agregadas no padrão da API.
+---
 
-## Evidências de Testes
+## ✅ Critérios de Aceite
 
-A solução foi validada por meio de compilação limpa do projeto, testes unitários abrangentes do helper e do método de orquestração no Service, e smoke test end-to-end em ambiente real (Postgres em Docker + aplicação Civitas WebAPI). Todos os 9 cenários funcionais previstos foram exercitados e retornaram o comportamento esperado.
+### 🔹 Alterações na Entidade `TipoDespesa`
+- [x] Coluna `JSONB` `camposopcionais` armazenando o envelope `{"camposOpcionais":[...]}`
+- [x] Estrutura/configuração dos campos adicionais (não dados fixos)
+- [x] Lista de nomes única, comprimento ≤ 100, máximo 50 itens
 
-### O que foi implementado
+### 🔹 Alterações na Entidade `Despesa`
+- [x] Coluna `JSONB` `valoresopcionais` armazenando objeto plano `{chave: valor}`
+- [x] Preenchimento parcial ou total aceito
+- [x] Não obrigatório o preenchimento de todos os campos
+- [x] Valores `null` aceitos em qualquer chave declarada
 
-- Inclusão da propriedade `CamposOpcionais` (`string?`) em `TipoDespesa.cs` e `ValoresOpcionais` (`string?`) em `Despesa.cs`, com mapeamento `[Column("snake_case")]` seguindo o padrão do projeto.
-- Configuração no `TipoDespesaBuilder.cs` e `DespesaBuilder.cs` mapeando as colunas via `HasColumnName` e `IsRequired(false)`. A definição do tipo `jsonb` ficou no DDL standalone para preservar compatibilidade com SQLite nos testes.
-- Inclusão de `CamposOpcionais` em `TipoDespesaDTO` como `IList<string>?` e `ValoresOpcionais` em `DespesaDTO` como `IDictionary<string, JsonElement>?`, com XML doc completo para documentação Swagger.
-- Criação do helper estático puro `CamposOpcionaisJsonHelper` em `Civitas.WebAPI/Services/Validation/`, oferecendo:
-  - `ParseCamposDeclarados(string?)` — parse do envelope com validação de estrutura, unicidade case-insensitive, comprimento ≤ 100 e limite de 50 nomes.
-  - `SerializeCamposDeclarados(IEnumerable<string>?)` — produção do envelope com as mesmas regras.
-  - `ParseValoresPreenchidos(string?)` — parse do objeto plano com `JsonElement.Clone()` para detachar valores do `JsonDocument`.
-  - `SerializeValoresPreenchidos(IReadOnlyDictionary<string, JsonElement>?)` — serialização inversa.
-  - `EncontrarChavesDesconhecidas(...)` — verificação de subset case-sensitive (alinhada a JSON ser case-sensitive).
-- Customização de `MappingsProfile.cs` substituindo o `ReverseMap()` simples para `TipoDespesa` e `Despesa` por mapeamento explícito que serializa/desserializa JSON via helper. A leitura é defensiva (try/catch retorna null em registro corrompido) e a escrita propaga exceções para o Service tratar antes da persistência.
-- Adição de `ValidarCamposOpcionais` no `TipoDespesaService` integrada a `ValidateCommonRules`, cobrindo automaticamente os fluxos `Create` e `Update`.
-- Adição de `ValidarValoresOpcionais` no `DespesaService`, executada dentro de `ValidarRelacionamentosAsync` logo após a resolução do `TipoDespesa` via `UnidadeConsumidora`. Cobre os casos: `TipoDespesa` ausente, `CamposOpcionais` corrompido no banco, `TipoDespesa` sem campos declarados, chaves desconhecidas, chaves vazias.
-- Criação de 17 testes unitários em `CamposOpcionaisHelperTests.cs` cobrindo todo o helper.
-- Criação de 8 testes diretos em `DespesaValoresOpcionaisValidationTests.cs` para a orquestração de subset, com `InternalsVisibleTo("Civitas.WebAPI.Tests")` declarado no `Civitas.WebAPI.csproj`.
-- Criação do script SQL standalone `Civitas.WebAPI/sql/add_campos_opcionais_jsonb.sql` com `ALTER TABLE ... ADD COLUMN IF NOT EXISTS ... jsonb`, idempotente, NULL-able e retrocompatível.
-- Adição de `<InternalsVisibleTo Include="Civitas.WebAPI.Tests" />` no `Civitas.WebAPI.csproj`.
-- Documentação inline da assimetria deliberada de case-sensitivity entre dedup de declaração (case-insensitive) e match de subset (case-sensitive).
+### 🔹 Alterações nos DTOs
+- [x] `TipoDespesaDTO.CamposOpcionais` (`IList<string>?`) com XML doc + exemplo Swagger
+- [x] `DespesaDTO.ValoresOpcionais` (`IDictionary<string, JsonElement>?`) com XML doc + exemplo Swagger
+- [x] Serialização/desserialização via AutoMapper customizado, padronização `camelCase` (`JsonNamingPolicy.CamelCase`)
 
-### Alterações técnicas
+### 🔹 Alterações nos Endpoints de `TipoDespesa`
+- [x] `POST /api/tipo-despesa` aceita `camposOpcionais`
+- [x] `PUT /api/tipo-despesa/{id}` aceita atualização da estrutura
+- [x] `GET /api/tipo-despesa[/{id}]` retorna a lista cadastrada
 
-- O JSON é armazenado no model como `string?` raw, mantendo a entidade trivial e provedor-agnóstica. A tradução para `IList<string>?` / `IDictionary<string, JsonElement>?` no DTO acontece exclusivamente no AutoMapper, isolando a complexidade.
-- A leitura é defensiva (Mapper retorna null em parse error) e a escrita é estrita (Service valida e lança exceção amigável upstream do mapper). Isso evita que registros corrompidos no banco quebrem GETs e garante que escrita inválida produza mensagens claras.
-- A política do repositório de gitignorar migrations (`**/Migrations/`) levou à entrega da alteração de schema como SQL DDL standalone em `sql/`, alinhado ao padrão já existente (`inserts_lowercase.sql`).
-- O builder não declara `HasColumnType("jsonb")` para preservar compatibilidade SQLite (testes); o tipo `jsonb` é definido apenas no DDL aplicado em produção. Como o app manipula JSON sempre como string em C#, o tipo da coluna não afeta o código.
-- A serialização usa `JsonNamingPolicy.CamelCase` para padronizar a nomenclatura de chaves no JSON.
+### 🔹 Alterações nos Endpoints de `Despesa`
+- [x] `POST /api/despesas` aceita `valoresOpcionais`
+- [x] `PUT /api/despesas/{id}` aceita atualização parcial ou total
+- [x] `GET /api/despesas[/{id}]` retorna o dicionário associado
 
-### Testes adicionados
+### 🔹 Alterações na Camada Service
+- [x] `TipoDespesaService.ValidarCamposOpcionais` — estrutura, unicidade case-insensitive, comprimento, limite (integrado ao `ValidateCommonRules`, cobre `Create` e `Update`)
+- [x] `DespesaService.ValidarValoresOpcionais` — subset via `UnidadeConsumidora.IdTipoDespesa`, dentro de `ValidarRelacionamentosAsync`
+- [x] Validação de estrutura JSON antes da persistência (helper `CamposOpcionaisJsonHelper`)
+- [x] Regras centralizadas em método dedicado por entidade
 
-- 17 testes unitários do helper (`CamposOpcionaisHelperTests.cs`).
-- 8 testes diretos de `ValidarValoresOpcionais` (`DespesaValoresOpcionaisValidationTests.cs`).
+### 🔹 Alterações em Mapeamentos
+- [x] `MappingsProfile` substitui `ReverseMap()` simples por `ForMember` explícito para `CamposOpcionais` e `ValoresOpcionais`
+- [x] Persistência correta como JSON string no model, exposição como tipos fortes no DTO
+- [x] Leitura defensiva: registro corrompido no banco não derruba o GET (try/catch retorna `null`)
+- [x] Escrita estrita: exceções propagam para o Service produzir mensagens amigáveis
+
+### 🔹 Validações
+- [x] Chaves de `Despesa.ValoresOpcionais` validadas contra `TipoDespesa.CamposOpcionais` resolvido via UC
+- [x] Campos desconhecidos rejeitados com mensagem listando todas as chaves
+- [x] Compatibilidade estrutural entre `TipoDespesa` e `Despesa` garantida pelo subset check
+- [x] Estrutura JSON validada antes de persistir (helper levanta `ArgumentException`/`JsonException`)
+- [x] Valores `null` tratados corretamente (parseados como `JsonValueKind.Null`, persistidos como `null`)
+- [x] Payloads malformados rejeitados com erro claro
+- [x] Mensagens de erro claras retornadas via `Response.Data` no padrão da API
+
+### 🔹 Banco de Dados
+- [x] Script SQL DDL (`Civitas.WebAPI/sql/add_campos_opcionais_jsonb.sql`) adicionando as colunas `jsonb`
+- [x] Compatibilidade com PostgreSQL (tipo `jsonb` nativo, idempotente via `IF NOT EXISTS`)
+- [x] Default `NULL` (registros antigos não exigem backfill)
+- [x] Retrocompatibilidade total: registros pré-existentes ficam com `NULL` em ambas as colunas
+
+### 🔹 Normalização e Boas Práticas
+- [x] Validações implementadas na camada **SERVICE**
+- [x] Não dependente apenas de `DataAnnotations`
+- [x] Validação anterior à persistência (helper validate-then-serialize)
+- [x] Nomenclatura JSON padronizada em `camelCase`
+- [x] Tratamento explícito de nullables em todas as superfícies (Model `string?`, DTO tipos `?`)
+- [x] Atualização parcial validada nos cenários de PUT
+- [x] Impacto em retornos da API e Swagger revisado (XML doc nos DTOs)
+- [x] Funcionamento completo verificado via smoke test end-to-end com Postgres real
+
+---
+
+## 🔄 Alterações Realizadas
+- [x] Nova funcionalidade
+- [ ] Correção de bug
+- [x] Refatoração de código (AutoMapper customizado substitui `ReverseMap()` simples)
+- [x] Testes automatizados (25 testes novos)
+- [x] Documentação
+
+---
+
+## 🧪 Evidências de Testes
+
+### Arquivos CRIADOS (4 + 2 docs)
+- `Civitas.WebAPI/Services/Validation/CamposOpcionaisJsonHelper.cs` — helper estático puro com 5 métodos públicos (`ParseCamposDeclarados`, `SerializeCamposDeclarados`, `ParseValoresPreenchidos`, `SerializeValoresPreenchidos`, `EncontrarChavesDesconhecidas`), constantes (`EnvelopeKey="camposOpcionais"`, `MaxFieldName=100`, `MaxFields=50`), `JsonNamingPolicy.CamelCase` para serialização padronizada
+- `Civitas.WebAPI/sql/add_campos_opcionais_jsonb.sql` — DDL idempotente com `ALTER TABLE ... ADD COLUMN IF NOT EXISTS ... jsonb` para `tipodespesa` e `despesa`, dentro de `BEGIN/COMMIT`, com bloco de rollback comentado
+- `Civitas.WebAPI.Tests/CamposOpcionaisHelperTests.cs` — 17 testes unitários cobrindo parsing (8), serialização (3), valores preenchidos (3), `EncontrarChavesDesconhecidas` (3)
+- `Civitas.WebAPI.Tests/DespesaValoresOpcionaisValidationTests.cs` — 8 testes diretos da orquestração de subset via `InternalsVisibleTo`, cobrindo: `ValoresOpcionais` null/vazio, `TipoDespesa` ausente, sem campos declarados, `CamposOpcionais` corrompido, todas chaves declaradas, chaves desconhecidas, case sensitivity
+- `documentation/relatorio-sprint-17-campos-opcionais-jsonb.md` — relatório completo de entrega
+- `documentation/pr-sprint-17-campos-opcionais-jsonb.md` — body source deste PR
+
+### Arquivos MODIFICADOS (10)
+- `Civitas.WebAPI/Objects/Models/TipoDespesa.cs` — adicionada propriedade `CamposOpcionais` (`string?`) com `[Column("camposopcionais")]`
+- `Civitas.WebAPI/Objects/Models/Despesa.cs` — adicionada propriedade `ValoresOpcionais` (`string?`) com `[Column("valoresopcionais")]`
+- `Civitas.WebAPI/Data/Builders/TipoDespesaBuilder.cs` — mapeamento da coluna via `HasColumnName` + `IsRequired(false)`
+- `Civitas.WebAPI/Data/Builders/DespesaBuilder.cs` — mapeamento da coluna via `HasColumnName` + `IsRequired(false)`
+- `Civitas.WebAPI/Objects/Dtos/Entities/TipoDespesaDTO.cs` — adicionada `CamposOpcionais` (`IList<string>?`) com XML doc e exemplo Swagger
+- `Civitas.WebAPI/Objects/Dtos/Entities/DespesaDTO.cs` — adicionada `ValoresOpcionais` (`IDictionary<string, JsonElement>?`) com `using System.Text.Json` e exemplo Swagger
+- `Civitas.WebAPI/Objects/Dtos/Mappings/MappingsProfile.cs` — substituição de `ReverseMap()` por `ForMember` explícito para os dois pares, com helpers privados `ParseCamposSafely`, `ParseValoresSafely`, `SerializeValoresOpcionais` (este último contornando limitação de expression tree do AutoMapper para `is null`)
+- `Civitas.WebAPI/Services/Entities/TipoDespesaService.cs` — método `ValidarCamposOpcionais` reusando `SerializeCamposDeclarados` para validar; chamada inserida em `ValidateCommonRules`
+- `Civitas.WebAPI/Services/Entities/DespesaService.cs` — método `ValidarValoresOpcionais` (`internal static` para teste direto); chamada inserida em `ValidarRelacionamentosAsync` logo após resolução do `tipoDespesa` via UC
+- `Civitas.WebAPI/Civitas.WebAPI.csproj` — adicionado `<InternalsVisibleTo Include="Civitas.WebAPI.Tests" />` em novo `<ItemGroup>`
+
+### Migration / DDL
+- O `.gitignore` do projeto contém `**/Migrations/` por política do time (commits anteriores: `devops: removendo migrations` e `chore: Remove Migrations do controle de versão`)
+- Tentativa de gerar migration via `dotnet ef migrations add` produziu drift (snapshot desatualizado vs. modelo, gerando `CreateTable` de 14 tabelas inaplicáveis em DB existente)
+- Em vez de migration EF, a alteração de schema foi entregue como **SQL DDL standalone** em `Civitas.WebAPI/sql/add_campos_opcionais_jsonb.sql`, alinhado ao padrão da pasta `sql/` que já contém `inserts_lowercase.sql`
+- DDL idempotente (`ADD COLUMN IF NOT EXISTS`), retrocompatível (`NULL` default), versionado e rastreável
+
+### Smoke test end-to-end (ambiente real)
+Container Postgres 16 em Docker + aplicação Civitas WebAPI (`DOTNET_ROLL_FORWARD=Major` por ausência de runtime .NET 9 local). 9 cenários funcionais via `curl` autenticado:
+
+| # | Cenário | Resultado |
+|---|---|---|
+| 1 | `GET /api/tipo-despesa` lista | OK — `camposOpcionais: []` em registros sem config |
+| 2 | `POST /api/tipo-despesa` com `camposOpcionais` válido | OK — criado, lista retornada |
+| 3 | `GET /api/tipo-despesa/{id}` | OK — `camposOpcionais` no body |
+| 4 | `POST` com duplicata `["a","a"]` | OK — 400 + `Nome de campo opcional duplicado: 'a'` |
+| 5 | `PUT` alterando `camposOpcionais` | OK — atualizado |
+| 6 | `POST /api/despesas` com `valoresOpcionais` válido | OK — criado, dict retornado |
+| 7 | `GET /api/despesas/{id}` | OK — `valoresOpcionais` no body |
+| 8 | `POST` com chave desconhecida | OK — 400 + `ValoresOpcionais contém chaves não declaradas em TipoDespesa: chaveDesconhecida` |
+| 9 | `PUT` com update parcial | OK — atualizado, dict reduzido |
+
+Verificações `psql` direto: operador `->>`, retrocompatibilidade `NULL`, validação nativa de JSON malformado.
 
 ### Verificações executadas
+- `dotnet build Civitas.WebAPI/Civitas.WebAPI.csproj` — **0 erros**, 99 warnings (todos pré-existentes)
+- `dotnet build Civitas.WebAPI/Civitas.WebAPI.sln` — **0 erros**
+- `docker run -d --name civitas-pg ... postgres:16` — container UP
+- Aplicação do DDL via `psql` — duas colunas `jsonb` criadas
+- Smoke test funcional com 9 cenários (todos OK)
 
-- `dotnet build Civitas.WebAPI/Civitas.WebAPI.csproj` — 0 erros.
-- `dotnet build Civitas.WebAPI/Civitas.WebAPI.sln` — 0 erros (warnings idênticos à baseline).
-- Smoke test end-to-end com Postgres 16 em container Docker e aplicação rodando via `DOTNET_ROLL_FORWARD=Major` (ambiente local sem runtime .NET 9): 9 cenários funcionais (POST/PUT/GET de TipoDespesa e Despesa, casos válidos e rejeições) — todos OK.
-- Verificação direta no Postgres via `psql`: operador jsonb `->>`, retrocompatibilidade com NULL, validação nativa de JSON malformado.
+### Padrão arquitetural seguido
+A implementação segue rigorosamente o estilo já consolidado em `OrcamentoService`/`UsuarioService` (validações centralizadas em `List<string>` agregada, `*ValidationException` por entidade já existentes em `TipoDespesaValidationException` e `DespesaValidationException`, override de `Create`/`Update`, controller `[ApiController]` com `try/catch` retornando `Response` com `ResponseEnum`). O helper estático puro segue o mesmo padrão de isolamento de regras de negócio adotado em outros utilitários do projeto.
 
-## Relacionado
+---
 
+## 📎 Relacionado
 - Task: Sprint 17 - Implementação de Campos Opcionais Dinâmicos com JSONB
+- Issue: #96
 
-## Observações
+---
 
-- A alteração de schema é entregue como SQL DDL em `Civitas.WebAPI/sql/add_campos_opcionais_jsonb.sql`, alinhada à política do repositório de não versionar migrations EF. O operador roda manualmente o script (idempotente via `IF NOT EXISTS`) antes do deploy.
-- A execução da suíte de testes localmente exige o runtime .NET 9, ausente nesta máquina de desenvolvimento (somente .NET 8 e .NET 10 instalados). A suíte compila limpa; a execução completa fica delegada ao CI.
-- O `InternalsVisibleTo` foi adicionado para permitir testes diretos do método `ValidarValoresOpcionais` (mudou de `private static` para `internal static`) sem necessidade de fixture com 8 entidades. Padrão reconhecido da Microsoft, não afeta a superfície pública.
-- A configuração `HasColumnType("jsonb")` foi propositalmente omitida nos builders para preservar compatibilidade com SQLite usado pelos testes. A coluna nasce como `jsonb` em produção via SQL DDL e como `text` em SQLite — comportamento da aplicação é idêntico em ambos.
-- Documentação completa da entrega disponível em `documentation/relatorio-sprint-17-campos-opcionais-jsonb.md`.
+## 🗒️ Observações
+
+- A política do repositório de gitignorar migrations EF (`**/Migrations/`) levou à decisão de entregar schema como SQL DDL standalone em `sql/`, alinhada à pasta já existente. O operador roda manualmente o script (idempotente) antes do deploy.
+- O builder EF mantém apenas `HasColumnName` (sem `HasColumnType("jsonb")`) para preservar compatibilidade com SQLite usado pelos testes; em produção a coluna nasce como `jsonb` via DDL. Como o app manipula JSON sempre como string em C#, o tipo da coluna é irrelevante para o código da aplicação.
+- A assimetria deliberada de case-sensitivity entre dedup de declaração (case-insensitive, evita declarações ambíguas) e match de subset (case-sensitive, alinhado a JSON ser case-sensitive por especificação) está documentada em XML doc no método `EncontrarChavesDesconhecidas` para evitar pegadinha futura.
+- O `InternalsVisibleTo` foi adicionado para permitir testes diretos de `ValidarValoresOpcionais` sem necessidade de fixture full-stack com 8 entidades. Padrão Microsoft, não afeta a superfície pública da API.
+- A execução da suíte de testes localmente exige o runtime .NET 9. A máquina de desenvolvimento usada para a entrega tem apenas .NET 8 e .NET 10 instalados; a suíte compila limpa e a execução completa fica delegada ao CI ou ao ambiente do dev com runtime correto.
+- Não foram introduzidas dependências novas: `System.Text.Json` é parte do .NET 9; AutoMapper, Npgsql e xUnit já existiam no projeto.
