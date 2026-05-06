@@ -50,6 +50,10 @@ namespace Civitas.WebAPI.Data.Builders
                 .IsRequired()
                 .HasColumnName("idunidadeconsumidora");
 
+            modelBuilder.Entity<Despesa>().Property(d => d.ValoresOpcionais)
+                .HasColumnName("valoresopcionais")
+                .IsRequired(false);
+
             modelBuilder.Entity<Despesa>()
                 .HasOne(d => d.Usuario)
                 .WithMany(u => u.Despesas)

@@ -12,6 +12,10 @@ namespace Civitas.WebAPI.Data.Builders
             modelBuilder.Entity<TipoDespesa>().Property(t => t.SolicitaUc).IsRequired();
             modelBuilder.Entity<TipoDespesa>().Property(t => t.Situacao).IsRequired();
             modelBuilder.Entity<TipoDespesa>()
+                .Property(t => t.CamposOpcionais)
+                .HasColumnName("camposopcionais")
+                .IsRequired(false);
+            modelBuilder.Entity<TipoDespesa>()
                 .HasOne<UnidadeMedida>(u => u.UnidadeMedida)
                 .WithMany(t => t.TiposDespesas)
                 .HasForeignKey(u => u.IdUnidadeMedida)
