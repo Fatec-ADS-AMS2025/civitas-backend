@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Civitas.WebAPI.Objects.Enums;
 
 namespace Civitas.WebAPI.Objects.Dtos.Entities
@@ -66,5 +67,12 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// Identificador da unidade consumidora vinculada.
         /// </summary>
         public int IdUnidadeConsumidora { get; set; }
+
+        /// <summary>
+        /// Valores preenchidos para os campos opcionais. Apenas chaves declaradas
+        /// no TipoDespesa relacionado são aceitas. Pode ser null, vazio, ou parcial.
+        /// </summary>
+        /// <example>{"numeroNota":"12345","fornecedor":"Papelaria Central","centroCusto":null}</example>
+        public IDictionary<string, JsonElement>? ValoresOpcionais { get; set; }
     }
 }

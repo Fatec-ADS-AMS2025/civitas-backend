@@ -53,5 +53,13 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// </remarks>
         public int IdUnidadeMedida { get; set; }
         public int IdTipoCodigo { get; set; }
+
+        /// <summary>
+        /// Lista de nomes de campos opcionais aceitos pelas despesas deste tipo.
+        /// Pode ser null ou vazia. Nomes únicos (case-insensitive), até 100 caracteres cada,
+        /// no máximo 50 itens.
+        /// </summary>
+        /// <example>["numeroNota","fornecedor","centroCusto"]</example>
+        public IList<string>? CamposOpcionais { get; set; }
     }
 }
