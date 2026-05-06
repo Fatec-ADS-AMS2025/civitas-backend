@@ -232,6 +232,8 @@ namespace Civitas.WebAPI.Services.Entities
                 }
             }
 
+            ValidarValoresOpcionais(despesaDTO, tipoDespesa, errors);
+
             Orcamento? orcamento = null;
             if (unidadeConsumidora.IdOrcamento <= 0)
             {
@@ -412,6 +414,59 @@ namespace Civitas.WebAPI.Services.Entities
             return string.IsNullOrWhiteSpace(valor)
                 ? string.Empty
                 : valor.Trim();
+        }
+
+        private static void ValidarValoresOpcionais(
+            DespesaDTO dto,
+            TipoDespesa? tipoDespesa,
+            ICollection<string> errors)
+        {
+            if (dto.ValoresOpcionais is null || dto.ValoresOpcionais.Count == 0)
+            {
+                return;
+            }
+
+            if (tipoDespesa is null)
+            {
+                errors.Add("Não é possível validar ValoresOpcionais sem TipoDespesa associado.");
+                return;
+            }
+
+            IReadOnlyList<string> declarados;
+            try
+            {
+                declarados = CamposOpcionaisJsonHelper.ParseCamposDeclarados(tipoDespesa.CamposOpcionais);
+            }
+            catch (Exception ex) when (ex is ArgumentException or System.Text.Json.JsonException)
+            {
+                errors.Add($"CamposOpcionais do TipoDespesa estão corrompidos: {ex.Message}");
+                return;
+            }
+
+            if (declarados.Count == 0)
+            {
+                errors.Add("O TipoDespesa associado não declara nenhum campo opcional.");
+                return;
+            }
+
+            var desconhecidas = CamposOpcionaisJsonHelper.EncontrarChavesDesconhecidas(
+                dto.ValoresOpcionais.Keys,
+                declarados);
+            if (desconhecidas.Count > 0)
+            {
+                errors.Add(
+                    $"ValoresOpcionais contém chaves não declaradas em TipoDespesa: " +
+                    string.Join(", ", desconhecidas));
+            }
+
+            foreach (var key in dto.ValoresOpcionais.Keys)
+            {
+                if (string.IsNullOrWhiteSpace(key))
+                {
+                    errors.Add("ValoresOpcionais não pode conter chaves vazias.");
+                    break;
+                }
+            }
         }
     }
 }
