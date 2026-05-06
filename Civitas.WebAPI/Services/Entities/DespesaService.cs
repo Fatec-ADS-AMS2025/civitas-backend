@@ -416,7 +416,7 @@ namespace Civitas.WebAPI.Services.Entities
                 : valor.Trim();
         }
 
-        private static void ValidarValoresOpcionais(
+        internal static void ValidarValoresOpcionais(
             DespesaDTO dto,
             TipoDespesa? tipoDespesa,
             ICollection<string> errors)
