@@ -62,6 +62,14 @@ namespace Civitas.WebAPI.Objects.Models
         [Column("idtipocodigo")]
         public int IdTipoCodigo { get; set; }
 
+        /// <summary>
+        /// Configuração JSON dos campos opcionais aceitos pelas despesas deste tipo.
+        /// Formato esperado: {"camposOpcionais":["nomeCampo1","nomeCampo2"]}.
+        /// Pode ser nulo (sem campos opcionais).
+        /// </summary>
+        [Column("camposopcionais")]
+        public string? CamposOpcionais { get; set; }
+
         public TipoCodigo TipoCodigo { get; set; }
 
         /// <summary>
