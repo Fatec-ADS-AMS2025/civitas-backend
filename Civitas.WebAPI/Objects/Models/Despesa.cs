@@ -92,6 +92,14 @@ namespace Civitas.WebAPI.Objects.Models
         /// </summary>
         public UnidadeConsumidora UnidadeConsumidora { get; set; }
 
+        /// <summary>
+        /// Valores dos campos opcionais preenchidos para esta despesa.
+        /// Formato esperado: objeto JSON plano, ex: {"nomeCampo1":"valor","nomeCampo2":null}.
+        /// Apenas chaves declaradas em TipoDespesa.CamposOpcionais são aceitas.
+        /// </summary>
+        [Column("valoresopcionais")]
+        public string? ValoresOpcionais { get; set; }
+
         public Despesa()
         {
         }
