@@ -51,20 +51,6 @@ namespace Civitas.WebAPI.Objects.Models
         public Fornecedor Fornecedor { get; set; }
 
         /// <summary>
-        /// Chave estrangeira do Fluxo (Pagamento/Medição) que este documento comprova.
-        /// </summary>
-        /// <remarks>
-        /// Exemplo: A conta de luz (Documento) justifica o pagamento de Março (Fluxo).
-        /// </remarks>
-        [Column("idfluxo")]
-        public int IdFluxo { get; set; }
-
-        /// <summary>
-        /// Objeto de navegação do Fluxo vinculado.
-        /// </summary>
-        public Fluxo Fluxo { get; set; }
-
-        /// <summary>
         /// Construtor para inicialização básica da entidade Documento.
         /// </summary>
         public Documento(int idDocumento, byte[] digitalizacao, int numeroDocumento)

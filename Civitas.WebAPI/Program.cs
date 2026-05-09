@@ -93,8 +93,6 @@ builder.Services.AddScoped<IInstituicaoRepository, InstituicaoRepository>();
 builder.Services.AddScoped<IInstituicaoService, InstituicaoService>();
 builder.Services.AddScoped<ITipoInstituicaoRepository, TipoInstituicaoRepository>();
 builder.Services.AddScoped<ITipoInstituicaoService, TipoInstituicaoService>();
-builder.Services.AddScoped<IFluxoRepository, FluxoRepository>();
-builder.Services.AddScoped<IFluxoService, FluxoService>();
 builder.Services.AddScoped<IUnidadeMedidaRepository, UnidadeMedidaRepository>();
 builder.Services.AddScoped<IUnidadeMedidaService, UnidadeMedidaService>();
 builder.Services.AddScoped<ITipoDespesaRepository, TipoDespesaRepository>();

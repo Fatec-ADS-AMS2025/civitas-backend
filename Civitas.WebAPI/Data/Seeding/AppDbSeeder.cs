@@ -36,7 +36,6 @@ namespace Civitas.WebAPI.Data.Seeding
                 await _context.Documento.AnyAsync(cancellationToken) ||
                 await _context.Auditorias.AnyAsync(cancellationToken) ||
                 await _context.TipoInstituicoes.AnyAsync(cancellationToken) ||
-                await _context.Fluxos.AnyAsync(cancellationToken) ||
                 await _context.UnidadesMedida.AnyAsync(cancellationToken) ||
                 await _context.TiposDespesa.AnyAsync(cancellationToken) ||
                 await _context.TipoCodigos.AnyAsync(cancellationToken))
@@ -203,11 +202,9 @@ namespace Civitas.WebAPI.Data.Seeding
                 IdTipoInstituicao = tipoInstituicaoSaude.Id
             };
 
-            var fluxoPago = new Fluxo(0, 18450.75f, 1320, Status.PAGA);
-            var fluxoAberto = new Fluxo(0, 0f, 18, Status.A_PAGAR);
+           
 
             await _context.Instituicoes.AddRangeAsync([escola, ubs], cancellationToken);
-            await _context.Fluxos.AddRangeAsync([fluxoPago, fluxoAberto], cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
             var orcamentoEscola = new Orcamento(
@@ -307,23 +304,7 @@ namespace Civitas.WebAPI.Data.Seeding
             await _context.Despesas.AddRangeAsync([despesaEnergia, despesaManutencao], cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
-            var documentoEnergia = new Documento(
-                0,
-                CreateDocumentContent("Comprovante de energia - abril/2026"),
-                20260001)
-            {
-                IdFornecedor = fornecedorEnergia.IdFornecedor,
-                IdFluxo = fluxoPago.IdFluxo
-            };
-
-            var documentoManutencao = new Documento(
-                0,
-                CreateDocumentContent("Ordem de servico de manutencao - abril/2026"),
-                20260042)
-            {
-                IdFornecedor = fornecedorManutencao.IdFornecedor,
-                IdFluxo = fluxoAberto.IdFluxo
-            };
+            
 
             var auditoriaAdmin = new Auditoria(
                 0,
@@ -347,7 +328,6 @@ namespace Civitas.WebAPI.Data.Seeding
                 Situacao.ATIVO,
                 funcionario.Id);
 
-            await _context.Documento.AddRangeAsync([documentoEnergia, documentoManutencao], cancellationToken);
             await _context.Auditorias.AddRangeAsync([auditoriaAdmin, auditoriaFuncionario], cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 

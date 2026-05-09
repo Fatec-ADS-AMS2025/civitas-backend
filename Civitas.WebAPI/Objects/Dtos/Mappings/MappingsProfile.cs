@@ -19,7 +19,6 @@ namespace Civitas.WebAPI.Objects.Dtos.Mappings
             CreateMap<Auditoria, AuditoriaDTO>().ReverseMap();
             CreateMap<TipoInstituicao, TipoInstituicaoDTO>().ReverseMap();
             CreateMap<Instituicao, InstituicaoDTO>().ReverseMap();
-            CreateMap<Fluxo, FluxoDTO>().ReverseMap();
             CreateMap<UnidadeMedida, UnidadeMedidaDTO>().ReverseMap();
 
             CreateMap<TipoDespesa, TipoDespesaDTO>()
