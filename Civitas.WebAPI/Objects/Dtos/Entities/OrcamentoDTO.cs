@@ -36,6 +36,42 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// </remarks>
         public decimal ValorOrcamento { get; set; }
 
+        public decimal JaneiroQuantidadeConsumo { get; set; }
+        public decimal JaneiroValorConsumo { get; set; }
+
+        public decimal FevereiroQuantidadeConsumo { get; set; }
+        public decimal FevereiroValorConsumo { get; set; }
+
+        public decimal MarcoQuantidadeConsumo { get; set; }
+        public decimal MarcoValorConsumo { get; set; }
+
+        public decimal AbrilQuantidadeConsumo { get; set; }
+        public decimal AbrilValorConsumo { get; set; }
+
+        public decimal MaioQuantidadeConsumo { get; set; }
+        public decimal MaioValorConsumo { get; set; }
+
+        public decimal JunhoQuantidadeConsumo { get; set; }
+        public decimal JunhoValorConsumo { get; set; }
+
+        public decimal JulhoQuantidadeConsumo { get; set; }
+        public decimal JulhoValorConsumo { get; set; }
+
+        public decimal AgostoQuantidadeConsumo { get; set; }
+        public decimal AgostoValorConsumo { get; set; }
+
+        public decimal SetembroQuantidadeConsumo { get; set; }
+        public decimal SetembroValorConsumo { get; set; }
+
+        public decimal OutubroQuantidadeConsumo { get; set; }
+        public decimal OutubroValorConsumo { get; set; }
+
+        public decimal NovembroQuantidadeConsumo { get; set; }
+        public decimal NovembroValorConsumo { get; set; }
+
+        public decimal DezembroQuantidadeConsumo { get; set; }
+        public decimal DezembroValorConsumo { get; set; }
+
         /// <summary>
         /// Identificador da Institui��o dona deste or�amento.
         /// </summary>

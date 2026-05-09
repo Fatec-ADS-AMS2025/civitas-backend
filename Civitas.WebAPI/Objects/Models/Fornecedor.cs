@@ -123,7 +123,7 @@ namespace Civitas.WebAPI.Objects.Models
         /// Construtor para inicialização completa da entidade Fornecedor.
         /// </summary>
         public Fornecedor(int idFornecedor, string nomeFantasia, Situacao situacao, string cnpj, string nome, string logradouro, string numero, string bairro, string cep
-            , string telefone, string email, string cidade, string estado)
+            , string telefone, string email, string cidade, string estado, int idTipoDespesa)
         {
             IdFornecedor = idFornecedor;
             NomeFantasia = nomeFantasia;
@@ -138,6 +138,7 @@ namespace Civitas.WebAPI.Objects.Models
             Email = email;
             Cidade = cidade;
             Estado = estado;
+            IdTipoDespesa = idTipoDespesa;
         }
     }
 }

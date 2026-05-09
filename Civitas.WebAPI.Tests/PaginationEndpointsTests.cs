@@ -119,7 +119,8 @@ public sealed class PaginationEndpointsTests : IClassFixture<TestWebApplicationF
                 "44999999999",
                 $"fornecedor{index:D2}@example.com",
                 "Cidade",
-                "PR");
+                "PR",
+                1);
         }
     }
 

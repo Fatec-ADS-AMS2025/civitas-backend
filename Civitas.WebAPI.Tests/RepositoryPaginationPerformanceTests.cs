@@ -142,7 +142,7 @@ public sealed class RepositoryPaginationPerformanceTests
                 "44999999999",
                 $"fornecedor{index:D5}@example.com",
                 "Cidade",
-                "PR");
+                "PR", 1);
         }
     }
 }

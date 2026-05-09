@@ -46,15 +46,8 @@ namespace Civitas.WebAPI.Data.Seeding
             }
 
             var admin = new Usuario(
-                0,
-                "12345678901",
-                "Administrador Dev",
-                "123456789",
-                "Rua das Palmeiras",
-                "100",
-                "Curitiba",
-                "PR",
-                "80000000",
+                0, "12345678901", "Administrador Dev", "123456789",
+                "Rua das Palmeiras", "100", "Curitiba", "PR", "80000000",
                 "admin@civitas.dev",
                 _passwordHashService.Hash(DevPassword),
                 Situacao.ATIVO,
@@ -63,21 +56,17 @@ namespace Civitas.WebAPI.Data.Seeding
                 "Centro");
 
             var funcionario = new Usuario(
-                0,
-                "98765432100",
-                "Funcionario Dev",
-                "987654321",
-                "Avenida das Araucarias",
-                "250",
-                "Curitiba",
-                "PR",
-                "80010000",
+                0, "98765432100", "Funcionario Dev", "987654321",
+                "Avenida das Araucarias", "250", "Curitiba", "PR", "80010000",
                 "funcionario@civitas.dev",
                 _passwordHashService.Hash(DevPassword),
                 Situacao.ATIVO,
                 "FUN-0001",
                 TipoUsuario.FUNCIONARIO,
                 "Batel");
+
+            await _context.Usuarios.AddRangeAsync([admin, funcionario], cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
 
             var tipoCodigoConsumo = new TipoCodigo(0, "CONSUMO", "Despesas recorrentes vinculadas ao consumo medido.");
             var tipoCodigoServico = new TipoCodigo(0, "SERVICO", "Despesas operacionais e contratos de servicos.");
@@ -88,9 +77,28 @@ namespace Civitas.WebAPI.Data.Seeding
             var tipoInstituicaoEscola = new TipoInstituicao(0, "Escola Municipal", Situacao.ATIVO);
             var tipoInstituicaoSaude = new TipoInstituicao(0, "Unidade Basica de Saude", Situacao.ATIVO);
 
+            await _context.TipoCodigos.AddRangeAsync([tipoCodigoConsumo, tipoCodigoServico], cancellationToken);
+            await _context.UnidadesMedida.AddRangeAsync([unidadeKwh, unidadeUnidade], cancellationToken);
+            await _context.TipoInstituicoes.AddRangeAsync([tipoInstituicaoEscola, tipoInstituicaoSaude], cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            var tipoDespesaEnergia = new TipoDespesa(0, "Energia Eletrica", SolicitaUc.Sim, Situacao.ATIVO)
+            {
+                IdTipoCodigo = tipoCodigoConsumo.Id,
+                IdUnidadeMedida = unidadeKwh.Id
+            };
+
+            var tipoDespesaManutencao = new TipoDespesa(0, "Manutencao Predial", SolicitaUc.Não, Situacao.ATIVO)
+            {
+                IdTipoCodigo = tipoCodigoServico.Id,
+                IdUnidadeMedida = unidadeUnidade.Id
+            };
+
+            await _context.TiposDespesa.AddRangeAsync([tipoDespesaEnergia, tipoDespesaManutencao], cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+
             var secretariaEducacao = new Secretaria(
-                0,
-                Situacao.ATIVO,
+                0, Situacao.ATIVO,
                 "Responsavel pela gestao da rede municipal de ensino.",
                 "11222333000144",
                 "Secretaria Municipal de Educacao",
@@ -105,8 +113,7 @@ namespace Civitas.WebAPI.Data.Seeding
                 "PR");
 
             var secretariaSaude = new Secretaria(
-                0,
-                Situacao.ATIVO,
+                0, Situacao.ATIVO,
                 "Responsavel pela gestao das unidades de atencao primaria.",
                 "22333444000155",
                 "Secretaria Municipal de Saude",
@@ -119,6 +126,9 @@ namespace Civitas.WebAPI.Data.Seeding
                 "4133330002",
                 "Curitiba",
                 "PR");
+
+            await _context.Secretarias.AddRangeAsync([secretariaEducacao, secretariaSaude], cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
 
             var fornecedorEnergia = new Fornecedor(
                 0,
@@ -133,7 +143,8 @@ namespace Civitas.WebAPI.Data.Seeding
                 "4132221000",
                 "faturamento@copel.dev",
                 "Curitiba",
-                "PR");
+                "PR",
+                tipoDespesaEnergia.Id);
 
             var fornecedorManutencao = new Fornecedor(
                 0,
@@ -148,50 +159,94 @@ namespace Civitas.WebAPI.Data.Seeding
                 "4132222000",
                 "contato@manutencao.dev",
                 "Curitiba",
-                "PR");
+                "PR",
+                tipoDespesaManutencao.Id);
 
-            await _context.Usuarios.AddRangeAsync([admin, funcionario], cancellationToken);
-            await _context.TipoCodigos.AddRangeAsync([tipoCodigoConsumo, tipoCodigoServico], cancellationToken);
-            await _context.UnidadesMedida.AddRangeAsync([unidadeKwh, unidadeUnidade], cancellationToken);
-            await _context.TipoInstituicoes.AddRangeAsync([tipoInstituicaoEscola, tipoInstituicaoSaude], cancellationToken);
-            await _context.Secretarias.AddRangeAsync([secretariaEducacao, secretariaSaude], cancellationToken);
             await _context.Fornecedores.AddRangeAsync([fornecedorEnergia, fornecedorManutencao], cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
-            var escola = new Instituicao(0, "55666777000188", "Escola Municipal Horizonte", "Rua do Saber", "45", "Cajuru", "82900000", "Escola Municipal Horizonte", "4131110001", "horizonte@civitas.dev", "Curitiba", "PR", Situacao.ATIVO)
+            var escola = new Instituicao(
+                0,
+                "55666777000188",
+                "Escola Municipal Horizonte",
+                "Rua do Saber",
+                "45",
+                "Cajuru",
+                "82900000",
+                "Escola Municipal Horizonte",
+                "4131110001",
+                "horizonte@civitas.dev",
+                "Curitiba",
+                "PR",
+                Situacao.ATIVO)
             {
                 IdSecretaria = secretariaEducacao.IdSecretaria,
                 IdTipoInstituicao = tipoInstituicaoEscola.Id
             };
 
-            var ubs = new Instituicao(0, "66777888000199", "UBS Vila Aurora", "Rua da Saude", "88", "Portao", "81070000", "UBS Vila Aurora", "4131110002", "ubs-aurora@civitas.dev", "Curitiba", "PR", Situacao.ATIVO)
+            var ubs = new Instituicao(
+                0,
+                "66777888000199",
+                "UBS Vila Aurora",
+                "Rua da Saude",
+                "88",
+                "Portao",
+                "81070000",
+                "UBS Vila Aurora",
+                "4131110002",
+                "ubs-aurora@civitas.dev",
+                "Curitiba",
+                "PR",
+                Situacao.ATIVO)
             {
                 IdSecretaria = secretariaSaude.IdSecretaria,
                 IdTipoInstituicao = tipoInstituicaoSaude.Id
-            };
-
-            var tipoDespesaEnergia = new TipoDespesa(0, "Energia Eletrica", SolicitaUc.Sim, Situacao.ATIVO)
-            {
-                IdTipoCodigo = tipoCodigoConsumo.Id,
-                IdUnidadeMedida = unidadeKwh.Id
-            };
-
-            var tipoDespesaManutencao = new TipoDespesa(0, "Manutencao Predial", SolicitaUc.Não, Situacao.ATIVO)
-            {
-                IdTipoCodigo = tipoCodigoServico.Id,
-                IdUnidadeMedida = unidadeUnidade.Id
             };
 
             var fluxoPago = new Fluxo(0, 18450.75f, 1320, Status.PAGA);
             var fluxoAberto = new Fluxo(0, 0f, 18, Status.A_PAGAR);
 
             await _context.Instituicoes.AddRangeAsync([escola, ubs], cancellationToken);
-            await _context.TiposDespesa.AddRangeAsync([tipoDespesaEnergia, tipoDespesaManutencao], cancellationToken);
             await _context.Fluxos.AddRangeAsync([fluxoPago, fluxoAberto], cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
-            var orcamentoEscola = new Orcamento(0, DateTime.UtcNow.Year, 350000.00m, escola.Id, tipoDespesaEnergia.Id);
-            var orcamentoUbs = new Orcamento(0, DateTime.UtcNow.Year, 420000.00m, ubs.Id, tipoDespesaManutencao.Id);
+            var orcamentoEscola = new Orcamento(
+                0,
+                DateTime.UtcNow.Year,
+                350000.00m,
+                escola.Id,
+                tipoDespesaEnergia.Id,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m);
+
+            var orcamentoUbs = new Orcamento(
+                0,
+                DateTime.UtcNow.Year,
+                420000.00m,
+                ubs.Id,
+                tipoDespesaManutencao.Id,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m,
+                0m, 0m);
 
             await _context.Orcamentos.AddRangeAsync([orcamentoEscola, orcamentoUbs], cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
@@ -252,13 +307,19 @@ namespace Civitas.WebAPI.Data.Seeding
             await _context.Despesas.AddRangeAsync([despesaEnergia, despesaManutencao], cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
-            var documentoEnergia = new Documento(0, CreateDocumentContent("Comprovante de energia - abril/2026"), 20260001)
+            var documentoEnergia = new Documento(
+                0,
+                CreateDocumentContent("Comprovante de energia - abril/2026"),
+                20260001)
             {
                 IdFornecedor = fornecedorEnergia.IdFornecedor,
                 IdFluxo = fluxoPago.IdFluxo
             };
 
-            var documentoManutencao = new Documento(0, CreateDocumentContent("Ordem de servico de manutencao - abril/2026"), 20260042)
+            var documentoManutencao = new Documento(
+                0,
+                CreateDocumentContent("Ordem de servico de manutencao - abril/2026"),
+                20260042)
             {
                 IdFornecedor = fornecedorManutencao.IdFornecedor,
                 IdFluxo = fluxoAberto.IdFluxo
