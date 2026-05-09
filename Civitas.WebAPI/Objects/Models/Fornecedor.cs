@@ -104,6 +104,11 @@ namespace Civitas.WebAPI.Objects.Models
         [Column("estado")]
         public string Estado { get; set; }
 
+        [Column("idtipodespesa")]
+        public int IdTipoDespesa { get; set; }
+
+        public TipoDespesa TipoDespesa { get; set; }
+
         /// <summary>
         /// Coleção de documentos legais (contratos, certidões negativas) vinculados ao fornecedor.
         /// </summary>

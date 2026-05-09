@@ -64,6 +64,9 @@ namespace Civitas.WebAPI.Objects.Models
         [Column("datavencimento")]
         public DateOnly DataVencimento { get; set; }
 
+        [Column("datapagamento")]
+        public DateOnly? DataPagamento { get; set; }
+
         /// <summary>
         /// Status financeiro da despesa.
         /// </summary>

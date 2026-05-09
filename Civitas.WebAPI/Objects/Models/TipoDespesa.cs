@@ -77,6 +77,7 @@ namespace Civitas.WebAPI.Objects.Models
         /// </summary>
         public ICollection<UnidadeConsumidora> UnidadesConsumidoras { get; set; }
         public ICollection<Orcamento> Orcamento { get; set; }
+        public ICollection<Fornecedor> Fornecedor { get; set; }
 
         /// <summary>
         /// Construtor para inicialização da entidade TipoDespesa.

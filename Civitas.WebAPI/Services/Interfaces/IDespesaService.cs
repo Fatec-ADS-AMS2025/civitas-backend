@@ -16,5 +16,6 @@ namespace Civitas.WebAPI.Services.Interfaces
         Task<IEnumerable<DespesaDTO>> GetByUsuarioAsync(int idUsuario);
         Task<IEnumerable<DespesaDTO>> GetByStatusAsync(Status status);
         Task<DespesaDTO> AlterarStatusAsync(int id, Status novoStatus);
+        Task AtualizarDespesasAtrasadasAsync();
     }
 }

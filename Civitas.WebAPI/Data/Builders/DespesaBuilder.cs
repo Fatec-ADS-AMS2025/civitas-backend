@@ -39,6 +39,9 @@ namespace Civitas.WebAPI.Data.Builders
             modelBuilder.Entity<Despesa>().Property(d => d.DataVencimento)
                 .IsRequired();
 
+            modelBuilder.Entity<Despesa>().Property(d => d.DataPagamento)
+                .IsRequired(false);
+
             modelBuilder.Entity<Despesa>().Property(d => d.Status)
                 .IsRequired();
 

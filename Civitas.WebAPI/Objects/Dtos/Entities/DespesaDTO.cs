@@ -53,6 +53,8 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// </summary>
         public DateOnly DataVencimento { get; set; }
 
+        public DateOnly? DataPagamento { get; set; }
+
         /// <summary>
         /// Status financeiro da despesa.
         /// </summary>

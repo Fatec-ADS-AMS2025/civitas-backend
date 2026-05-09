@@ -31,6 +31,8 @@ namespace Civitas.WebAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            await _despesaService.AtualizarDespesasAtrasadasAsync();
+
             var despesas = await _despesaService.GetAll();
 
             _response.Code = ResponseEnum.SUCCESS;
@@ -258,7 +260,6 @@ namespace Civitas.WebAPI.Controllers
         /// Altera o status financeiro da despesa.
         /// </summary>
         [HttpPatch("{id}/status")]
-        [HttpPatch("status/{id}")]
         public async Task<IActionResult> AlterarStatus(int id, [FromBody] Status novoStatus)
         {
             try

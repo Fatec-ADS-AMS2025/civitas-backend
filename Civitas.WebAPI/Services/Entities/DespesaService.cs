@@ -468,5 +468,23 @@ namespace Civitas.WebAPI.Services.Entities
                 }
             }
         }
+
+        public async Task AtualizarDespesasAtrasadasAsync()
+        {
+            var hoje = DateOnly.FromDateTime(DateTime.Today);
+
+            var despesasAtrasadas = await _context.Despesas
+                .Where(d => d.DataPagamento == null
+                         && d.DataVencimento < hoje
+                         && d.Status != Status.ATRASADO)
+                .ToListAsync();
+
+            foreach (var despesa in despesasAtrasadas)
+            {
+                despesa.Status = Status.ATRASADO;
+            }
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

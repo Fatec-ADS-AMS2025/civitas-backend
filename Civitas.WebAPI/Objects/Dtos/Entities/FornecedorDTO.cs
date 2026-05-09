@@ -93,5 +93,7 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// Estado (UF).
         /// </summary>
         public string Estado { get; set; } = string.Empty;
+
+        public int IdTipoDespesa { get; set; }
     }
 }
