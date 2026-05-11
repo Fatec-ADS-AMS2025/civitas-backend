@@ -59,21 +59,79 @@ namespace Civitas.WebAPI.Data.Repositories
                     despesa.Status == Status.A_PAGAR);
         }
 
-        public async Task<InstituicaoGastosDTO?> GetGastosByInstituicaoIdAsync(int instituicaoId)
+        public async Task<InstituicaoGastosDTO?> GetGastosByInstituicaoIdAsync(int instituicaoId, int tipoDespesaId)
         {
-            return await _context.Instituicoes
+            var instituicao = await _context.Instituicoes
                 .AsNoTracking()
-                .Where(instituicao => instituicao.Id == instituicaoId)
-                .Select(instituicao => new InstituicaoGastosDTO
-                {
-                    IdInstituicao = instituicao.Id,
-                    NomeInstituicao = instituicao.Nome,
-                    QuantidadeDespesas = _context.Despesas.Count(despesa => despesa.UnidadeConsumidora.IdInstituicao == instituicao.Id),
-                    TotalGastos = _context.Despesas
-                        .Where(despesa => despesa.UnidadeConsumidora.IdInstituicao == instituicao.Id)
-                        .Sum(despesa => despesa.ValorPrevisto)
-                })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(i => i.Id == instituicaoId);
+
+            if (instituicao is null)
+                return null;
+
+            var despesas = await _context.Despesas
+                .AsNoTracking()
+                .Where(d =>
+                    d.UnidadeConsumidora.IdInstituicao == instituicaoId &&
+                    d.UnidadeConsumidora.IdTipoDespesa == tipoDespesaId
+                )
+                .ToListAsync();
+
+            return new InstituicaoGastosDTO
+            {
+                IdInstituicao = instituicao.Id,
+                NomeInstituicao = instituicao.Nome,
+
+                QuantidadeDespesas = despesas.Count,
+                TotalGastos = despesas.Sum(d => d.ValorPago),
+
+                JaneiroGastos = despesas
+                    .Where(d => d.DataPagamento.HasValue && d.DataPagamento.Value.Month == 1)
+                    .Sum(d => d.ValorPago),
+
+                FevereiroGastos = despesas
+                    .Where(d => d.DataPagamento.HasValue && d.DataPagamento.Value.Month == 2)
+                    .Sum(d => d.ValorPago),
+
+                MarcoGastos = despesas
+                    .Where(d => d.DataPagamento.HasValue && d.DataPagamento.Value.Month == 3)
+                    .Sum(d => d.ValorPago),
+
+                AbrilGastos = despesas
+                    .Where(d => d.DataPagamento.HasValue && d.DataPagamento.Value.Month == 4)
+                    .Sum(d => d.ValorPago),
+
+                MaioGastos = despesas
+                    .Where(d => d.DataPagamento.HasValue && d.DataPagamento.Value.Month == 5)
+                    .Sum(d => d.ValorPago),
+
+                JunhoGastos = despesas
+                    .Where(d => d.DataPagamento.HasValue && d.DataPagamento.Value.Month == 6)
+                    .Sum(d => d.ValorPago),
+
+                JulhoGastos = despesas
+                    .Where(d => d.DataPagamento.HasValue && d.DataPagamento.Value.Month == 7)
+                    .Sum(d => d.ValorPago),
+
+                AgostoGastos = despesas
+                    .Where(d => d.DataPagamento.HasValue && d.DataPagamento.Value.Month == 8)
+                    .Sum(d => d.ValorPago),
+
+                SetembroGastos = despesas
+                    .Where(d => d.DataPagamento.HasValue && d.DataPagamento.Value.Month == 9)
+                    .Sum(d => d.ValorPago),
+
+                OutubroGastos = despesas
+                    .Where(d => d.DataPagamento.HasValue && d.DataPagamento.Value.Month == 10)
+                    .Sum(d => d.ValorPago),
+
+                NovembroGastos = despesas
+                    .Where(d => d.DataPagamento.HasValue && d.DataPagamento.Value.Month == 11)
+                    .Sum(d => d.ValorPago),
+
+                DezembroGastos = despesas
+                    .Where(d => d.DataPagamento.HasValue && d.DataPagamento.Value.Month == 12)
+                    .Sum(d => d.ValorPago)
+            };
         }
 
         public async Task<InstituicaoOrcamentoDisponivelDTO?> GetOrcamentoDisponivelByInstituicaoIdAsync(int instituicaoId)

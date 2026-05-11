@@ -7,5 +7,7 @@ namespace Civitas.WebAPI.Data.Interfaces
         Task<bool> ExisteDespesaVinculada(int idOrcamento);
 
         Task<decimal> SumValorPrevistoByOrcamentoAsync(int idOrcamento);
+
+        Task CalcularMediaOrcamentoEPreencherPorMes(Orcamento orcamento);
     }
 }

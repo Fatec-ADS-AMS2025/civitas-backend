@@ -9,7 +9,7 @@ namespace Civitas.WebAPI.Data.Interfaces
         Task<bool> ExistsByCnpjAsync(string cnpj, int? ignoreId = null);
         Task<bool> ExistsByEmailAsync(string email, int? ignoreId = null);
         Task<bool> HasDespesasPendentesAsync(int instituicaoId);
-        Task<InstituicaoGastosDTO?> GetGastosByInstituicaoIdAsync(int instituicaoId);
+        Task<InstituicaoGastosDTO?> GetGastosByInstituicaoIdAsync(int instituicaoId, int tipoDespesaId);
         Task<InstituicaoOrcamentoDisponivelDTO?> GetOrcamentoDisponivelByInstituicaoIdAsync(int instituicaoId);
     }
 }

@@ -29,5 +29,24 @@ namespace Civitas.WebAPI.Data.Repositories
 
             return Math.Round(total, 2, MidpointRounding.AwayFromZero);
         }
+
+        public async Task CalcularMediaOrcamentoEPreencherPorMes(Orcamento orcamento)
+        {
+            decimal valorMensal = Math.Floor((orcamento.ValorOrcamento / 12) * 100) / 100;
+            decimal resto = orcamento.ValorOrcamento - (valorMensal * 12);
+
+            orcamento.JaneiroValorConsumo = valorMensal;
+            orcamento.FevereiroValorConsumo = valorMensal;
+            orcamento.MarcoValorConsumo = valorMensal;
+            orcamento.AbrilValorConsumo = valorMensal;
+            orcamento.MaioValorConsumo = valorMensal;
+            orcamento.JunhoValorConsumo = valorMensal;
+            orcamento.JulhoValorConsumo = valorMensal;
+            orcamento.AgostoValorConsumo = valorMensal;
+            orcamento.SetembroValorConsumo = valorMensal;
+            orcamento.OutubroValorConsumo = valorMensal;
+            orcamento.NovembroValorConsumo = valorMensal;
+            orcamento.DezembroValorConsumo = valorMensal + resto;
+        }
     }
 }

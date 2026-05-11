@@ -1,6 +1,8 @@
-﻿using Civitas.WebAPI.Objects.Contracts;
+﻿using Civitas.WebAPI.Data.Interfaces;
+using Civitas.WebAPI.Objects.Contracts;
 using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
+using Civitas.WebAPI.Objects.Models;
 using Civitas.WebAPI.Services.Interfaces;
 using Civitas.WebAPI.Services.Validation;
 using Microsoft.AspNetCore.Authorization;
@@ -25,6 +27,7 @@ namespace Civitas.WebAPI.Controllers
     public class OrcamentoController : ControllerBase
     {
         private readonly IOrcamentoService _orcamentoService;
+        private readonly IOrcamentoRepository _orcamentoRepository;
         private readonly Response _response;
 
         /// <summary>
@@ -94,7 +97,6 @@ namespace Civitas.WebAPI.Controllers
             try
             {
                 await _orcamentoService.Create(orcamentoDTO);
-
                 _response.Code = ResponseEnum.SUCCESS;
                 _response.Data = orcamentoDTO;
                 _response.Message = "OrÃ§amento cadastrado com sucesso";

@@ -88,21 +88,22 @@ namespace Civitas.WebAPI.Controllers
             return Ok(_response);
         }
 
-        [HttpGet("{id}/gastos")]
-        public async Task<IActionResult> GetGastosByInstituicao(int id)
+        [HttpGet("{idInstituicao}/{idTipoDespesa}/gastos")]
+        public async Task<IActionResult> GetGastosByInstituicao(int idInstituicao, int idTipoDespesa)
         {
-            var gastosInstituicao = await _instituicaoService.GetGastosByInstituicaoIdAsync(id);
+            var gastosInstituicao = await _instituicaoService.GetGastosByInstituicaoIdAsync(idInstituicao, idTipoDespesa);
+
             if (gastosInstituicao is null)
             {
                 _response.Code = ResponseEnum.NOT_FOUND;
                 _response.Data = null;
-                _response.Message = "Instituicao nao encontrada";
+                _response.Message = "Instituição não encontrada";
                 return NotFound(_response);
             }
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = gastosInstituicao;
-            _response.Message = "Gastos da instituicao obtidos com sucesso";
+            _response.Message = "Gastos da instituição obtidos com sucesso";
             return Ok(_response);
         }
 

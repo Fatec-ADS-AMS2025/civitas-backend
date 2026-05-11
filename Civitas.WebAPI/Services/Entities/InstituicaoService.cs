@@ -72,9 +72,9 @@ namespace Civitas.WebAPI.Services.Entities
             return _mapper.Map<IEnumerable<InstituicaoDTO>>(instituicao);
         }
 
-        public async Task<InstituicaoGastosDTO?> GetGastosByInstituicaoIdAsync(int instituicaoId)
+        public async Task<InstituicaoGastosDTO?> GetGastosByInstituicaoIdAsync(int instituicaoId, int tipoDespesaId)
         {
-            return await _instituicaoRepository.GetGastosByInstituicaoIdAsync(instituicaoId);
+            return await _instituicaoRepository.GetGastosByInstituicaoIdAsync(instituicaoId, tipoDespesaId);
         }
 
         public async Task<InstituicaoOrcamentoDisponivelDTO?> GetOrcamentoDisponivelByInstituicaoIdAsync(int instituicaoId)
