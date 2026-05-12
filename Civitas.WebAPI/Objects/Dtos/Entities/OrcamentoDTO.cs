@@ -34,7 +34,7 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// Regra: Deve ser maior que zero.
         /// Este valor ser� o limite usado para validar se as despesas lan�adas estouraram o or�amento.
         /// </remarks>
-        public decimal ValorOrcamento { get; set; }
+        public decimal? ValorOrcamento { get; set; }
 
         public decimal JaneiroQuantidadeConsumo { get; set; }
         public decimal JaneiroValorConsumo { get; set; }
