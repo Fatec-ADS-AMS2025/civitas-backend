@@ -47,7 +47,7 @@ namespace Civitas.WebAPI.Services.Entities
             {
                 await ValidarOrcamentoAsync(entityDTO, existente: null);
 
-                entityDTO.ValorOrcamento = Math.Round(entityDTO.ValorOrcamento, 2, MidpointRounding.AwayFromZero);
+                entityDTO.ValorOrcamento = Math.Round(entityDTO.ValorOrcamento ?? 0, 2, MidpointRounding.AwayFromZero);
                 entityDTO.IdOrcamento = 0;
 
                 var entity = _mapper.Map<Orcamento>(entityDTO);
@@ -70,7 +70,7 @@ namespace Civitas.WebAPI.Services.Entities
 
                 await ValidarOrcamentoAsync(entityDTO, existente);
 
-                entityDTO.ValorOrcamento = Math.Round(entityDTO.ValorOrcamento, 2, MidpointRounding.AwayFromZero);
+                entityDTO.ValorOrcamento = Math.Round(entityDTO.ValorOrcamento ?? 0, 2, MidpointRounding.AwayFromZero);
                 entityDTO.IdOrcamento = id;
 
                 var entity = _mapper.Map<Orcamento>(entityDTO);
@@ -123,7 +123,6 @@ namespace Civitas.WebAPI.Services.Entities
             var errors = new List<string>();
 
             ValidarAno(entityDTO.AnoOrcamento, errors);
-            ValidarValor(entityDTO.ValorOrcamento, errors);
 
             if (entityDTO.IdInstituicao <= 0)
             {
@@ -141,7 +140,7 @@ namespace Civitas.WebAPI.Services.Entities
             if (existente is not null && entityDTO.ValorOrcamento > 0)
             {
                 var totalComprometido = await _orcamentoRepository.SumValorPrevistoByOrcamentoAsync(existente.IdOrcamento);
-                var novoValor = Math.Round(entityDTO.ValorOrcamento, 2, MidpointRounding.AwayFromZero);
+                var novoValor = Math.Round(entityDTO.ValorOrcamento ?? 0, 2, MidpointRounding.AwayFromZero);
                 if (novoValor < totalComprometido)
                 {
                     errors.Add(
@@ -181,30 +180,34 @@ namespace Civitas.WebAPI.Services.Entities
             }
         }
 
-        private static void ValidarValor(decimal valor, ICollection<string> errors)
-        {
-            if (valor <= 0)
-            {
-                errors.Add("O campo ValorOrcamento e obrigatorio e deve ser maior que zero.");
-            }
-        }
+        //private static void ValidarValor(decimal valor, ICollection<string> errors)
+        //{
+        //    if (valor <= 0)
+        //    {
+        //        errors.Add("O campo ValorOrcamento e obrigatorio e deve ser maior que zero.");
+        //    }
+        //}
 
-        public async Task CalcularMediaOrcamentoEPreencherPorMes(Orcamento orcamento)
-        {
-            decimal valorMensal = Math.Round(orcamento.ValorOrcamento / 12, 2);
+        //public async Task CalcularMediaOrcamentoEPreencherPorMes(Orcamento orcamento)
+        //{
+        //    if (orcamento.ValorOrcamento != 0 || orcamento.ValorOrcamento != null)
+        //    {
+        //        decimal valorMensal = Math.Floor(((orcamento.ValorOrcamento ?? 0) / 12) * 100) / 100;
+        //        decimal resto = (orcamento.ValorOrcamento ?? 0) - (valorMensal * 12);
 
-            orcamento.JaneiroValorConsumo = valorMensal;
-            orcamento.FevereiroValorConsumo = valorMensal;
-            orcamento.MarcoValorConsumo = valorMensal;
-            orcamento.AbrilValorConsumo = valorMensal;
-            orcamento.MaioValorConsumo = valorMensal;
-            orcamento.JunhoValorConsumo = valorMensal;
-            orcamento.JulhoValorConsumo = valorMensal;
-            orcamento.AgostoValorConsumo = valorMensal;
-            orcamento.SetembroValorConsumo = valorMensal;
-            orcamento.OutubroValorConsumo = valorMensal;
-            orcamento.NovembroValorConsumo = valorMensal;
-            orcamento.DezembroValorConsumo = valorMensal;
-        }
+        //        orcamento.JaneiroValorConsumo = valorMensal;
+        //        orcamento.FevereiroValorConsumo = valorMensal;
+        //        orcamento.MarcoValorConsumo = valorMensal;
+        //        orcamento.AbrilValorConsumo = valorMensal;
+        //        orcamento.MaioValorConsumo = valorMensal;
+        //        orcamento.JunhoValorConsumo = valorMensal;
+        //        orcamento.JulhoValorConsumo = valorMensal;
+        //        orcamento.AgostoValorConsumo = valorMensal;
+        //        orcamento.SetembroValorConsumo = valorMensal;
+        //        orcamento.OutubroValorConsumo = valorMensal;
+        //        orcamento.NovembroValorConsumo = valorMensal;
+        //        orcamento.DezembroValorConsumo = valorMensal + resto;
+        //    }
+        //}
     }
 }

@@ -36,7 +36,7 @@ namespace Civitas.WebAPI.Objects.Models
         /// Este valor serve como limite superior para as valida��es de despesas.
         /// </remarks>
         [Column("valororcamento")]
-        public decimal ValorOrcamento { get; set; }
+        public decimal? ValorOrcamento { get; set; }
 
 
         [Column("janeiroquantidadeconsumo")]
