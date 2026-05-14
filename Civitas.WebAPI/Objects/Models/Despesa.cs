@@ -121,26 +121,29 @@ namespace Civitas.WebAPI.Objects.Models
         }
 
         public Despesa(
-             int id,
-             string numeroDocumento,
-             string nomeDocumento,
-            string hashDocumento,
-             string codigo,
-             DateOnly dataEmissao,
-             decimal valorPrevisto,
-             decimal valorPago,
-             decimal consumoPrevisto,
-             decimal consumoReal,
-             DateOnly dataVencimento,
-             Status status,
+            int id,
+            string numeroDocumento,
+            string? nomeDocumento,
+            string? hashDocumento,
+            string codigo,
+            DateOnly dataEmissao,
+            decimal valorPrevisto,
+            decimal valorPago,
+            decimal consumoPrevisto,
+            decimal consumoReal,
+            DateOnly dataVencimento,
+            DateOnly? dataPagamento,
+            Status status,
             int idUsuario,
-         int idUnidadeConsumidora)
+            Usuario usuario,
+            int idUnidadeConsumidora,
+            UnidadeConsumidora unidadeConsumidora,
+            string? valoresOpcionais)
         {
             Id = id;
             NumeroDocumento = numeroDocumento;
             NomeDocumento = nomeDocumento;
             HashDocumento = hashDocumento;
-
             Codigo = codigo;
             DataEmissao = dataEmissao;
             ValorPrevisto = valorPrevisto;
@@ -148,9 +151,13 @@ namespace Civitas.WebAPI.Objects.Models
             ConsumoPrevisto = consumoPrevisto;
             ConsumoReal = consumoReal;
             DataVencimento = dataVencimento;
+            DataPagamento = dataPagamento;
             Status = status;
             IdUsuario = idUsuario;
+            Usuario = usuario;
             IdUnidadeConsumidora = idUnidadeConsumidora;
+            UnidadeConsumidora = unidadeConsumidora;
+            ValoresOpcionais = valoresOpcionais;
         }
     }
 }

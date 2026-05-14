@@ -275,34 +275,44 @@ namespace Civitas.WebAPI.Data.Seeding
             var despesaEnergia = new Despesa(
                 0,
                 "NF-2026-0001",
-                "1001",
                 "Documento 1",
                 "e64d18547b406ae3b00152234dc5327e800d8e7921142b6adcc0ffb8d3be7f3c",
+                "1001",
                 new DateOnly(2026, 4, 10),
                 18450.75m,
                 18450.75m,
                 1320.50m,
                 1320.50m,
                 new DateOnly(2026, 4, 25),
+                new DateOnly(2026, 4, 24),
                 Status.PAGA,
                 admin.Id,
-                unidadeConsumidoraEscola.Id);
+                admin,
+                unidadeConsumidoraEscola.Id,
+                unidadeConsumidoraEscola,
+                null
+            );
 
             var despesaManutencao = new Despesa(
                 0,
                 "OS-2026-0042",
-                "2001",
                 "Documento 2",
                 "b08e9c91a71899cca2136f9caa6b04321361ed52f801cb6ff4c7d5128cf8be8e",
+                "2001",
                 new DateOnly(2026, 4, 15),
                 9200.00m,
                 0m,
                 18m,
                 0m,
                 new DateOnly(2026, 5, 5),
+                null,
                 Status.A_PAGAR,
                 funcionario.Id,
-                unidadeConsumidoraUbs.Id);
+                funcionario,
+                unidadeConsumidoraUbs.Id,
+                unidadeConsumidoraUbs,
+                null
+            );
 
             await _context.Despesas.AddRangeAsync([despesaEnergia, despesaManutencao], cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
