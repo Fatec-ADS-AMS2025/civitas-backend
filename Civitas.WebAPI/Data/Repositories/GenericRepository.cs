@@ -1,5 +1,6 @@
 using Civitas.WebAPI.Data.Interfaces;
 using Civitas.WebAPI.Objects.Contracts;
+using Civitas.WebAPI.Objects.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System.Reflection;
@@ -20,16 +21,31 @@ namespace Civitas.WebAPI.Data.Repositories
 
         public virtual async Task<IEnumerable<T>> Get()
         {
-            return await _dbSet.AsNoTracking().ToListAsync();
+            return await ApplySoftDeleteFilter(_dbSet.AsNoTracking(), excluido: false).ToListAsync();
+        }
+
+        public virtual async Task<IEnumerable<T>> GetExcluidos()
+        {
+            return await ApplySoftDeleteFilter(_dbSet.AsNoTracking(), excluido: true).ToListAsync();
         }
 
         public virtual async Task<PaginatedResult<T>> GetPage(PaginationQuery paginationQuery)
+        {
+            return await GetPageByExcluido(paginationQuery, excluido: false);
+        }
+
+        public virtual async Task<PaginatedResult<T>> GetPageExcluidos(PaginationQuery paginationQuery)
+        {
+            return await GetPageByExcluido(paginationQuery, excluido: true);
+        }
+
+        private async Task<PaginatedResult<T>> GetPageByExcluido(PaginationQuery paginationQuery, bool excluido)
         {
             var currentPage = paginationQuery.NormalizedPage;
             var pageSize = paginationQuery.NormalizedSize;
 
             var orderedQuery = ApplyOrdering(
-                _dbSet.AsNoTracking(),
+                ApplySoftDeleteFilter(_dbSet.AsNoTracking(), excluido),
                 paginationQuery.SortBy,
                 paginationQuery.IsDescending);
 
@@ -53,7 +69,10 @@ namespace Civitas.WebAPI.Data.Repositories
 
         public virtual async Task<IEnumerable<T>> GetByEnumValue<TEnum>(string propertyName, TEnum value) where TEnum : struct, Enum
         {
-            var filteredQuery = ApplyEnumFilter(_dbSet.AsNoTracking(), propertyName, value);
+            var filteredQuery = ApplyEnumFilter(
+                ApplySoftDeleteFilter(_dbSet.AsNoTracking(), excluido: false),
+                propertyName,
+                value);
             return await filteredQuery.ToListAsync();
         }
 
@@ -62,7 +81,10 @@ namespace Civitas.WebAPI.Data.Repositories
             var currentPage = paginationQuery.NormalizedPage;
             var pageSize = paginationQuery.NormalizedSize;
 
-            var filteredQuery = ApplyEnumFilter(_dbSet.AsNoTracking(), propertyName, value);
+            var filteredQuery = ApplyEnumFilter(
+                ApplySoftDeleteFilter(_dbSet.AsNoTracking(), excluido: false),
+                propertyName,
+                value);
             var orderedQuery = ApplyOrdering(
                 filteredQuery,
                 paginationQuery.SortBy,
@@ -88,11 +110,28 @@ namespace Civitas.WebAPI.Data.Repositories
 
         public async Task<T> GetById(int id)
         {
+            var entity = await _dbSet.FindAsync(id);
+            if (entity is ISoftDeletable { Excluido: true })
+            {
+                return null;
+            }
+
+            return entity;
+        }
+
+        public async Task<T> GetByIdIncludingDeleted(int id)
+        {
             return await _dbSet.FindAsync(id);
         }
 
         public async Task Add(T entity)
         {
+            if (entity is ISoftDeletable softDeletable)
+            {
+                softDeletable.Excluido = false;
+                softDeletable.DataExclusao = null;
+            }
+
             await _dbSet.AddAsync(entity);
             await SaveChanges();
         }
@@ -157,6 +196,16 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             var resolvedPropertyName = ResolvePropertyName(propertyName);
             return query.Where(entity => EF.Property<TEnum>(entity, resolvedPropertyName).Equals(value));
+        }
+
+        private static IQueryable<T> ApplySoftDeleteFilter(IQueryable<T> query, bool excluido)
+        {
+            if (!typeof(ISoftDeletable).IsAssignableFrom(typeof(T)))
+            {
+                return query;
+            }
+
+            return query.Where(entity => EF.Property<bool>(entity, nameof(ISoftDeletable.Excluido)) == excluido);
         }
 
         private static string ResolvePropertyName(string requestedPropertyName)

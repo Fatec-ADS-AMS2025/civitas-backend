@@ -45,5 +45,9 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// Unidades "Inativas" não devem ser exibidas em listas de seleção para novos cadastros.
         /// </remarks>
         public Situacao Situacao { get; set; }
+        public bool Excluido { get; set; }
+
+        public DateTime? DataExclusao { get; set; }
+
     }
 }

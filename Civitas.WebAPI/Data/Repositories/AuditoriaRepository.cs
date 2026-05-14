@@ -17,7 +17,7 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             return await _context.Auditorias
                 .Include(a => a.Usuario)
-                .Where(a => a.UsuarioId == usuarioId)
+                .Where(a => a.UsuarioId == usuarioId && !a.Excluido)
                 .OrderByDescending(a => a.Id)
                 .ToListAsync();
         }
@@ -26,7 +26,7 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             return await _context.Auditorias
                 .Include(a => a.Usuario)
-                .Where(a => a.NomeEntidade.Contains(nomeEntidade))
+                .Where(a => a.NomeEntidade.Contains(nomeEntidade) && !a.Excluido)
                 .OrderByDescending(a => a.Id)
                 .ToListAsync();
         }
@@ -35,7 +35,7 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             return await _context.Auditorias
                 .Include(a => a.Usuario)
-                .Where(a => a.Operacao.Contains(operacao))
+                .Where(a => a.Operacao.Contains(operacao) && !a.Excluido)
                 .OrderByDescending(a => a.Id)
                 .ToListAsync();
         }

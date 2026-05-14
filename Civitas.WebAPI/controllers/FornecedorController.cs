@@ -310,6 +310,49 @@ namespace Civitas.WebAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
         }
+        [HttpGet("excluidos")]
+        public async Task<IActionResult> GetExcluidos([FromQuery] PaginationQuery paginationQuery)
+        {
+            var result = await _fornecedorService.GetPageExcluidos(paginationQuery);
+
+            _response.Code = ResponseEnum.SUCCESS;
+            _response.Data = result;
+            _response.Message = "Fornecedores excluidos listados com sucesso";
+
+            return Ok(_response);
+        }
+        [HttpPatch("{id}/status-exclusao")]
+        public async Task<IActionResult> ToggleStatusExclusao(int id)
+        {
+            try
+            {
+                var dto = await _fornecedorService.ToggleStatusExclusaoAsync(id);
+
+                _response.Code = ResponseEnum.SUCCESS;
+                _response.Data = dto;
+                _response.Message = "Fornecedores com status de exclusao alterado com sucesso";
+                return Ok(_response);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _response.Code = ResponseEnum.NOT_FOUND;
+                _response.Data = null;
+                _response.Message = ex.Message;
+                return NotFound(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.Code = ResponseEnum.ERROR;
+                _response.Message = "Ocorreu um erro ao alterar o status de exclusao";
+                _response.Data = new
+                {
+                    ErrorMessage = ex.Message,
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponivel"
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, _response);
+            }
+        }
     }
 }
+
 

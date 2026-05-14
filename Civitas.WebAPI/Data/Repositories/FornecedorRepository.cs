@@ -17,7 +17,7 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             var query = _appDbContext.Fornecedores
                 .AsNoTracking()
-                .Where(fornecedor => fornecedor.Cnpj == cnpj);
+                .Where(fornecedor => fornecedor.Cnpj == cnpj && !fornecedor.Excluido);
 
             if (ignoreId.HasValue)
             {

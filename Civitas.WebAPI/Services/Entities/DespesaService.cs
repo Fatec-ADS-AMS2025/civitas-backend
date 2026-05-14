@@ -67,6 +67,8 @@ namespace Civitas.WebAPI.Services.Entities
                 entityDTO.Id = 0;
 
                 var entity = _mapper.Map<Despesa>(entityDTO);
+                entity.Excluido = false;
+                entity.DataExclusao = null;
                 await _despesaRepository.Add(entity);
                 entityDTO.Id = entity.Id;
             });
@@ -92,6 +94,8 @@ namespace Civitas.WebAPI.Services.Entities
 
                 var entity = _mapper.Map<Despesa>(entityDTO);
                 entity.Id = id;
+                entity.Excluido = existingEntity.Excluido;
+                entity.DataExclusao = existingEntity.DataExclusao;
                 await _despesaRepository.Update(entity);
             });
         }
@@ -324,6 +328,9 @@ namespace Civitas.WebAPI.Services.Entities
         {
             despesaDTO.ValorPrevisto = Math.Round(despesaDTO.ValorPrevisto, 2, MidpointRounding.AwayFromZero);
             despesaDTO.ValorPago = Math.Round(despesaDTO.ValorPago, 2, MidpointRounding.AwayFromZero);
+            despesaDTO.Juros = Math.Round(despesaDTO.Juros, 2, MidpointRounding.AwayFromZero);
+            despesaDTO.Multa = Math.Round(despesaDTO.Multa, 2, MidpointRounding.AwayFromZero);
+            despesaDTO.Desconto = Math.Round(despesaDTO.Desconto, 2, MidpointRounding.AwayFromZero);
             despesaDTO.ConsumoPrevisto = Math.Round(despesaDTO.ConsumoPrevisto, 2, MidpointRounding.AwayFromZero);
             despesaDTO.ConsumoReal = Math.Round(despesaDTO.ConsumoReal, 2, MidpointRounding.AwayFromZero);
         }
@@ -360,6 +367,9 @@ namespace Civitas.WebAPI.Services.Entities
 
             ValidarValorNaoNegativo(despesaDTO.ValorPrevisto, nameof(despesaDTO.ValorPrevisto), errors);
             ValidarValorNaoNegativo(despesaDTO.ValorPago, nameof(despesaDTO.ValorPago), errors);
+            ValidarValorNaoNegativo(despesaDTO.Juros, nameof(despesaDTO.Juros), errors);
+            ValidarValorNaoNegativo(despesaDTO.Multa, nameof(despesaDTO.Multa), errors);
+            ValidarValorNaoNegativo(despesaDTO.Desconto, nameof(despesaDTO.Desconto), errors);
             ValidarValorNaoNegativo(despesaDTO.ConsumoPrevisto, nameof(despesaDTO.ConsumoPrevisto), errors);
             ValidarValorNaoNegativo(despesaDTO.ConsumoReal, nameof(despesaDTO.ConsumoReal), errors);
 
@@ -476,7 +486,8 @@ namespace Civitas.WebAPI.Services.Entities
             var despesasAtrasadas = await _context.Despesas
                 .Where(d => d.DataPagamento == null
                          && d.DataVencimento < hoje
-                         && d.Status != Status.ATRASADO)
+                         && d.Status != Status.ATRASADO
+                         && !d.Excluido)
                 .ToListAsync();
 
             foreach (var despesa in despesasAtrasadas)

@@ -19,12 +19,16 @@ namespace Civitas.WebAPI.Services.Interfaces
         /// <returns>Uma tarefa assíncrona contendo a coleção de objetos convertidos para DTO.</returns>
         Task<IEnumerable<TDto>> GetAll();
 
+        Task<IEnumerable<TDto>> GetExcluidos();
+
         /// <summary>
         /// Recupera uma página específica com metadados de paginação e ordenação.
         /// </summary>
         /// <param name="paginationQuery">Parâmetros da consulta paginada.</param>
         /// <returns>Uma tarefa assíncrona contendo o resultado paginado.</returns>
         Task<PaginatedResult<TDto>> GetPage(PaginationQuery paginationQuery);
+
+        Task<PaginatedResult<TDto>> GetPageExcluidos(PaginationQuery paginationQuery);
 
         /// <summary>
         /// Recupera todos os registros cujo valor do enum informado corresponde ao filtro solicitado.
@@ -76,5 +80,7 @@ namespace Civitas.WebAPI.Services.Interfaces
         /// <param name="id">O identificador do registro a ser excluído.</param>
         /// <returns>Uma tarefa assíncrona.</returns>
         Task Remove(int id);
+
+        Task<TDto> ToggleStatusExclusaoAsync(int id);
     }
 }

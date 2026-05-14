@@ -61,5 +61,9 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// </summary>
         /// <example>["numeroNota","fornecedor","centroCusto"]</example>
         public IList<string>? CamposOpcionais { get; set; }
+        public bool Excluido { get; set; }
+
+        public DateTime? DataExclusao { get; set; }
+
     }
 }

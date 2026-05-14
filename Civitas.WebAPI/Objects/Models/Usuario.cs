@@ -12,7 +12,7 @@ namespace Civitas.WebAPI.Objects.Models
     /// Diferentes perfis (Visitante, Administrador, Funcionário) compartilham esta mesma estrutura.
     /// </remarks>
     [Table("usuario")]
-    public class Usuario
+    public class Usuario : ISoftDeletable
     {
         /// <summary>
         /// Identificador único do usuário (Chave Primária).
@@ -137,6 +137,13 @@ namespace Civitas.WebAPI.Objects.Models
         /// <summary>
         /// Construtor padrão para inicialização completa da entidade Usuario.
         /// </summary>
+
+        [Column("excluido")]
+        public bool Excluido { get; set; }
+
+        [Column("dataexclusao")]
+        public DateTime? DataExclusao { get; set; }
+
         public Usuario(int id, string cpf, string nome, string rg, string logradouro, string numero, string cidade, string estado, string cep, string email, string senha
             , Situacao situacao, string matricula, TipoUsuario tipoUsuario, string bairro)
         {

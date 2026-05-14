@@ -38,5 +38,9 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// Regra: Categorias inativas não podem ser vinculadas a novas Instituições.
         /// </remarks>
         public Situacao Situacao { get; set; }
+        public bool Excluido { get; set; }
+
+        public DateTime? DataExclusao { get; set; }
+
     }
 }

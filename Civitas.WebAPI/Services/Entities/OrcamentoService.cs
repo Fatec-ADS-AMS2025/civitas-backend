@@ -74,6 +74,8 @@ namespace Civitas.WebAPI.Services.Entities
                 entityDTO.IdOrcamento = id;
 
                 var entity = _mapper.Map<Orcamento>(entityDTO);
+                entity.Excluido = existente.Excluido;
+                entity.DataExclusao = existente.DataExclusao;
                 await _orcamentoRepository.Update(entity);
             });
         }

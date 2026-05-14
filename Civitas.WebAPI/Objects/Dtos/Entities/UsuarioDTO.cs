@@ -115,5 +115,10 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// Valores: <see cref="Civitas.WebAPI.Objects.Enums.TipoUsuario"/> (Visitante, Admin, Funcionário).
         /// </remarks>
         public TipoUsuario TipoUsuario { get; set; }
+        public bool Excluido { get; set; }
+
+        public DateTime? DataExclusao { get; set; }
+
     }
 }
+

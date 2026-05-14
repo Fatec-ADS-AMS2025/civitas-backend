@@ -17,6 +17,7 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             return await _context.Usuarios.AnyAsync(usuario =>
                 usuario.Cpf == cpf &&
+                !usuario.Excluido &&
                 (!ignoredId.HasValue || usuario.Id != ignoredId.Value));
         }
 
@@ -24,6 +25,7 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             return await _context.Usuarios.AnyAsync(usuario =>
                 usuario.Email == email &&
+                !usuario.Excluido &&
                 (!ignoredId.HasValue || usuario.Id != ignoredId.Value));
         }
 
@@ -31,19 +33,20 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             return await _context.Usuarios.AnyAsync(usuario =>
                 usuario.Matricula == matricula &&
+                !usuario.Excluido &&
                 (!ignoredId.HasValue || usuario.Id != ignoredId.Value));
         }
 
         public async Task<Usuario?> GetByEmailAsync(string email)
         {
             return await _context.Usuarios
-                .FirstOrDefaultAsync(usuario => usuario.Email == email);
+                .FirstOrDefaultAsync(usuario => usuario.Email == email && !usuario.Excluido);
         }
 
         public async Task<IEnumerable<Usuario>> GetUsuarioByCpf(string cpf)
         {
             return await _context.Usuarios
-                .Where(usuario => usuario.Cpf == cpf)
+                .Where(usuario => usuario.Cpf == cpf && !usuario.Excluido)
                 .ToListAsync();
         }
     }
