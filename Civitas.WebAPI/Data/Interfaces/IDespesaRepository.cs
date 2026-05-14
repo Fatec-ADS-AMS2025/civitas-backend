@@ -11,5 +11,6 @@ namespace Civitas.WebAPI.Data.Interfaces
         Task<IEnumerable<Despesa>> GetByUsuarioAsync(int idUsuario);
         Task<IEnumerable<Despesa>> GetByStatusAsync(Status status);
         Task<decimal> SumValorPrevistoByOrcamentoAsync(int idOrcamento, int? ignoreId = null);
+        Task<bool> ExistsByHashDocumentoAsync(string hashDocumento, int? ignoreId = null);
     }
 }

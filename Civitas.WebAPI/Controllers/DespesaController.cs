@@ -181,10 +181,23 @@ namespace Civitas.WebAPI.Controllers
         /// Cria uma nova despesa no sistema.
         /// </summary>
         [HttpPost]
-        public async Task<IActionResult> Post(DespesaDTO despesaDTO)
+        public async Task<IActionResult> Post([FromForm] DespesaDTO despesaDTO)
         {
+            if (despesaDTO is null)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = null;
+                _response.Message = "Dados inválidos";
+
+                return BadRequest(_response);
+            }
+
             try
             {
+                await _despesaService.ValidarCadastroAsync(despesaDTO);
+
+                despesaDTO.Id = 0;
+
                 await _despesaService.Create(despesaDTO);
 
                 _response.Code = ResponseEnum.SUCCESS;
@@ -195,9 +208,23 @@ namespace Civitas.WebAPI.Controllers
             }
             catch (DespesaValidationException ex)
             {
-                _response.Code = ResponseEnum.INVALID;
+                _response.Code = ex.Errors.Any(e => e.Contains("documento com o mesmo conteúdo"))
+                    ? ResponseEnum.CONFLICT
+                    : ResponseEnum.INVALID;
+
                 _response.Message = ex.Message;
                 _response.Data = ex.Errors;
+
+                return _response.Code == ResponseEnum.CONFLICT
+                    ? Conflict(_response)
+                    : BadRequest(_response);
+            }
+            catch (ArgumentException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Message = ex.Message;
+                _response.Data = null;
+
                 return BadRequest(_response);
             }
             catch (Exception ex)
@@ -209,6 +236,7 @@ namespace Civitas.WebAPI.Controllers
                     ErrorMessage = ex.Message,
                     StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
+
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
         }
@@ -217,14 +245,30 @@ namespace Civitas.WebAPI.Controllers
         /// Atualiza uma despesa existente.
         /// </summary>
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, DespesaDTO despesaDTO)
+        public async Task<IActionResult> Put(int id, [FromForm] DespesaDTO despesaDTO)
         {
             try
             {
                 await _despesaService.Update(despesaDTO, id);
 
                 _response.Code = ResponseEnum.SUCCESS;
-                _response.Data = despesaDTO;
+                _response.Data = new
+                {
+                    despesaDTO.Id,
+                    despesaDTO.NumeroDocumento,
+                    despesaDTO.NomeDocumento,
+                    despesaDTO.Codigo,
+                    despesaDTO.DataEmissao,
+                    despesaDTO.DataVencimento,
+                    despesaDTO.ValorPrevisto,
+                    despesaDTO.ValorPago,
+                    despesaDTO.ConsumoPrevisto,
+                    despesaDTO.ConsumoReal,
+                    despesaDTO.Status,
+                    despesaDTO.IdUsuario,
+                    despesaDTO.IdUnidadeConsumidora,
+                    despesaDTO.HashDocumento
+                };
                 _response.Message = "Despesa atualizada com sucesso";
 
                 return Ok(_response);
@@ -234,6 +278,14 @@ namespace Civitas.WebAPI.Controllers
                 _response.Code = ResponseEnum.INVALID;
                 _response.Message = ex.Message;
                 _response.Data = ex.Errors;
+                
+                // Verificar se é erro de documento duplicado
+                if (ex.Errors.Any(e => e.Contains("documento com o mesmo conteúdo")))
+                {
+                    _response.Code = ResponseEnum.CONFLICT;
+                    return Conflict(_response);
+                }
+
                 return BadRequest(_response);
             }
             catch (KeyNotFoundException ex)

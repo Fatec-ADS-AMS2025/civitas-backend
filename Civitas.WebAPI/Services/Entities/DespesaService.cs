@@ -8,6 +8,8 @@ using Civitas.WebAPI.Services.Interfaces;
 using Civitas.WebAPI.Services.Validation;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Civitas.WebAPI.Services.Entities
 {
@@ -25,6 +27,9 @@ namespace Civitas.WebAPI.Services.Entities
         private readonly IFornecedorRepository _fornecedorRepository;
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
+        private const string DocumentosFolder = "Documentos";
 
         /// <summary>
         /// Inicializa uma nova instancia do servico de Despesas com as dependencias necessarias.
@@ -38,7 +43,8 @@ namespace Civitas.WebAPI.Services.Entities
             IInstituicaoRepository instituicaoRepository,
             IFornecedorRepository fornecedorRepository,
             AppDbContext context,
-            IMapper mapper)
+            IMapper mapper,
+            IWebHostEnvironment webHostEnvironment)
             : base(despesaRepository, mapper)
         {
             _despesaRepository = despesaRepository;
@@ -50,6 +56,7 @@ namespace Civitas.WebAPI.Services.Entities
             _fornecedorRepository = fornecedorRepository;
             _context = context;
             _mapper = mapper;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public override async Task Create(DespesaDTO entityDTO)
@@ -63,6 +70,12 @@ namespace Civitas.WebAPI.Services.Entities
 
             await ExecuteEmTransacaoAsync(async () =>
             {
+                // Processar documento se fornecido
+                if (entityDTO.Documento != null)
+                {
+                    await ProcessarDocumentoAsync(entityDTO);
+                }
+
                 await ValidarCadastroAsync(entityDTO);
                 entityDTO.Id = 0;
 
@@ -88,6 +101,19 @@ namespace Civitas.WebAPI.Services.Entities
                 }
 
                 entityDTO.Id = id;
+
+                // Processar documento se fornecido
+                if (entityDTO.Documento != null)
+                {
+                    await ProcessarDocumentoAsync(entityDTO, id);
+                }
+                else if (!string.IsNullOrEmpty(existingEntity.HashDocumento))
+                {
+                    // Manter hash e nome do documento existente se não for fornecido novo
+                    entityDTO.HashDocumento = existingEntity.HashDocumento;
+                    entityDTO.NomeDocumento = existingEntity.NomeDocumento;
+                }
+
                 await ValidarCadastroAsync(entityDTO, id);
 
                 var entity = _mapper.Map<Despesa>(entityDTO);
@@ -485,6 +511,113 @@ namespace Civitas.WebAPI.Services.Entities
             }
 
             await _context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Gera um hash SHA-256 de um arquivo de documento.
+        /// </summary>
+        /// <param name="arquivo">O arquivo IFormFile para o qual gerar o hash.</param>
+        /// <returns>Hash SHA-256 em formato hexadecimal.</returns>
+        public static async Task<string> GerarHashAsync(IFormFile arquivo)
+        {
+            if (arquivo == null || arquivo.Length == 0)
+            {
+                throw new ArgumentException("Arquivo não pode ser nulo ou vazio.");
+            }
+
+            using (var sha256 = SHA256.Create())
+            using (var stream = arquivo.OpenReadStream())
+            {
+                var hashBytes = await Task.Run(() => sha256.ComputeHash(stream));
+                return Convert.ToHexString(hashBytes);
+            }
+        }
+
+        /// <summary>
+        /// Confirma se um documento com o mesmo hash já existe no banco de dados.
+        /// </summary>
+        /// <param name="hashDocumento">O hash SHA-256 do documento a verificar.</param>
+        /// <param name="ignoreId">ID de despesa a ignorar na busca (usado em atualizações).</param>
+        /// <returns>True se o hash já existe, false caso contrário.</returns>
+        public async Task<bool> ConfirmarDocumentoDuplicadoAsync(string hashDocumento, int? ignoreId = null)
+        {
+            if (string.IsNullOrWhiteSpace(hashDocumento))
+            {
+                throw new ArgumentException("Hash do documento não pode ser nulo ou vazio.");
+            }
+
+            return await _despesaRepository.ExistsByHashDocumentoAsync(hashDocumento, ignoreId);
+        }
+
+        /// <summary>
+        /// Processa um documento anexado, gerando seu hash e validando duplicatas.
+        /// Salva o arquivo na pasta "Documentos" com nome baseado no hash.
+        /// </summary>
+        /// <param name="despesaDTO">DTO da despesa com o arquivo documento.</param>
+        /// <param name="ignoreId">ID da despesa a ignorar (usado em atualizações).</param>
+        /// <exception cref="DespesaValidationException">Lançada se o documento for duplicado.</exception>
+        private async Task ProcessarDocumentoAsync(DespesaDTO despesaDTO, int? ignoreId = null)
+        {
+            if (despesaDTO.Documento == null || despesaDTO.Documento.Length == 0)
+            {
+                return;
+            }
+
+            // Gerar hash do documento automaticamente
+            var hashDocumento = await GerarHashAsync(despesaDTO.Documento);
+
+            // Verificar se o hash já existe no banco
+            var documentoDuplicado = await ConfirmarDocumentoDuplicadoAsync(hashDocumento, ignoreId);
+            if (documentoDuplicado  && !despesaDTO.ConfirmarDocumentoDuplicado)
+            {
+                throw new DespesaValidationException(
+                    ["Um documento com o mesmo conteúdo já foi cadastrado. Use ConfirmarDocumentoDuplicado=true para sobrescrever."]);
+            }
+
+            // Salvar arquivo na pasta Documentos com nome baseado no hash
+            await SalvarArquivoDocumentoAsync(despesaDTO.Documento, hashDocumento);
+
+            // Armazenar hash e nome do documento no DTO para serem salvos no banco
+            despesaDTO.HashDocumento = hashDocumento;
+            despesaDTO.NomeDocumento = despesaDTO.Documento.FileName;
+        }
+
+        /// <summary>
+        /// Salva o arquivo de documento na pasta "Documentos" com nome baseado no hash.
+        /// </summary>
+        /// <param name="arquivo">O arquivo a ser salvo.</param>
+        /// <param name="hashDocumento">O hash SHA-256 do documento para uso como nome.</param>
+        private async Task SalvarArquivoDocumentoAsync(IFormFile arquivo, string hashDocumento)
+        {
+            try
+            {
+                // Obter extensão original do arquivo
+                var extensao = Path.GetExtension(arquivo.FileName);
+
+                // Construir caminho da pasta Documentos
+                var pastaDocumentos = Path.Combine(_webHostEnvironment.ContentRootPath, DocumentosFolder);
+
+                // Criar pasta se não existir
+                if (!Directory.Exists(pastaDocumentos))
+                {
+                    Directory.CreateDirectory(pastaDocumentos);
+                }
+
+                // Nome do arquivo: hash + extensão original
+                var nomeArquivo = $"{hashDocumento}{extensao}";
+                var caminhoCompleto = Path.Combine(pastaDocumentos, nomeArquivo);
+
+                // Salvar arquivo no disco
+                using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
+                {
+                    await arquivo.CopyToAsync(stream);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new DespesaValidationException(
+                    [$"Erro ao salvar documento: {ex.Message}"]);
+            }
         }
     }
 }

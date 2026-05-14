@@ -110,11 +110,6 @@ namespace Civitas.WebAPI.Objects.Models
         public TipoDespesa TipoDespesa { get; set; }
 
         /// <summary>
-        /// Coleção de documentos legais (contratos, certidões negativas) vinculados ao fornecedor.
-        /// </summary>
-        public ICollection<Documento> Documentos { get; set; }
-
-        /// <summary>
         /// Unidades consumidoras vinculadas a este fornecedor.
         /// </summary>
         public ICollection<UnidadeConsumidora> UnidadesConsumidoras { get; set; }

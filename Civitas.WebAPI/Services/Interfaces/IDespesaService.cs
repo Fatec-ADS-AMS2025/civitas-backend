@@ -17,5 +17,6 @@ namespace Civitas.WebAPI.Services.Interfaces
         Task<IEnumerable<DespesaDTO>> GetByStatusAsync(Status status);
         Task<DespesaDTO> AlterarStatusAsync(int id, Status novoStatus);
         Task AtualizarDespesasAtrasadasAsync();
+        Task<bool> ConfirmarDocumentoDuplicadoAsync(string hashDocumento, int? ignoreId = null);
     }
 }

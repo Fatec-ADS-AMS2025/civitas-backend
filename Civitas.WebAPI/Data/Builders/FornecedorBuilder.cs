@@ -22,11 +22,6 @@ namespace Civitas.WebAPI.Data.Builders
             modelBuilder.Entity<Fornecedor>().Property(f => f.Cidade).IsRequired().HasMaxLength(100);
             modelBuilder.Entity<Fornecedor>().Property(f => f.Estado).IsRequired().HasMaxLength(2);
             modelBuilder.Entity<Fornecedor>()
-               .HasMany<Documento>(i => i.Documentos)
-               .WithOne(ti => ti.Fornecedor)
-               .HasForeignKey(i => i.IdFornecedor)
-               .OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<Fornecedor>()
                 .HasOne(f => f.TipoDespesa)
                 .WithMany(td => td.Fornecedor)
                 .HasForeignKey(f => f.IdTipoDespesa)

@@ -23,6 +23,19 @@ namespace Civitas.WebAPI.Objects.Models
         public string NumeroDocumento { get; set; }
 
         /// <summary>
+        /// Nome de identificação do documento
+        /// </summary>
+        [Column("nomedocumento")]
+        public string? NomeDocumento { get; set; }
+
+
+        /// <summary>
+        /// Nash de identificação do documento
+        /// </summary>
+        [Column("hashdocumento")]
+        public string? HashDocumento { get; set; }
+
+        /// <summary>
         /// Código identificador da despesa.
         /// </summary>
         [Column("codigo")]
@@ -108,21 +121,26 @@ namespace Civitas.WebAPI.Objects.Models
         }
 
         public Despesa(
-            int id,
-            string numeroDocumento,
-            string codigo,
-            DateOnly dataEmissao,
-            decimal valorPrevisto,
-            decimal valorPago,
-            decimal consumoPrevisto,
-            decimal consumoReal,
-            DateOnly dataVencimento,
-            Status status,
+             int id,
+             string numeroDocumento,
+             string nomeDocumento,
+            string hashDocumento,
+             string codigo,
+             DateOnly dataEmissao,
+             decimal valorPrevisto,
+             decimal valorPago,
+             decimal consumoPrevisto,
+             decimal consumoReal,
+             DateOnly dataVencimento,
+             Status status,
             int idUsuario,
-            int idUnidadeConsumidora)
+         int idUnidadeConsumidora)
         {
             Id = id;
             NumeroDocumento = numeroDocumento;
+            NomeDocumento = nomeDocumento;
+            HashDocumento = hashDocumento;
+
             Codigo = codigo;
             DataEmissao = dataEmissao;
             ValorPrevisto = valorPrevisto;

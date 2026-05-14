@@ -33,7 +33,6 @@ namespace Civitas.WebAPI.Data.Seeding
                 await _context.Orcamentos.AnyAsync(cancellationToken) ||
                 await _context.UnidadesConsumidoras.AnyAsync(cancellationToken) ||
                 await _context.Despesas.AnyAsync(cancellationToken) ||
-                await _context.Documento.AnyAsync(cancellationToken) ||
                 await _context.Auditorias.AnyAsync(cancellationToken) ||
                 await _context.TipoInstituicoes.AnyAsync(cancellationToken) ||
                 await _context.UnidadesMedida.AnyAsync(cancellationToken) ||
@@ -277,6 +276,8 @@ namespace Civitas.WebAPI.Data.Seeding
                 0,
                 "NF-2026-0001",
                 "1001",
+                "Documento 1",
+                "e64d18547b406ae3b00152234dc5327e800d8e7921142b6adcc0ffb8d3be7f3c",
                 new DateOnly(2026, 4, 10),
                 18450.75m,
                 18450.75m,
@@ -291,6 +292,8 @@ namespace Civitas.WebAPI.Data.Seeding
                 0,
                 "OS-2026-0042",
                 "2001",
+                "Documento 2",
+                "b08e9c91a71899cca2136f9caa6b04321361ed52f801cb6ff4c7d5128cf8be8e",
                 new DateOnly(2026, 4, 15),
                 9200.00m,
                 0m,

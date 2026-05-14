@@ -19,6 +19,26 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         public string NumeroDocumento { get; set; }
 
         /// <summary>
+        /// Nome do documento fornecido pelo usuário
+        /// </summary>
+        public string? NomeDocumento { get; set; }
+
+        /// <summary>
+        /// Hash SHA-256 do documento (gerado automaticamente pelo código)
+        /// </summary>
+        public string? HashDocumento { get; set; }
+
+        /// <summary>
+        /// Campo para confirmação de documento duplicado.
+        /// </summary>
+        public Boolean ConfirmarDocumentoDuplicado { get; set; }
+
+        /// <summary>
+        /// Campo de arquivo de Documento para upload.
+        /// </summary>
+        public IFormFile? Documento { get; set; }
+
+        /// <summary>
         /// Código identificador da despesa.
         /// </summary>
         public string Codigo { get; set; }

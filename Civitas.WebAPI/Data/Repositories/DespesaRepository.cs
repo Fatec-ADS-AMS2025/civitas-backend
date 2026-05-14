@@ -76,5 +76,19 @@ namespace Civitas.WebAPI.Data.Repositories
             var total = await query.SumAsync(despesa => (decimal?)despesa.ValorPrevisto) ?? 0m;
             return Math.Round(total, 2, MidpointRounding.AwayFromZero);
         }
+
+        public async Task<bool> ExistsByHashDocumentoAsync(string hashDocumento, int? ignoreId = null)
+        {
+            var query = _context.Despesas
+                .AsNoTracking()
+                .Where(despesa => despesa.HashDocumento == hashDocumento);
+
+            if (ignoreId.HasValue)
+            {
+                query = query.Where(despesa => despesa.Id != ignoreId.Value);
+            }
+
+            return await query.AnyAsync();
+        }
     }
 }
