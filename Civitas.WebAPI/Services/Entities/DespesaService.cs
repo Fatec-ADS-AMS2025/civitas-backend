@@ -128,20 +128,20 @@ namespace Civitas.WebAPI.Services.Entities
             return _mapper.Map<IEnumerable<DespesaDTO>>(entities);
         }
 
-        public async Task<IEnumerable<DespesaDTO>> GetByNomeDocumentoAsync(string nomeDocumento)
+        public async Task<IEnumerable<DespesaDTO>> GetByHashDocumentoAsync(string hashDocumento)
         {
-            var entities = await _despesaRepository.GetByNomeDocumentoAsync(Sanitize(nomeDocumento));
+            var entities = await _despesaRepository.GetByHashDocumentoAsync(Sanitize(hashDocumento));
             return _mapper.Map<IEnumerable<DespesaDTO>>(entities);
         }
 
 
 
-        public async Task<FileResultDto?> ObterArquivoDocumentoAsync(string nomeDocumento)
+        public async Task<FileResultDto?> ObterArquivoDocumentoAsync(string hashDocumento)
         {
-            if (string.IsNullOrWhiteSpace(nomeDocumento))
+            if (string.IsNullOrWhiteSpace(hashDocumento))
                 throw new ArgumentException("Nome do documento não pode ser vazio");
 
-            var despesa = (await GetByNomeDocumentoAsync(nomeDocumento))
+            var despesa = (await GetByHashDocumentoAsync(hashDocumento))
                 .FirstOrDefault();
 
             if (despesa is null)
@@ -169,7 +169,7 @@ namespace Civitas.WebAPI.Services.Entities
             return new FileResultDto
             {
                 Stream = stream,
-                FileName = $"{despesa.NomeDocumento}.pdf",
+                FileName = $"{despesa.HashDocumento}.pdf",
                 ContentType = "application/pdf",
                 Inline = true
             };

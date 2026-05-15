@@ -25,15 +25,15 @@ namespace Civitas.WebAPI.Data.Repositories
                     despesa.NumeroDocumento.Trim().ToUpper() == normalizedNumeroDocumento)
                 .ToListAsync();
         }
-        public async Task<IEnumerable<Despesa>> GetByNomeDocumentoAsync(string nomeDocumento)
+        public async Task<IEnumerable<Despesa>> GetByHashDocumentoAsync(string hashDocumento)
         {
-            var normalized = nomeDocumento.Trim().ToUpperInvariant();
+            var normalized = hashDocumento.Trim().ToUpperInvariant();
 
             return await _context.Despesas
                 .AsNoTracking()
                 .Where(d =>
-                    d.NomeDocumento != null &&
-                    d.NomeDocumento.Trim().ToUpper() == normalized)
+                    d.HashDocumento != null &&
+                    d.HashDocumento.Trim().ToUpper() == normalized)
                 .ToListAsync();
         }
 

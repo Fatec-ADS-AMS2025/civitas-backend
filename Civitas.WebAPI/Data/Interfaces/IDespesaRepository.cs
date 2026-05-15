@@ -6,7 +6,7 @@ namespace Civitas.WebAPI.Data.Interfaces
     public interface IDespesaRepository : IGenericRepository<Despesa>
     {
         Task<IEnumerable<Despesa>> GetByNumeroDocumentoAsync(string numeroDocumento);
-        Task<IEnumerable<Despesa>> GetByNomeDocumentoAsync(string nomeDocumento);
+        Task<IEnumerable<Despesa>> GetByHashDocumentoAsync(string hashDocumento);
         Task<IEnumerable<Despesa>> GetByCodigoAsync(string codigo);
         Task<IEnumerable<Despesa>> GetByUnidadeConsumidoraAsync(int idUnidadeConsumidora);
         Task<IEnumerable<Despesa>> GetByUsuarioAsync(int idUsuario);

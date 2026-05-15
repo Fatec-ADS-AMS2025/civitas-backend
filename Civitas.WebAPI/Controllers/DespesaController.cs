@@ -88,14 +88,14 @@ namespace Civitas.WebAPI.Controllers
             return Ok(_response);
         }
 
-        [HttpGet("nome-documento/{nomeDocumento}")]
-        public async Task<IActionResult> GetByNomeDocumento(string nomeDocumento)
+        [HttpGet("hash-documento/{hashDocumento}")]
+        public async Task<IActionResult> GetByHashDocumento(string hashDocumento)
         {
-            var despesas = await _despesaService.GetByNomeDocumentoAsync(nomeDocumento);
+            var despesas = await _despesaService.GetByHashDocumentoAsync(hashDocumento);
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = despesas;
-            _response.Message = "Despesas listadas por número do documento com sucesso";
+            _response.Message = "Despesas listadas por hash do documento com sucesso";
 
             return Ok(_response);
         }
@@ -199,24 +199,26 @@ namespace Civitas.WebAPI.Controllers
         /// <summary>
         /// Abre o documento PDF da despesa no navegador.
         /// </summary>
-        [HttpGet("documento/abrir")]
-        public async Task<IActionResult> AbrirDocumento([FromQuery] string nomeDocumento)
+        [HttpGet("documento/{hashDocumento}")]
+        public async Task<IActionResult> AbrirDocumento(string hashDocumento)
         {
-            if (string.IsNullOrWhiteSpace(nomeDocumento))
+            if (string.IsNullOrWhiteSpace(hashDocumento))
             {
                 _response.Code = ResponseEnum.INVALID;
                 _response.Data = null;
-                _response.Message = "Nome do documento é obrigatório";
+                _response.Message = "Hash do documento é obrigatório";
+
                 return BadRequest(_response);
             }
 
-            var fileResult = await _despesaService.ObterArquivoDocumentoAsync(nomeDocumento);
+            var fileResult = await _despesaService.ObterArquivoDocumentoAsync(hashDocumento);
 
             if (fileResult is null)
             {
                 _response.Code = ResponseEnum.NOT_FOUND;
                 _response.Data = null;
                 _response.Message = "Documento não encontrado";
+
                 return NotFound(_response);
             }
 
