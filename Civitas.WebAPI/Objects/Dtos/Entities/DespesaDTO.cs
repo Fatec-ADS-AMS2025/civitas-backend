@@ -95,7 +95,7 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// Valores preenchidos para os campos opcionais. Apenas chaves declaradas
         /// no TipoDespesa relacionado são aceitas. Pode ser null, vazio, ou parcial.
         /// </summary>
-        /// <example>{"numeroNota":"12345","fornecedor":"Papelaria Central","centroCusto":null}</example>
-        public string? ValoresOpcionais { get; set; }
+        /// <example>"{"numeroNota":"12345","fornecedor":"Papelaria Central","centroCusto":null}"</example>
+        public string ValoresOpcionais { get; set; }
     }
 }

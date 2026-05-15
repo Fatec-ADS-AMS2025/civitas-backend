@@ -258,8 +258,6 @@ namespace Civitas.WebAPI.Controllers
 
             try
             {
-                await _despesaService.ValidarCadastroAsync(despesaDTO);
-
                 despesaDTO.Id = 0;
 
                 await _despesaService.Create(despesaDTO);
