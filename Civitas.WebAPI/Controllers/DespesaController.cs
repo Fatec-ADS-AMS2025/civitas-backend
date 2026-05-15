@@ -4,6 +4,7 @@ using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
 using Civitas.WebAPI.Services.Validation;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
@@ -79,6 +80,18 @@ namespace Civitas.WebAPI.Controllers
         public async Task<IActionResult> GetByNumeroDocumento(string numeroDocumento)
         {
             var despesas = await _despesaService.GetByNumeroDocumentoAsync(numeroDocumento);
+
+            _response.Code = ResponseEnum.SUCCESS;
+            _response.Data = despesas;
+            _response.Message = "Despesas listadas por número do documento com sucesso";
+
+            return Ok(_response);
+        }
+
+        [HttpGet("nome-documento/{nomeDocumento}")]
+        public async Task<IActionResult> GetByNomeDocumento(string nomeDocumento)
+        {
+            var despesas = await _despesaService.GetByNomeDocumentoAsync(nomeDocumento);
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = despesas;
@@ -178,6 +191,55 @@ namespace Civitas.WebAPI.Controllers
         }
 
         /// <summary>
+        /// Abre o documento PDF da despesa no navegador.
+        /// </summary>
+        /// <summary>
+        /// Abre o documento PDF da despesa no navegador pelo nome do documento.
+        /// </summary>
+        /// <summary>
+        /// Abre o documento PDF da despesa no navegador.
+        /// </summary>
+        [HttpGet("documento/abrir")]
+        public async Task<IActionResult> AbrirDocumento([FromQuery] string nomeDocumento)
+        {
+            if (string.IsNullOrWhiteSpace(nomeDocumento))
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = null;
+                _response.Message = "Nome do documento é obrigatório";
+                return BadRequest(_response);
+            }
+
+            var fileResult = await _despesaService.ObterArquivoDocumentoAsync(nomeDocumento);
+
+            if (fileResult is null)
+            {
+                _response.Code = ResponseEnum.NOT_FOUND;
+                _response.Data = null;
+                _response.Message = "Documento não encontrado";
+                return NotFound(_response);
+            }
+
+            _response.Code = ResponseEnum.SUCCESS;
+            _response.Data = new
+            {
+                fileResult.FileName,
+                ContentType = "application/pdf"
+            };
+            _response.Message = "Documento encontrado com sucesso";
+
+            var encodedFileName = Uri.EscapeDataString(fileResult.FileName);
+
+            Response.Headers.Add(
+                "Content-Disposition",
+                $"inline; filename*=UTF-8''{encodedFileName}"
+            );
+
+            return File(fileResult.Stream, "application/pdf");
+        }
+
+
+        /// <summary>
         /// Cria uma nova despesa no sistema.
         /// </summary>
         [HttpPost]
@@ -244,6 +306,9 @@ namespace Civitas.WebAPI.Controllers
         /// <summary>
         /// Atualiza uma despesa existente.
         /// </summary>
+        /// <summary>
+        /// Atualiza uma despesa existente.
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromForm] DespesaDTO despesaDTO)
         {
@@ -252,23 +317,7 @@ namespace Civitas.WebAPI.Controllers
                 await _despesaService.Update(despesaDTO, id);
 
                 _response.Code = ResponseEnum.SUCCESS;
-                _response.Data = new
-                {
-                    despesaDTO.Id,
-                    despesaDTO.NumeroDocumento,
-                    despesaDTO.NomeDocumento,
-                    despesaDTO.Codigo,
-                    despesaDTO.DataEmissao,
-                    despesaDTO.DataVencimento,
-                    despesaDTO.ValorPrevisto,
-                    despesaDTO.ValorPago,
-                    despesaDTO.ConsumoPrevisto,
-                    despesaDTO.ConsumoReal,
-                    despesaDTO.Status,
-                    despesaDTO.IdUsuario,
-                    despesaDTO.IdUnidadeConsumidora,
-                    despesaDTO.HashDocumento
-                };
+                _response.Data = despesaDTO;
                 _response.Message = "Despesa atualizada com sucesso";
 
                 return Ok(_response);
@@ -278,7 +327,7 @@ namespace Civitas.WebAPI.Controllers
                 _response.Code = ResponseEnum.INVALID;
                 _response.Message = ex.Message;
                 _response.Data = ex.Errors;
-                
+
                 // Verificar se é erro de documento duplicado
                 if (ex.Errors.Any(e => e.Contains("documento com o mesmo conteúdo")))
                 {
@@ -304,6 +353,7 @@ namespace Civitas.WebAPI.Controllers
                     ErrorMessage = ex.Message,
                     StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
                 };
+
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
         }

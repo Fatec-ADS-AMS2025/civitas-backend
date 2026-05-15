@@ -128,6 +128,53 @@ namespace Civitas.WebAPI.Services.Entities
             return _mapper.Map<IEnumerable<DespesaDTO>>(entities);
         }
 
+        public async Task<IEnumerable<DespesaDTO>> GetByNomeDocumentoAsync(string nomeDocumento)
+        {
+            var entities = await _despesaRepository.GetByNomeDocumentoAsync(Sanitize(nomeDocumento));
+            return _mapper.Map<IEnumerable<DespesaDTO>>(entities);
+        }
+
+
+
+        public async Task<FileResultDto?> ObterArquivoDocumentoAsync(string nomeDocumento)
+        {
+            if (string.IsNullOrWhiteSpace(nomeDocumento))
+                throw new ArgumentException("Nome do documento não pode ser vazio");
+
+            var despesa = (await GetByNomeDocumentoAsync(nomeDocumento))
+                .FirstOrDefault();
+
+            if (despesa is null)
+                return null;
+
+            if (string.IsNullOrWhiteSpace(despesa.HashDocumento))
+                throw new InvalidOperationException("Documento não possui hash associado");
+
+            var filePath = Path.Combine(
+                _webHostEnvironment.ContentRootPath,
+                "Documentos",
+                $"{despesa.HashDocumento}.pdf"
+            );
+
+            if (!File.Exists(filePath))
+                return null;
+
+            var stream = new FileStream(
+                filePath,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.Read
+            );
+
+            return new FileResultDto
+            {
+                Stream = stream,
+                FileName = $"{despesa.NomeDocumento}.pdf",
+                ContentType = "application/pdf",
+                Inline = true
+            };
+        }
+
         public async Task<IEnumerable<DespesaDTO>> GetByCodigoAsync(string codigo)
         {
             var entities = await _despesaRepository.GetByCodigoAsync(Sanitize(codigo));
