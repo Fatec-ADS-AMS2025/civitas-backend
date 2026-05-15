@@ -9,7 +9,7 @@ using Civitas.WebAPI.Services.Validation;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Security.Cryptography;
-using System.Text;
+using System.Text.Json;
 
 namespace Civitas.WebAPI.Services.Entities
 {
@@ -258,8 +258,6 @@ namespace Civitas.WebAPI.Services.Entities
                 }
             }
 
-            ValidarValoresOpcionais(despesaDTO, tipoDespesa, errors);
-
             Orcamento? orcamento = null;
             if (unidadeConsumidora.IdOrcamento <= 0)
             {
@@ -447,7 +445,20 @@ namespace Civitas.WebAPI.Services.Entities
             TipoDespesa? tipoDespesa,
             ICollection<string> errors)
         {
-            if (dto.ValoresOpcionais is null || dto.ValoresOpcionais.Count == 0)
+            IReadOnlyDictionary<string, JsonElement>? valores;
+            try
+            {
+                valores = string.IsNullOrWhiteSpace(dto.ValoresOpcionais)
+                    ? null
+                    : CamposOpcionaisJsonHelper.ParseValoresPreenchidos(dto.ValoresOpcionais);
+            }
+            catch (Exception ex) when (ex is ArgumentException or JsonException)
+            {
+                errors.Add($"ValoresOpcionais invalido: {ex.Message}");
+                return;
+            }
+
+            if (valores is null || valores.Count == 0)
             {
                 return;
             }
@@ -476,7 +487,7 @@ namespace Civitas.WebAPI.Services.Entities
             }
 
             var desconhecidas = CamposOpcionaisJsonHelper.EncontrarChavesDesconhecidas(
-                dto.ValoresOpcionais.Keys,
+                valores.Keys,
                 declarados);
             if (desconhecidas.Count > 0)
             {
@@ -485,7 +496,7 @@ namespace Civitas.WebAPI.Services.Entities
                     string.Join(", ", desconhecidas));
             }
 
-            foreach (var key in dto.ValoresOpcionais.Keys)
+            foreach (var key in valores.Keys)
             {
                 if (string.IsNullOrWhiteSpace(key))
                 {

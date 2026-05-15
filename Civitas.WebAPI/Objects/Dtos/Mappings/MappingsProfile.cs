@@ -2,7 +2,6 @@ using AutoMapper;
 using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Models;
 using Civitas.WebAPI.Services.Validation;
-using System.Text.Json;
 
 namespace Civitas.WebAPI.Objects.Dtos.Mappings
 {
@@ -28,13 +27,7 @@ namespace Civitas.WebAPI.Objects.Dtos.Mappings
                     CamposOpcionaisJsonHelper.SerializeCamposDeclarados(src.CamposOpcionais)));
 
             CreateMap<Orcamento, OrcamentoDTO>().ReverseMap();
-
-            CreateMap<Despesa, DespesaDTO>()
-                .ForMember(dest => dest.ValoresOpcionais, opt => opt.MapFrom(src =>
-                    ParseValoresSafely(src.ValoresOpcionais)));
-            CreateMap<DespesaDTO, Despesa>()
-                .ForMember(dest => dest.ValoresOpcionais, opt => opt.MapFrom(src =>
-                    SerializeValoresOpcionais(src.ValoresOpcionais)));
+            CreateMap<Despesa, DespesaDTO>().ReverseMap();
 
             CreateMap<TipoCodigo, TipoCodigoDTO>().ReverseMap();
             CreateMap<UnidadeConsumidora, UnidadeConsumidoraDTO>().ReverseMap();
@@ -57,36 +50,5 @@ namespace Civitas.WebAPI.Objects.Dtos.Mappings
             }
         }
 
-        private static IDictionary<string, JsonElement>? ParseValoresSafely(string? json)
-        {
-            if (string.IsNullOrWhiteSpace(json))
-            {
-                return null;
-            }
-
-            try
-            {
-                return CamposOpcionaisJsonHelper.ParseValoresPreenchidos(json)
-                    .ToDictionary(kv => kv.Key, kv => kv.Value);
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        private static string? SerializeValoresOpcionais(IDictionary<string, JsonElement>? valores)
-        {
-            if (valores == null)
-            {
-                return null;
-            }
-
-            IReadOnlyDictionary<string, JsonElement> readOnly =
-                valores as IReadOnlyDictionary<string, JsonElement>
-                ?? new Dictionary<string, JsonElement>(valores);
-
-            return CamposOpcionaisJsonHelper.SerializeValoresPreenchidos(readOnly);
-        }
     }
 }
