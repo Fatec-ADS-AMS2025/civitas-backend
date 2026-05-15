@@ -11,7 +11,7 @@ namespace Civitas.WebAPI.Objects.Models
     /// Exemplos de uso: Quilowatts (kW) para energia, Metros Cúbicos (m³) para água, Unidade (un) para itens fixos.
     /// </remarks>
     [Table("unidademedida")]
-    public class UnidadeMedida
+    public class UnidadeMedida : ISoftDeletable
     {
         /// <summary>
         /// Identificador único da unidade de medida (Chave Primária).
@@ -52,6 +52,13 @@ namespace Civitas.WebAPI.Objects.Models
         /// <summary>
         /// Construtor para inicialização completa da entidade UnidadeMedida.
         /// </summary>
+
+        [Column("excluido")]
+        public bool Excluido { get; set; }
+
+        [Column("dataexclusao")]
+        public DateTime? DataExclusao { get; set; }
+
         public UnidadeMedida(int id, string descricao, string abreviatura, Situacao situacao)
         {
             Id = id;

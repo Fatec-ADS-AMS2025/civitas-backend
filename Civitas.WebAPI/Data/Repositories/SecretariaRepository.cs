@@ -18,7 +18,7 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             var query = _appDbContext.Secretarias
                 .AsNoTracking()
-                .Where(secretaria => secretaria.Cnpj == cnpj);
+                .Where(secretaria => secretaria.Cnpj == cnpj && !secretaria.Excluido);
 
             if (ignoreId.HasValue)
             {
@@ -34,7 +34,7 @@ namespace Civitas.WebAPI.Data.Repositories
 
             var query = _appDbContext.Secretarias
                 .AsNoTracking()
-                .Where(secretaria => secretaria.Email.ToLower() == normalizedEmail);
+                .Where(secretaria => secretaria.Email.ToLower() == normalizedEmail && !secretaria.Excluido);
 
             if (ignoreId.HasValue)
             {
@@ -48,15 +48,15 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             return await _appDbContext.Secretarias
                 .AsNoTracking()
-                .Where(secretaria => secretaria.IdSecretaria == secretariaId)
+                .Where(secretaria => secretaria.IdSecretaria == secretariaId && !secretaria.Excluido)
                 .Select(secretaria => new SecretariaGastosDTO
                 {
                     IdSecretaria = secretaria.IdSecretaria,
                     NomeSecretaria = secretaria.Nome,
-                    QuantidadeInstituicoes = _appDbContext.Instituicoes.Count(instituicao => instituicao.IdSecretaria == secretaria.IdSecretaria),
-                    QuantidadeDespesas = _appDbContext.Despesas.Count(despesa => despesa.UnidadeConsumidora.Instituicao.IdSecretaria == secretaria.IdSecretaria),
+                    QuantidadeInstituicoes = _appDbContext.Instituicoes.Count(instituicao => instituicao.IdSecretaria == secretaria.IdSecretaria && !instituicao.Excluido),
+                    QuantidadeDespesas = _appDbContext.Despesas.Count(despesa => despesa.UnidadeConsumidora.Instituicao.IdSecretaria == secretaria.IdSecretaria && !despesa.Excluido),
                     TotalGastos = _appDbContext.Despesas
-                        .Where(despesa => despesa.UnidadeConsumidora.Instituicao.IdSecretaria == secretaria.IdSecretaria)
+                        .Where(despesa => despesa.UnidadeConsumidora.Instituicao.IdSecretaria == secretaria.IdSecretaria && !despesa.Excluido)
                         .Sum(despesa => despesa.ValorPrevisto)
                 })
                 .FirstOrDefaultAsync();
@@ -66,22 +66,22 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             return await _appDbContext.Secretarias
                 .AsNoTracking()
-                .Where(secretaria => secretaria.IdSecretaria == secretariaId)
+                .Where(secretaria => secretaria.IdSecretaria == secretariaId && !secretaria.Excluido)
                 .Select(secretaria => new SecretariaOrcamentoDisponivelDTO
                 {
                     IdSecretaria = secretaria.IdSecretaria,
                     NomeSecretaria = secretaria.Nome,
-                    QuantidadeInstituicoes = _appDbContext.Instituicoes.Count(instituicao => instituicao.IdSecretaria == secretaria.IdSecretaria),
+                    QuantidadeInstituicoes = _appDbContext.Instituicoes.Count(instituicao => instituicao.IdSecretaria == secretaria.IdSecretaria && !instituicao.Excluido),
                     TotalOrcamentoDisponivel = 
                         (
                             _appDbContext.Orcamentos
-                                .Where(orcamento => orcamento.Instituicao.IdSecretaria == secretaria.IdSecretaria)
+                                .Where(orcamento => orcamento.Instituicao.IdSecretaria == secretaria.IdSecretaria && !orcamento.Excluido)
                                 .Sum(orcamento => (decimal?)orcamento.ValorOrcamento) ?? 0
                         )
                         -
                         (
                             _appDbContext.Despesas
-                                .Where(despesa => despesa.UnidadeConsumidora.Instituicao.IdSecretaria == secretaria.IdSecretaria)
+                                .Where(despesa => despesa.UnidadeConsumidora.Instituicao.IdSecretaria == secretaria.IdSecretaria && !despesa.Excluido)
                                 .Sum(despesa => (decimal?)despesa.ValorPrevisto) ?? 0
                         )
                 })

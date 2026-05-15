@@ -70,27 +70,27 @@ namespace Civitas.WebAPI.Data.Repositories
 
         public async Task<bool> InstituicaoExistsAsync(int idInstituicao)
         {
-            return await _context.Instituicoes.AsNoTracking().AnyAsync(i => i.Id == idInstituicao);
+            return await _context.Instituicoes.AsNoTracking().AnyAsync(i => i.Id == idInstituicao && !i.Excluido);
         }
 
         public async Task<bool> TipoDespesaExistsAsync(int idTipoDespesa)
         {
-            return await _context.TiposDespesa.AsNoTracking().AnyAsync(td => td.Id == idTipoDespesa);
+            return await _context.TiposDespesa.AsNoTracking().AnyAsync(td => td.Id == idTipoDespesa && !td.Excluido);
         }
 
         public async Task<bool> SecretariaExistsAsync(int idSecretaria)
         {
-            return await _context.Secretarias.AsNoTracking().AnyAsync(s => s.IdSecretaria == idSecretaria);
+            return await _context.Secretarias.AsNoTracking().AnyAsync(s => s.IdSecretaria == idSecretaria && !s.Excluido);
         }
 
         public async Task<bool> OrcamentoExistsAsync(int idOrcamento)
         {
-            return await _context.Orcamentos.AsNoTracking().AnyAsync(o => o.IdOrcamento == idOrcamento);
+            return await _context.Orcamentos.AsNoTracking().AnyAsync(o => o.IdOrcamento == idOrcamento && !o.Excluido);
         }
 
         public async Task<bool> FornecedorExistsAsync(int idFornecedor)
         {
-            return await _context.Fornecedores.AsNoTracking().AnyAsync(f => f.IdFornecedor == idFornecedor);
+            return await _context.Fornecedores.AsNoTracking().AnyAsync(f => f.IdFornecedor == idFornecedor && !f.Excluido);
         }
 
         private async Task<PaginatedResult<UnidadeConsumidora>> PageByExcluidoAsync(PaginationQuery paginationQuery, bool excluido)

@@ -90,6 +90,8 @@ namespace Civitas.WebAPI.Services.Entities
 
             var entity = _mapper.Map<TipoDespesa>(entityDTO);
             entity.Id = id;
+            entity.Excluido = existingTipoDespesa.Excluido;
+            entity.DataExclusao = existingTipoDespesa.DataExclusao;
 
             await _tipoDespesaRepository.Update(entity);
 

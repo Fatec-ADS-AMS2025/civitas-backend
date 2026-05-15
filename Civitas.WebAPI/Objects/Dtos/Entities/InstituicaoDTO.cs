@@ -106,5 +106,9 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// Obrigatório. Define a hierarquia superior (quem paga a conta).
         /// </remarks>
         public int IdSecretaria { get; set; }
+        public bool Excluido { get; set; }
+
+        public DateTime? DataExclusao { get; set; }
+
     }
 }

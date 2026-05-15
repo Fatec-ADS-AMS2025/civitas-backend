@@ -1,55 +1,55 @@
-using Civitas.WebAPI.Objects.Enums;
+﻿using Civitas.WebAPI.Objects.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Civitas.WebAPI.Objects.Models
 {
     /// <summary>
-    /// Entidade que representa um órgão governamental ou departamento administrativo superior (Secretaria).
+    /// Entidade que representa um Ã³rgÃ£o governamental ou departamento administrativo superior (Secretaria).
     /// Mapeia a tabela 'secretaria' do banco de dados.
     /// </summary>
     /// <remarks>
-    /// A Secretaria atua como entidade gestora, sendo responsável por um grupo de Instituições.
-    /// Exemplo: Secretaria de Educação (gere Escolas), Secretaria de Saúde (gere Postos de Saúde).
+    /// A Secretaria atua como entidade gestora, sendo responsÃ¡vel por um grupo de InstituiÃ§Ãµes.
+    /// Exemplo: Secretaria de EducaÃ§Ã£o (gere Escolas), Secretaria de SaÃºde (gere Postos de SaÃºde).
     /// </remarks>
     [Table("secretaria")]
-    public class Secretaria
+    public class Secretaria : ISoftDeletable
     {
         /// <summary>
-        /// Identificador único da secretaria (Chave Primária).
+        /// Identificador Ãºnico da secretaria (Chave PrimÃ¡ria).
         /// </summary>
         [Column("idsecretaria")]
         public int IdSecretaria { get; set; }
 
         /// <summary>
-        /// Situação cadastral da secretaria no sistema.
+        /// SituaÃ§Ã£o cadastral da secretaria no sistema.
         /// </summary>
         /// <remarks>
         /// Controlado pelo Enum <see cref="Situacao"/>.
-        /// Secretarias INATIVAS não devem permitir a abertura de novos processos ou vínculos de despesas.
+        /// Secretarias INATIVAS nÃ£o devem permitir a abertura de novos processos ou vÃ­nculos de despesas.
         /// </remarks>
         [Column("situacao")]
         public Situacao Situacao { get; set; }
 
         /// <summary>
-        /// Descrição detalhada ou missão da secretaria.
+        /// DescriÃ§Ã£o detalhada ou missÃ£o da secretaria.
         /// </summary>
         [Column("descricao")]
         public string Descricao { get; set; }
 
         /// <summary>
-        /// Cadastro Nacional da Pessoa Jurídica.
+        /// Cadastro Nacional da Pessoa JurÃ­dica.
         /// </summary>
         /// <remarks>
-        /// Regra: Deve conter apenas números (14 dígitos) ou estar formatado com máscara padrão.
-        /// Campo obrigatório para validações fiscais.
+        /// Regra: Deve conter apenas nÃºmeros (14 dÃ­gitos) ou estar formatado com mÃ¡scara padrÃ£o.
+        /// Campo obrigatÃ³rio para validaÃ§Ãµes fiscais.
         /// </remarks>
         [Column("cnpj")]
         public string Cnpj { get; set; }
 
         /// <summary>
-        /// Nome Fantasia ou nome de exibição pública da secretaria.
+        /// Nome Fantasia ou nome de exibiÃ§Ã£o pÃºblica da secretaria.
         /// </summary>
-        /// <example>Secretaria Municipal de Educação</example>
+        /// <example>Secretaria Municipal de EducaÃ§Ã£o</example>
         [Column("nome")]
         public string Nome { get; set; }
 
@@ -60,7 +60,7 @@ namespace Civitas.WebAPI.Objects.Models
         public string Logradouro { get; set; }
 
         /// <summary>
-        /// Número do imóvel da sede.
+        /// NÃºmero do imÃ³vel da sede.
         /// </summary>
         [Column("numero")]
         public string Numero { get; set; }
@@ -72,13 +72,13 @@ namespace Civitas.WebAPI.Objects.Models
         public string Bairro { get; set; }
 
         /// <summary>
-        /// Código de Endereçamento Postal da sede.
+        /// CÃ³digo de EndereÃ§amento Postal da sede.
         /// </summary>
         [Column("cep")]
         public string Cep { get; set; }
 
         /// <summary>
-        /// Razão Social oficial registrada para fins jurídicos e contratuais.
+        /// RazÃ£o Social oficial registrada para fins jurÃ­dicos e contratuais.
         /// </summary>
         [Column("nomerazaosocial")]
         public string NomeRazaoSocial { get; set; }
@@ -90,31 +90,38 @@ namespace Civitas.WebAPI.Objects.Models
         public string Email { get; set; }
 
         /// <summary>
-        /// Telefone fixo ou móvel da sede.
+        /// Telefone fixo ou mÃ³vel da sede.
         /// </summary>
         [Column("telefone")]
         public string Telefone { get; set; }
 
         /// <summary>
-        /// Cidade onde a secretaria está localizada.
+        /// Cidade onde a secretaria estÃ¡ localizada.
         /// </summary>
         [Column("cidade")]
         public string Cidade { get; set; }
 
         /// <summary>
-        /// Unidade Federativa (UF) da localização.
+        /// Unidade Federativa (UF) da localizaÃ§Ã£o.
         /// </summary>
         [Column("estado")]
         public string Estado { get; set; }
 
         /// <summary>
-        /// Relacionamento: Lista de instituições subordinadas a esta secretaria.
+        /// Relacionamento: Lista de instituiÃ§Ãµes subordinadas a esta secretaria.
         /// </summary>
         public ICollection<Instituicao> Instituicoes { get; set; }
 
         /// <summary>
-        /// Construtor vazio necessário para a materialização de objetos pelo Entity Framework.
+        /// Construtor vazio necessÃ¡rio para a materializaÃ§Ã£o de objetos pelo Entity Framework.
         /// </summary>
+
+        [Column("excluido")]
+        public bool Excluido { get; set; }
+
+        [Column("dataexclusao")]
+        public DateTime? DataExclusao { get; set; }
+
         public Secretaria()
         {
             Descricao = string.Empty;
@@ -132,7 +139,7 @@ namespace Civitas.WebAPI.Objects.Models
         }
 
         /// <summary>
-        /// Construtor para inicialização completa da entidade Secretaria.
+        /// Construtor para inicializaÃ§Ã£o completa da entidade Secretaria.
         /// </summary>
         public Secretaria(int idSecretaria, Situacao situacao, string descricao, string cnpj, string nome,
             string logradouro, string numero, string bairro, string cep, string nomeRazaoSocial,

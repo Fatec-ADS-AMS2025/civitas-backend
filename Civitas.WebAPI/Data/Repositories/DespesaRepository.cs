@@ -21,6 +21,7 @@ namespace Civitas.WebAPI.Data.Repositories
             return await _context.Despesas
                 .AsNoTracking()
                 .Where(despesa =>
+                    !despesa.Excluido &&
                     despesa.NumeroDocumento != null &&
                     despesa.NumeroDocumento.Trim().ToUpper() == normalizedNumeroDocumento)
                 .ToListAsync();
@@ -33,6 +34,7 @@ namespace Civitas.WebAPI.Data.Repositories
             return await _context.Despesas
                 .AsNoTracking()
                 .Where(despesa =>
+                    !despesa.Excluido &&
                     despesa.Codigo != null &&
                     despesa.Codigo.Trim().ToUpper() == normalizedCodigo)
                 .ToListAsync();
@@ -42,7 +44,7 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             return await _context.Despesas
                 .AsNoTracking()
-                .Where(despesa => despesa.IdUnidadeConsumidora == idUnidadeConsumidora)
+                .Where(despesa => despesa.IdUnidadeConsumidora == idUnidadeConsumidora && !despesa.Excluido)
                 .ToListAsync();
         }
 
@@ -50,7 +52,7 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             return await _context.Despesas
                 .AsNoTracking()
-                .Where(despesa => despesa.IdUsuario == idUsuario)
+                .Where(despesa => despesa.IdUsuario == idUsuario && !despesa.Excluido)
                 .ToListAsync();
         }
 
@@ -58,7 +60,7 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             return await _context.Despesas
                 .AsNoTracking()
-                .Where(despesa => despesa.Status == status)
+                .Where(despesa => despesa.Status == status && !despesa.Excluido)
                 .ToListAsync();
         }
 
@@ -66,7 +68,7 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             var query = _context.Despesas
                 .AsNoTracking()
-                .Where(despesa => despesa.UnidadeConsumidora.IdOrcamento == idOrcamento);
+                .Where(despesa => despesa.UnidadeConsumidora.IdOrcamento == idOrcamento && !despesa.Excluido);
 
             if (ignoreId.HasValue)
             {

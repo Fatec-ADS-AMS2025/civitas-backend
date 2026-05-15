@@ -1,36 +1,36 @@
-using Civitas.WebAPI.Objects.Enums;
+ï»¿using Civitas.WebAPI.Objects.Enums;
 
 namespace Civitas.WebAPI.Objects.Dtos.Entities
 {
     /// <summary>
-    /// Objeto de transferência de dados para operações envolvendo Secretarias (Órgãos Gestores).
+    /// Objeto de transferÃªncia de dados para operaÃ§Ãµes envolvendo Secretarias (Ã“rgÃ£os Gestores).
     /// </summary>
     /// <remarks>
     /// Finalidade:
-    /// - Input: Receber dados para cadastro/edição de uma secretaria via formulário.
-    /// - Output: Retornar os detalhes da secretaria para visualização.
+    /// - Input: Receber dados para cadastro/ediÃ§Ã£o de uma secretaria via formulÃ¡rio.
+    /// - Output: Retornar os detalhes da secretaria para visualizaÃ§Ã£o.
     /// </remarks>
     public class SecretariaDTO
     {
         /// <summary>
-        /// Identificador único da secretaria.
+        /// Identificador Ãºnico da secretaria.
         /// </summary>
         /// <remarks>
-        /// Input: Ignorar na criação. Obrigatório na atualização.
+        /// Input: Ignorar na criaÃ§Ã£o. ObrigatÃ³rio na atualizaÃ§Ã£o.
         /// </remarks>
         public int IdSecretaria { get; set; }
 
         /// <summary>
-        /// Situação cadastral.
+        /// SituaÃ§Ã£o cadastral.
         /// </summary>
         /// <remarks>
         /// Valores: <see cref="Situacao"/>. 
-        /// Secretarias inativas bloqueiam a criação de novas instituições vinculadas.
+        /// Secretarias inativas bloqueiam a criaÃ§Ã£o de novas instituiÃ§Ãµes vinculadas.
         /// </remarks>
         public Situacao Situacao { get; set; }
 
         /// <summary>
-        /// Descrição detalhada ou área de atuação.
+        /// DescriÃ§Ã£o detalhada ou Ã¡rea de atuaÃ§Ã£o.
         /// </summary>
         public string Descricao { get; set; } = string.Empty;
 
@@ -38,14 +38,14 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// CNPJ da secretaria.
         /// </summary>
         /// <remarks>
-        /// Obrigatório. Deve ser enviado sem máscara (apenas números) ou validado pelo backend se vier com pontuação.
+        /// ObrigatÃ³rio. Deve ser enviado sem mÃ¡scara (apenas nÃºmeros) ou validado pelo backend se vier com pontuaÃ§Ã£o.
         /// </remarks>
         public string Cnpj { get; set; } = string.Empty;
 
         /// <summary>
-        /// Nome Fantasia (Nome de exibição).
+        /// Nome Fantasia (Nome de exibiÃ§Ã£o).
         /// </summary>
-        /// <example>Secretaria de Obras, Secretaria da Saúde.</example>
+        /// <example>Secretaria de Obras, Secretaria da SaÃºde.</example>
         public string Nome { get; set; } = string.Empty;
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         public string Logradouro { get; set; } = string.Empty;
 
         /// <summary>
-        /// Número do endereço.
+        /// NÃºmero do endereÃ§o.
         /// </summary>
         public string Numero { get; set; } = string.Empty;
 
@@ -64,12 +64,12 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         public string Bairro { get; set; } = string.Empty;
 
         /// <summary>
-        /// Código Postal (CEP).
+        /// CÃ³digo Postal (CEP).
         /// </summary>
         public string Cep { get; set; } = string.Empty;
 
         /// <summary>
-        /// Razão Social oficial (Nome Jurídico).
+        /// RazÃ£o Social oficial (Nome JurÃ­dico).
         /// </summary>
         public string NomeRazaoSocial { get; set; } = string.Empty;
 
@@ -95,5 +95,9 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// Estado (UF).
         /// </summary>
         public string Estado { get; set; } = string.Empty;
+        public bool Excluido { get; set; }
+
+        public DateTime? DataExclusao { get; set; }
+
     }
 }

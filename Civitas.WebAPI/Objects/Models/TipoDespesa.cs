@@ -13,7 +13,7 @@ namespace Civitas.WebAPI.Objects.Models
     /// Exemplos: Energia Elétrica (Exige UC, Medido em kWh), Aluguel (Não exige UC, Unidade Fixa).
     /// </remarks>
     [Table("tipodespesa")]
-    public class TipoDespesa
+    public class TipoDespesa : ISoftDeletable
     {
         /// <summary>
         /// Identificador único do tipo de despesa (Chave Primária).
@@ -82,6 +82,13 @@ namespace Civitas.WebAPI.Objects.Models
         /// <summary>
         /// Construtor para inicialização da entidade TipoDespesa.
         /// </summary>
+
+        [Column("excluido")]
+        public bool Excluido { get; set; }
+
+        [Column("dataexclusao")]
+        public DateTime? DataExclusao { get; set; }
+
         public TipoDespesa(int id, string descricao, SolicitaUc solicitaUc, Situacao situacao)
         {
             Id = id;
@@ -93,3 +100,4 @@ namespace Civitas.WebAPI.Objects.Models
 
     }
 }
+

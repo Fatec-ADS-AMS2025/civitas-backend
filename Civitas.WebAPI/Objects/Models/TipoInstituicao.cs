@@ -11,7 +11,7 @@ namespace Civitas.WebAPI.Objects.Models
     /// Exemplos de categorias: ONG, Escola, Prefeitura, Posto de Saúde, Associação de Moradores.
     /// </remarks>
     [Table("tipoinstituicao")]
-    public class TipoInstituicao
+    public class TipoInstituicao : ISoftDeletable
     {
         /// <summary>
         /// Identificador único do tipo de instituição (Chave Primária).
@@ -45,6 +45,13 @@ namespace Civitas.WebAPI.Objects.Models
         /// <summary>
         /// Construtor para inicialização da entidade TipoInstituicao.
         /// </summary>
+
+        [Column("excluido")]
+        public bool Excluido { get; set; }
+
+        [Column("dataexclusao")]
+        public DateTime? DataExclusao { get; set; }
+
         public TipoInstituicao(int id, string descricao, Situacao situacao)
         {
             Id = id;

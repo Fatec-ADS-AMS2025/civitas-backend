@@ -17,14 +17,14 @@ namespace Civitas.WebAPI.Data.Repositories
 
         public async Task<IEnumerable<Instituicao>> GetInstituicaoByName(string name)
         {
-            return await _context.Instituicoes.Where(m => m.Nome.Contains(name)).ToListAsync();
+            return await _context.Instituicoes.Where(m => m.Nome.Contains(name) && !m.Excluido).ToListAsync();
         }
 
         public async Task<bool> ExistsByCnpjAsync(string cnpj, int? ignoreId = null)
         {
             var query = _context.Instituicoes
                 .AsNoTracking()
-                .Where(instituicao => instituicao.CNPJ == cnpj);
+                .Where(instituicao => instituicao.CNPJ == cnpj && !instituicao.Excluido);
 
             if (ignoreId.HasValue)
             {
@@ -40,7 +40,7 @@ namespace Civitas.WebAPI.Data.Repositories
 
             var query = _context.Instituicoes
                 .AsNoTracking()
-                .Where(instituicao => instituicao.Email.ToLower() == normalizedEmail);
+                .Where(instituicao => instituicao.Email.ToLower() == normalizedEmail && !instituicao.Excluido);
 
             if (ignoreId.HasValue)
             {
@@ -56,14 +56,15 @@ namespace Civitas.WebAPI.Data.Repositories
                 .AsNoTracking()
                 .AnyAsync(despesa =>
                     despesa.UnidadeConsumidora.IdInstituicao == instituicaoId &&
-                    despesa.Status == Status.A_PAGAR);
+                    despesa.Status == Status.A_PAGAR &&
+                    !despesa.Excluido);
         }
 
         public async Task<InstituicaoGastosDTO?> GetGastosByInstituicaoIdAsync(int instituicaoId, int tipoDespesaId)
         {
             var instituicao = await _context.Instituicoes
                 .AsNoTracking()
-                .FirstOrDefaultAsync(i => i.Id == instituicaoId);
+                .FirstOrDefaultAsync(i => i.Id == instituicaoId && !i.Excluido);
 
             if (instituicao is null)
                 return null;
@@ -72,7 +73,8 @@ namespace Civitas.WebAPI.Data.Repositories
                 .AsNoTracking()
                 .Where(d =>
                     d.UnidadeConsumidora.IdInstituicao == instituicaoId &&
-                    d.UnidadeConsumidora.IdTipoDespesa == tipoDespesaId
+                    d.UnidadeConsumidora.IdTipoDespesa == tipoDespesaId &&
+                    !d.Excluido
                 )
                 .ToListAsync();
 
@@ -138,15 +140,15 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             return await _context.Instituicoes
                 .AsNoTracking()
-                .Where(instituicao => instituicao.Id == instituicaoId)
+                .Where(instituicao => instituicao.Id == instituicaoId && !instituicao.Excluido)
                 .Select(instituicao => new InstituicaoOrcamentoDisponivelDTO
                 {
                     IdInstituicao = instituicao.Id,
                     NomeInstituicao = instituicao.Nome,
                     TotalOrcamentoDisponivel =
-                        (instituicao.Orcamento.Sum(orcamento => (decimal?)orcamento.ValorOrcamento) ?? 0m)
+                        (instituicao.Orcamento.Where(orcamento => !orcamento.Excluido).Sum(orcamento => (decimal?)orcamento.ValorOrcamento) ?? 0m)
                         - (_context.Despesas
-                            .Where(despesa => despesa.UnidadeConsumidora.IdInstituicao == instituicao.Id)
+                            .Where(despesa => despesa.UnidadeConsumidora.IdInstituicao == instituicao.Id && !despesa.Excluido)
                             .Sum(despesa => (decimal?)despesa.ValorPrevisto) ?? 0m)
                 })
                 .FirstOrDefaultAsync();

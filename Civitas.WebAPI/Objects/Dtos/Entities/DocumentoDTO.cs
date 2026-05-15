@@ -54,5 +54,9 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// Obrigatório. Define qual parcela ou competência este documento está comprovando.
         /// </remarks>
         public int IdFluxo { get; set; }
+        public bool Excluido { get; set; }
+
+        public DateTime? DataExclusao { get; set; }
+
     }
 }

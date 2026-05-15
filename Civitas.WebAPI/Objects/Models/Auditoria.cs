@@ -1,69 +1,69 @@
-using Civitas.WebAPI.Objects.Enums;
+Ôªøusing Civitas.WebAPI.Objects.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Civitas.WebAPI.Objects.Models
 {
     /// <summary>
-    /// Entidade respons·vel pelo registro histÛrico de operaÁıes (Logs) realizadas no sistema.
+    /// Entidade respons√°vel pelo registro hist√≥rico de opera√ß√µes (Logs) realizadas no sistema.
     /// Mapeia a tabela 'auditoria' do banco de dados.
     /// </summary>
     /// <remarks>
-    /// O registro de auditoria È imut·vel e essencial para rastreabilidade de seguranÁa.
-    /// Ele captura quem realizou a aÁ„o, qual entidade foi afetada e o estado dos dados antes e depois da operaÁ„o.
+    /// O registro de auditoria √© imut√°vel e essencial para rastreabilidade de seguran√ßa.
+    /// Ele captura quem realizou a a√ß√£o, qual entidade foi afetada e o estado dos dados antes e depois da opera√ß√£o.
     /// </remarks>
     [Table("auditoria")]
-    public class Auditoria
+    public class Auditoria : ISoftDeletable
     {
         /// <summary>
-        /// Identificador ˙nico do registro de log (Chave Prim·ria).
+        /// Identificador √∫nico do registro de log (Chave Prim√°ria).
         /// </summary>
         [Column("id")]
         public int Id { get; set; }
 
         /// <summary>
-        /// Data em que a operaÁ„o ocorreu.
+        /// Data em que a opera√ß√£o ocorreu.
         /// </summary>
         /// <remarks>
-        /// Armazenado como string. Recomendado formato ISO (AAAA-MM-DD) para facilitar ordenaÁ„o.
+        /// Armazenado como string. Recomendado formato ISO (AAAA-MM-DD) para facilitar ordena√ß√£o.
         /// </remarks>
         [Column("data")]
         public string Data { get; set; } = string.Empty;
 
         /// <summary>
-        /// Hor·rio exato em que a operaÁ„o ocorreu.
+        /// Hor√°rio exato em que a opera√ß√£o ocorreu.
         /// </summary>
         /// <example>14:30:59</example>
         [Column("hora")]
         public string Hora { get; set; } = string.Empty;
 
         /// <summary>
-        /// Tipo de operaÁ„o realizada no banco de dados.
+        /// Tipo de opera√ß√£o realizada no banco de dados.
         /// </summary>
         /// <example>INSERT, UPDATE, DELETE, LOGIN.</example>
         [Column("operacao")]
         public string Operacao { get; set; } = string.Empty;
 
         /// <summary>
-        /// Nome da tabela ou entidade que sofreu a alteraÁ„o.
+        /// Nome da tabela ou entidade que sofreu a altera√ß√£o.
         /// </summary>
         /// <example>Usuario, Despesa, Fornecedor.</example>
         [Column("nome_entidade")]
         public string NomeEntidade { get; set; } = string.Empty;
 
         /// <summary>
-        /// Snapshot dos dados ANTES da alteraÁ„o (Valores Antigos).
+        /// Snapshot dos dados ANTES da altera√ß√£o (Valores Antigos).
         /// </summary>
         /// <remarks>
-        /// Geralmente armazenado em formato JSON stringificado para permitir a reconstruÁ„o do estado anterior.
+        /// Geralmente armazenado em formato JSON stringificado para permitir a reconstru√ß√£o do estado anterior.
         /// </remarks>
         [Column("valores_atingidos")]
         public string ValoresAtingidos { get; set; } = string.Empty;
 
         /// <summary>
-        /// Snapshot dos dados DEPOIS da alteraÁ„o (Novos Valores).
+        /// Snapshot dos dados DEPOIS da altera√ß√£o (Novos Valores).
         /// </summary>
         /// <remarks>
-        /// Em operaÁıes de INSERT, contÈm o objeto criado. Em UPDATE, o objeto atualizado. Em DELETE, pode estar vazio ou nulo.
+        /// Em opera√ß√µes de INSERT, cont√©m o objeto criado. Em UPDATE, o objeto atualizado. Em DELETE, pode estar vazio ou nulo.
         /// </remarks>
         [Column("novos_valores")]
         public string NovosValores { get; set; } = string.Empty;
@@ -73,22 +73,22 @@ namespace Civitas.WebAPI.Objects.Models
         /// </summary>
         /// <remarks>
         /// Controlado pelo Enum <see cref="Situacao"/>. 
-        /// Geralmente registros de auditoria s„o sempre criados como ATIVOS e nunca devem ser inativados para garantir a integridade histÛrica.
+        /// Geralmente registros de auditoria s√£o sempre criados como ATIVOS e nunca devem ser inativados para garantir a integridade hist√≥rica.
         /// </remarks>
         [Column("situacao")]
         public Situacao Situacao { get; set; }
 
         /// <summary>
-        /// Chave estrangeira do Usu·rio que executou a aÁ„o.
+        /// Chave estrangeira do Usu√°rio que executou a a√ß√£o.
         /// </summary>
         /// <remarks>
-        /// Identifica o autor da mudanÁa (Responsabilidade).
+        /// Identifica o autor da mudan√ßa (Responsabilidade).
         /// </remarks>
         [Column("usuario_id")]
         public int UsuarioId { get; set; }
 
         /// <summary>
-        /// Objeto de navegaÁ„o do Usu·rio autor da aÁ„o.
+        /// Objeto de navega√ß√£o do Usu√°rio autor da a√ß√£o.
         /// </summary>
         [ForeignKey("UsuarioId")]
         public virtual Usuario? Usuario { get; set; }
@@ -96,12 +96,19 @@ namespace Civitas.WebAPI.Objects.Models
         /// <summary>
         /// Construtor vazio para o Entity Framework.
         /// </summary>
+
+        [Column("excluido")]
+        public bool Excluido { get; set; }
+
+        [Column("dataexclusao")]
+        public DateTime? DataExclusao { get; set; }
+
         public Auditoria()
         {
         }
 
         /// <summary>
-        /// Construtor completo para criaÁ„o de um log de auditoria.
+        /// Construtor completo para cria√ß√£o de um log de auditoria.
         /// </summary>
         public Auditoria(int id, string data, string hora, string operacao, string nomeEntidade,
             string valoresAtingidos, string novosValores, Situacao situacao, int usuarioId)

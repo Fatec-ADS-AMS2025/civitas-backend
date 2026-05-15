@@ -11,7 +11,7 @@ namespace Civitas.WebAPI.Objects.Models
     /// armazenando a cópia digital (Blob) de Notas Fiscais, Boletos ou Contratos.
     /// </remarks>
     [Table("documento")]
-    public class Documento
+    public class Documento : ISoftDeletable
     {
         /// <summary>
         /// Identificador único do documento (Chave Primária).
@@ -53,6 +53,13 @@ namespace Civitas.WebAPI.Objects.Models
         /// <summary>
         /// Construtor para inicialização básica da entidade Documento.
         /// </summary>
+
+        [Column("excluido")]
+        public bool Excluido { get; set; }
+
+        [Column("dataexclusao")]
+        public DateTime? DataExclusao { get; set; }
+
         public Documento(int idDocumento, byte[] digitalizacao, int numeroDocumento)
         {
             IdDocumento = idDocumento;
