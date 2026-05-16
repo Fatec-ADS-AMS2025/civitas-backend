@@ -32,7 +32,7 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// <summary>
         /// Campo para confirmação de documento duplicado.
         /// </summary>
-        public Boolean ConfirmarDocumentoDuplicado { get; set; }
+        public bool ConfirmarDocumentoDuplicado { get; set; } = false;
 
         /// <summary>
         /// Campo de arquivo de Documento para upload.
