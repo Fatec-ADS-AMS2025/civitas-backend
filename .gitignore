@@ -38,6 +38,9 @@ TestResults/
 # =========================
 # ASP.NET Core / .NET
 # =========================
+.env
+.env.*
+!.env.example
 .dotnet/
 appsettings.Development.json
 appsettings.Local.json

@@ -1,0 +1,71 @@
+name: civitas
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-civitas}
+      POSTGRES_USER: ${POSTGRES_USER:-civitas}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-civitas_dev_password}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - civitas-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - civitas-network
+
+  backend:
+    build:
+      context: .
+      target: final
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+      DisableHttpsRedirection: "true"
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=${POSTGRES_DB:-civitas};Username=${POSTGRES_USER:-civitas};Password=${POSTGRES_PASSWORD:-civitas_dev_password}
+      Jwt__Issuer: ${JWT_ISSUER:-Civitas.WebAPI}
+      Jwt__Audience: ${JWT_AUDIENCE:-Civitas.Client}
+      Jwt__SecretKey: ${JWT_SECRET_KEY:-development-only-key-change-before-production-2026}
+      Jwt__ExpirationMinutes: ${JWT_EXPIRATION_MINUTES:-60}
+      ViaCep__BaseUrl: ${VIACEP_BASE_URL:-https://viacep.com.br/}
+      ViaCep__TimeoutSeconds: ${VIACEP_TIMEOUT_SECONDS:-10}
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - civitas-network
+
+  frontend:
+    build:
+      context: ${FRONTEND_CONTEXT:-../civitas-frontend/civitas-frontend}
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080/api}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - civitas-network
+
+volumes:
+  civitas-postgres-data:
+
+networks:
+  civitas-network:
+    driver: bridge
