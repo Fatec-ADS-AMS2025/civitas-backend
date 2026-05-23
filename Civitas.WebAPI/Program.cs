@@ -15,6 +15,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddHealthChecks();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
@@ -125,7 +126,15 @@ if (app.Environment.IsDevelopment())
 
     if (dbContext.Database.ProviderName != "Microsoft.EntityFrameworkCore.Sqlite")
     {
-        await dbContext.Database.MigrateAsync();
+        if (dbContext.Database.GetMigrations().Any())
+        {
+            await dbContext.Database.MigrateAsync();
+        }
+        else
+        {
+            await dbContext.Database.EnsureCreatedAsync();
+        }
+
         await seeder.SeedAsync();
     }
 
@@ -144,11 +153,15 @@ app.UseCors(policy =>
         .AllowAnyHeader()
 );
 
-app.UseHttpsRedirection();
+if (!builder.Configuration.GetValue<bool>("DisableHttpsRedirection"))
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHealthChecks("/health").AllowAnonymous();
 app.MapControllers();
 
 app.Run();

@@ -142,6 +142,33 @@ Authorization: Bearer {seu_jwt}
 
 O endpoint de CEP foi pensado para reutilizacao pelos formularios de Usuario, Instituicao, Fornecedor e Secretaria. O frontend pode consultar `/api/cep/{cep}` quando receber um CEP valido com 8 digitos para preencher automaticamente `logradouro`, `bairro`, `cidade` e `estado`, mantendo a edicao manual liberada para o usuario.
 
+### Executando com Docker
+
+O `docker-compose.yml` sobe o backend, o frontend e o PostgreSQL na mesma rede Docker. Para usar o compose, mantenha os repositorios como pastas irmas:
+
+```text
+projetos cliente/
+|-- civitas-backend/
+`-- civitas-frontend/
+    `-- civitas-frontend/
+```
+
+Copie o arquivo de exemplo e ajuste as portas ou credenciais se necessario:
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+Servicos expostos:
+
+- Frontend: `http://localhost:3000`
+- Backend/Swagger: `http://localhost:8080`
+- Healthcheck da API: `http://localhost:8080/health`
+- PostgreSQL: `localhost:5432`
+
+O backend roda em `Development` no compose para manter Swagger, criacao do schema e seed local. Em ambientes fora de desenvolvimento, altere as variaveis de ambiente e use uma chave JWT propria.
+
 ---
 
 ## API Endpoints
