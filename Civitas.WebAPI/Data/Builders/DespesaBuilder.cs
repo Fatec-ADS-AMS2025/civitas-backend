@@ -13,9 +13,15 @@ namespace Civitas.WebAPI.Data.Builders
                 .IsRequired()
                 .HasMaxLength(100);
 
+            modelBuilder.Entity<Despesa>().Property(d => d.NomeDocumento)
+                .HasMaxLength(100);
+
+            modelBuilder.Entity<Despesa>().Property(d => d.HashDocumento);
+
             modelBuilder.Entity<Despesa>().Property(d => d.Codigo)
                 .IsRequired()
                 .HasMaxLength(100);
+
 
             modelBuilder.Entity<Despesa>().Property(d => d.DataEmissao)
                 .IsRequired();

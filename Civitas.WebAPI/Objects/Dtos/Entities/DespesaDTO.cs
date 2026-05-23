@@ -1,5 +1,5 @@
-﻿using System.Text.Json;
 using Civitas.WebAPI.Objects.Enums;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Objects.Dtos.Entities
 {
@@ -18,12 +18,28 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// </summary>
         public string NumeroDocumento { get; set; }
 
+        /// <summary>
+        /// Nome do documento fornecido pelo usuário
+        /// </summary>
         public string? NomeDocumento { get; set; }
 
+        /// <summary>
+        /// Hash SHA-256 do documento (gerado automaticamente pelo código)
+        /// </summary>
         public string? HashDocumento { get; set; }
 
         /// <summary>
-        /// CÃ³digo identificador da despesa.
+        /// Campo para confirmação de documento duplicado.
+        /// </summary>
+        public bool ConfirmarDocumentoDuplicado { get; set; } = false;
+
+        /// <summary>
+        /// Campo de arquivo de Documento para upload.
+        /// </summary>
+        public IFormFile? Documento { get; set; }
+
+        /// <summary>
+        /// Código identificador da despesa.
         /// </summary>
         public string Codigo { get; set; }
 
@@ -84,8 +100,9 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// Valores preenchidos para os campos opcionais. Apenas chaves declaradas
         /// no TipoDespesa relacionado sÃ£o aceitas. Pode ser null, vazio, ou parcial.
         /// </summary>
-        /// <example>{"numeroNota":"12345","fornecedor":"Papelaria Central","centroCusto":null}</example>
-        public IDictionary<string, JsonElement>? ValoresOpcionais { get; set; }
+        /// <example>"{"numeroNota":"12345","fornecedor":"Papelaria Central","centroCusto":null}"</example>
+        public string? ValoresOpcionais { get; set; }
+
         public bool Excluido { get; set; }
 
         public DateTime? DataExclusao { get; set; }

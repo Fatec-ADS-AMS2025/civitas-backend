@@ -4,6 +4,7 @@ using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
 using Civitas.WebAPI.Services.Validation;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
@@ -83,6 +84,18 @@ namespace Civitas.WebAPI.Controllers
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = despesas;
             _response.Message = "Despesas listadas por nÃºmero do documento com sucesso";
+
+            return Ok(_response);
+        }
+
+        [HttpGet("hash-documento/{hashDocumento}")]
+        public async Task<IActionResult> GetByHashDocumento(string hashDocumento)
+        {
+            var despesas = await _despesaService.GetByHashDocumentoAsync(hashDocumento);
+
+            _response.Code = ResponseEnum.SUCCESS;
+            _response.Data = despesas;
+            _response.Message = "Despesas listadas por hash do documento com sucesso";
 
             return Ok(_response);
         }
@@ -178,13 +191,75 @@ namespace Civitas.WebAPI.Controllers
         }
 
         /// <summary>
+        /// Abre o documento PDF da despesa no navegador.
+        /// </summary>
+        /// <summary>
+        /// Abre o documento PDF da despesa no navegador pelo nome do documento.
+        /// </summary>
+        /// <summary>
+        /// Abre o documento PDF da despesa no navegador.
+        /// </summary>
+        [HttpGet("documento/{hashDocumento}")]
+        public async Task<IActionResult> AbrirDocumento(string hashDocumento)
+        {
+            if (string.IsNullOrWhiteSpace(hashDocumento))
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = null;
+                _response.Message = "Hash do documento é obrigatório";
+
+                return BadRequest(_response);
+            }
+
+            var fileResult = await _despesaService.ObterArquivoDocumentoAsync(hashDocumento);
+
+            if (fileResult is null)
+            {
+                _response.Code = ResponseEnum.NOT_FOUND;
+                _response.Data = null;
+                _response.Message = "Documento não encontrado";
+
+                return NotFound(_response);
+            }
+
+            _response.Code = ResponseEnum.SUCCESS;
+            _response.Data = new
+            {
+                fileResult.FileName,
+                ContentType = "application/pdf"
+            };
+            _response.Message = "Documento encontrado com sucesso";
+
+            var encodedFileName = Uri.EscapeDataString(fileResult.FileName);
+
+            Response.Headers.Add(
+                "Content-Disposition",
+                $"inline; filename*=UTF-8''{encodedFileName}"
+            );
+
+            return File(fileResult.Stream, "application/pdf");
+        }
+
+
+        /// <summary>
         /// Cria uma nova despesa no sistema.
         /// </summary>
         [HttpPost]
-        public async Task<IActionResult> Post(DespesaDTO despesaDTO)
+        public async Task<IActionResult> Post([FromForm] DespesaDTO despesaDTO)
         {
+            if (despesaDTO is null)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = null;
+                _response.Message = "Dados inválidos";
+
+                return BadRequest(_response);
+            }
+
             try
             {
+                despesaDTO.Id = 0;
+
                 await _despesaService.Create(despesaDTO);
 
                 _response.Code = ResponseEnum.SUCCESS;
@@ -195,9 +270,23 @@ namespace Civitas.WebAPI.Controllers
             }
             catch (DespesaValidationException ex)
             {
-                _response.Code = ResponseEnum.INVALID;
+                _response.Code = ex.Errors.Any(e => e.Contains("documento com o mesmo conteúdo"))
+                    ? ResponseEnum.CONFLICT
+                    : ResponseEnum.INVALID;
+
                 _response.Message = ex.Message;
                 _response.Data = ex.Errors;
+
+                return _response.Code == ResponseEnum.CONFLICT
+                    ? Conflict(_response)
+                    : BadRequest(_response);
+            }
+            catch (ArgumentException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Message = ex.Message;
+                _response.Data = null;
+
                 return BadRequest(_response);
             }
             catch (Exception ex)
@@ -209,6 +298,7 @@ namespace Civitas.WebAPI.Controllers
                     ErrorMessage = ex.Message,
                     StackTrace = ex.StackTrace ?? "Sem stack trace disponÃ­vel"
                 };
+
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
         }
@@ -216,8 +306,11 @@ namespace Civitas.WebAPI.Controllers
         /// <summary>
         /// Atualiza uma despesa existente.
         /// </summary>
+        /// <summary>
+        /// Atualiza uma despesa existente.
+        /// </summary>
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, DespesaDTO despesaDTO)
+        public async Task<IActionResult> Put(int id, [FromForm] DespesaDTO despesaDTO)
         {
             try
             {
@@ -234,6 +327,14 @@ namespace Civitas.WebAPI.Controllers
                 _response.Code = ResponseEnum.INVALID;
                 _response.Message = ex.Message;
                 _response.Data = ex.Errors;
+
+                // Verificar se é erro de documento duplicado
+                if (ex.Errors.Any(e => e.Contains("documento com o mesmo conteúdo")))
+                {
+                    _response.Code = ResponseEnum.CONFLICT;
+                    return Conflict(_response);
+                }
+
                 return BadRequest(_response);
             }
             catch (KeyNotFoundException ex)
@@ -252,6 +353,7 @@ namespace Civitas.WebAPI.Controllers
                     ErrorMessage = ex.Message,
                     StackTrace = ex.StackTrace ?? "Sem stack trace disponÃ­vel"
                 };
+
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
         }

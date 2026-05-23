@@ -11,11 +11,14 @@ namespace Civitas.WebAPI.Services.Interfaces
     {
         Task ValidarCadastroAsync(DespesaDTO entityDTO, int? id = null);
         Task<IEnumerable<DespesaDTO>> GetByNumeroDocumentoAsync(string numeroDocumento);
+        Task<IEnumerable<DespesaDTO>> GetByHashDocumentoAsync(string hashDocumento);
+        Task<FileResultDto?> ObterArquivoDocumentoAsync(string nomeDocumento);
         Task<IEnumerable<DespesaDTO>> GetByCodigoAsync(string codigo);
         Task<IEnumerable<DespesaDTO>> GetByUnidadeConsumidoraAsync(int idUnidadeConsumidora);
         Task<IEnumerable<DespesaDTO>> GetByUsuarioAsync(int idUsuario);
         Task<IEnumerable<DespesaDTO>> GetByStatusAsync(Status status);
         Task<DespesaDTO> AlterarStatusAsync(int id, Status novoStatus);
         Task AtualizarDespesasAtrasadasAsync();
+        Task<bool> ConfirmarDocumentoDuplicadoAsync(string hashDocumento, int? ignoreId = null);
     }
 }

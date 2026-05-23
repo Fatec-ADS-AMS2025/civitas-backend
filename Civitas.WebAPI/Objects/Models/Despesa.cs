@@ -22,14 +22,21 @@ namespace Civitas.WebAPI.Objects.Models
         [Column("numerodocumento")]
         public string NumeroDocumento { get; set; }
 
+        /// <summary>
+        /// Nome de identificação do documento
+        /// </summary>
         [Column("nomedocumento")]
         public string? NomeDocumento { get; set; }
 
+
+        /// <summary>
+        /// Hash de identificação do documento
+        /// </summary>
         [Column("hashdocumento")]
         public string? HashDocumento { get; set; }
 
         /// <summary>
-        /// CÃ³digo identificador da despesa.
+        /// Código identificador da despesa.
         /// </summary>
         [Column("codigo")]
         public string Codigo { get; set; }
@@ -132,6 +139,8 @@ namespace Civitas.WebAPI.Objects.Models
         public Despesa(
             int id,
             string numeroDocumento,
+            string? nomeDocumento,
+            string? hashDocumento,
             string codigo,
             DateOnly dataEmissao,
             decimal valorPrevisto,
@@ -139,12 +148,18 @@ namespace Civitas.WebAPI.Objects.Models
             decimal consumoPrevisto,
             decimal consumoReal,
             DateOnly dataVencimento,
+            DateOnly? dataPagamento,
             Status status,
             int idUsuario,
-            int idUnidadeConsumidora)
+            Usuario usuario,
+            int idUnidadeConsumidora,
+            UnidadeConsumidora unidadeConsumidora,
+            string? valoresOpcionais)
         {
             Id = id;
             NumeroDocumento = numeroDocumento;
+            NomeDocumento = nomeDocumento;
+            HashDocumento = hashDocumento;
             Codigo = codigo;
             DataEmissao = dataEmissao;
             ValorPrevisto = valorPrevisto;
@@ -155,9 +170,13 @@ namespace Civitas.WebAPI.Objects.Models
             ConsumoPrevisto = consumoPrevisto;
             ConsumoReal = consumoReal;
             DataVencimento = dataVencimento;
+            DataPagamento = dataPagamento;
             Status = status;
             IdUsuario = idUsuario;
+            Usuario = usuario;
             IdUnidadeConsumidora = idUnidadeConsumidora;
+            UnidadeConsumidora = unidadeConsumidora;
+            ValoresOpcionais = valoresOpcionais;
         }
     }
 }
