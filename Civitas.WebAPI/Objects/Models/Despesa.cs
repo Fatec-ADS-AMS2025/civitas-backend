@@ -1,23 +1,23 @@
-using Civitas.WebAPI.Objects.Enums;
+﻿using Civitas.WebAPI.Objects.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Civitas.WebAPI.Objects.Models
 {
     /// <summary>
-    /// Entidade central que representa uma obrigação financeira, conta ou fatura a ser paga.
+    /// Entidade central que representa uma obrigaÃ§Ã£o financeira, conta ou fatura a ser paga.
     /// Mapeia a tabela 'despesa' do banco de dados.
     /// </summary>
     [Table("despesa")]
-    public class Despesa
+    public class Despesa : ISoftDeletable
     {
         /// <summary>
-        /// Identificador único da despesa (Chave Primária).
+        /// Identificador Ãºnico da despesa (Chave PrimÃ¡ria).
         /// </summary>
         [Column("id")]
         public int Id { get; set; }
 
         /// <summary>
-        /// Número de identificação impresso no documento fiscal (NF, Fatura, Boleto).
+        /// NÃºmero de identificaÃ§Ã£o impresso no documento fiscal (NF, Fatura, Boleto).
         /// </summary>
         [Column("numerodocumento")]
         public string NumeroDocumento { get; set; }
@@ -30,7 +30,7 @@ namespace Civitas.WebAPI.Objects.Models
 
 
         /// <summary>
-        /// Nash de identificação do documento
+        /// Hash de identificação do documento
         /// </summary>
         [Column("hashdocumento")]
         public string? HashDocumento { get; set; }
@@ -59,6 +59,15 @@ namespace Civitas.WebAPI.Objects.Models
         [Column("valorpago")]
         public decimal ValorPago { get; set; }
 
+        [Column("juros")]
+        public decimal Juros { get; set; }
+
+        [Column("multa")]
+        public decimal Multa { get; set; }
+
+        [Column("desconto")]
+        public decimal Desconto { get; set; }
+
         /// <summary>
         /// Consumo previsto para esta despesa.
         /// </summary>
@@ -72,7 +81,7 @@ namespace Civitas.WebAPI.Objects.Models
         public decimal ConsumoReal { get; set; }
 
         /// <summary>
-        /// Data limite para o pagamento sem incidência de juros ou multas.
+        /// Data limite para o pagamento sem incidÃªncia de juros ou multas.
         /// </summary>
         [Column("datavencimento")]
         public DateOnly DataVencimento { get; set; }
@@ -87,13 +96,13 @@ namespace Civitas.WebAPI.Objects.Models
         public Status Status { get; set; }
 
         /// <summary>
-        /// Chave estrangeira do Usuário que cadastrou esta despesa.
+        /// Chave estrangeira do UsuÃ¡rio que cadastrou esta despesa.
         /// </summary>
         [Column("idusuario")]
         public int IdUsuario { get; set; }
 
         /// <summary>
-        /// Objeto de navegação do Usuário.
+        /// Objeto de navegaÃ§Ã£o do UsuÃ¡rio.
         /// </summary>
         public Usuario Usuario { get; set; }
 
@@ -104,17 +113,24 @@ namespace Civitas.WebAPI.Objects.Models
         public int IdUnidadeConsumidora { get; set; }
 
         /// <summary>
-        /// Objeto de navegação da unidade consumidora.
+        /// Objeto de navegaÃ§Ã£o da unidade consumidora.
         /// </summary>
         public UnidadeConsumidora UnidadeConsumidora { get; set; }
 
         /// <summary>
         /// Valores dos campos opcionais preenchidos para esta despesa.
         /// Formato esperado: objeto JSON plano, ex: {"nomeCampo1":"valor","nomeCampo2":null}.
-        /// Apenas chaves declaradas em TipoDespesa.CamposOpcionais são aceitas.
+        /// Apenas chaves declaradas em TipoDespesa.CamposOpcionais sÃ£o aceitas.
         /// </summary>
         [Column("valoresopcionais")]
         public string? ValoresOpcionais { get; set; }
+
+
+        [Column("excluido")]
+        public bool Excluido { get; set; }
+
+        [Column("dataexclusao")]
+        public DateTime? DataExclusao { get; set; }
 
         public Despesa()
         {
@@ -148,6 +164,9 @@ namespace Civitas.WebAPI.Objects.Models
             DataEmissao = dataEmissao;
             ValorPrevisto = valorPrevisto;
             ValorPago = valorPago;
+            Juros = 0;
+            Multa = 0;
+            Desconto = 0;
             ConsumoPrevisto = consumoPrevisto;
             ConsumoReal = consumoReal;
             DataVencimento = dataVencimento;
@@ -161,3 +180,5 @@ namespace Civitas.WebAPI.Objects.Models
         }
     }
 }
+
+

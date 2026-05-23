@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Civitas.WebAPI.Objects.Models
 {
@@ -12,7 +12,7 @@ namespace Civitas.WebAPI.Objects.Models
     /// Suporta soft delete via <see cref="Excluido"/> e <see cref="DataExclusao"/>.
     /// </remarks>
     [Table("unidadeconsumidora")]
-    public class UnidadeConsumidora
+    public class UnidadeConsumidora : ISoftDeletable
     {
         /// <summary>
         /// Identificador unico da unidade consumidora (Chave Primaria).
@@ -128,3 +128,4 @@ namespace Civitas.WebAPI.Objects.Models
         }
     }
 }
+

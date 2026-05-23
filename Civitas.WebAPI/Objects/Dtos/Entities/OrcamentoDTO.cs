@@ -1,38 +1,38 @@
-namespace Civitas.WebAPI.Objects.Dtos.Entities
+﻿namespace Civitas.WebAPI.Objects.Dtos.Entities
 {
     /// <summary>
-    /// Objeto de transfer�ncia para gest�o dos tetos or�ament�rios (Previs�o de Gastos).
+    /// Objeto de transferï¿½ncia para gestï¿½o dos tetos orï¿½amentï¿½rios (Previsï¿½o de Gastos).
     /// </summary>
     /// <remarks>
     /// Finalidade:
-    /// - Input: Cadastrar ou ajustar o limite de gastos de uma institui��o para um determinado ano e tipo de despesa.
+    /// - Input: Cadastrar ou ajustar o limite de gastos de uma instituiï¿½ï¿½o para um determinado ano e tipo de despesa.
     /// - Output: Exibir o planejamento financeiro aprovado.
     /// </remarks>
     public class OrcamentoDTO
     {
         /// <summary>
-        /// Identificador �nico do or�amento.
+        /// Identificador ï¿½nico do orï¿½amento.
         /// </summary>
         /// <remarks>
-        /// Input: Ignorado na cria��o. Obrigat�rio na edi��o.
+        /// Input: Ignorado na criaï¿½ï¿½o. Obrigatï¿½rio na ediï¿½ï¿½o.
         /// </remarks>
         public int IdOrcamento { get; set; }
 
         /// <summary>
-        /// Ano fiscal de refer�ncia (Exerc�cio).
+        /// Ano fiscal de referï¿½ncia (Exercï¿½cio).
         /// </summary>
         /// <example>2024, 2025.</example>
         /// <remarks>
-        /// Valida��o: Deve ser um ano v�lido (4 d�gitos). Geralmente n�o se permite cadastrar or�amentos para anos passados.
+        /// Validaï¿½ï¿½o: Deve ser um ano vï¿½lido (4 dï¿½gitos). Geralmente nï¿½o se permite cadastrar orï¿½amentos para anos passados.
         /// </remarks>
         public int AnoOrcamento { get; set; }
 
         /// <summary>
-        /// Valor monet�rio total dispon�vel (Teto).
+        /// Valor monetï¿½rio total disponï¿½vel (Teto).
         /// </summary>
         /// <remarks>
         /// Regra: Deve ser maior que zero.
-        /// Este valor ser� o limite usado para validar se as despesas lan�adas estouraram o or�amento.
+        /// Este valor serï¿½ o limite usado para validar se as despesas lanï¿½adas estouraram o orï¿½amento.
         /// </remarks>
         public decimal? ValorOrcamento { get; set; }
 
@@ -73,12 +73,16 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         public decimal DezembroValorConsumo { get; set; }
 
         /// <summary>
-        /// Identificador da Institui��o dona deste or�amento.
+        /// Identificador da Instituiï¿½ï¿½o dona deste orï¿½amento.
         /// </summary>
         /// <remarks>
-        /// Obrigat�rio. Define qual unidade (escola, posto, secretaria) poder� usar este recurso.
+        /// Obrigatï¿½rio. Define qual unidade (escola, posto, secretaria) poderï¿½ usar este recurso.
         /// </remarks>
         public int IdInstituicao { get; set; }
         public int IdTipoDespesa { get; set; }
+        public bool Excluido { get; set; }
+
+        public DateTime? DataExclusao { get; set; }
+
     }
 }

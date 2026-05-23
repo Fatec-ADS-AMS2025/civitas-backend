@@ -12,7 +12,7 @@ namespace Civitas.WebAPI.Objects.Models
     /// É obrigatório que possua dados fiscais válidos (CNPJ) para a emissão de despesas.
     /// </remarks>
     [Table("fornecedor")]
-    public class Fornecedor
+    public class Fornecedor : ISoftDeletable
     {
         /// <summary>
         /// Identificador único do fornecedor (Chave Primária).
@@ -117,6 +117,13 @@ namespace Civitas.WebAPI.Objects.Models
         /// <summary>
         /// Construtor para inicialização completa da entidade Fornecedor.
         /// </summary>
+
+        [Column("excluido")]
+        public bool Excluido { get; set; }
+
+        [Column("dataexclusao")]
+        public DateTime? DataExclusao { get; set; }
+
         public Fornecedor(int idFornecedor, string nomeFantasia, Situacao situacao, string cnpj, string nome, string logradouro, string numero, string bairro, string cep
             , string telefone, string email, string cidade, string estado, int idTipoDespesa)
         {
@@ -137,3 +144,4 @@ namespace Civitas.WebAPI.Objects.Models
         }
     }
 }
+

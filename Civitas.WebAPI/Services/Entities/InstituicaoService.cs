@@ -114,6 +114,8 @@ namespace Civitas.WebAPI.Services.Entities
 
             var entity = _mapper.Map<Instituicao>(entityDTO);
             entity.Id = id;
+            entity.Excluido = existingInstituicao.Excluido;
+            entity.DataExclusao = existingInstituicao.DataExclusao;
 
             await _instituicaoRepository.Update(entity);
 

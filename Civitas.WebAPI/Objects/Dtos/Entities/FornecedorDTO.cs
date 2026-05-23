@@ -95,5 +95,10 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         public string Estado { get; set; } = string.Empty;
 
         public int IdTipoDespesa { get; set; }
+        public bool Excluido { get; set; }
+
+        public DateTime? DataExclusao { get; set; }
+
     }
 }
+

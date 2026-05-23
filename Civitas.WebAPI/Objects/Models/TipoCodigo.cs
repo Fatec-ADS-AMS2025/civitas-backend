@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Civitas.WebAPI.Objects.Models
 {
     [Table("tipocodigo")]
-    public class TipoCodigo
+    public class TipoCodigo : ISoftDeletable
     {
         [Key]
         [Required]
@@ -22,6 +22,13 @@ namespace Civitas.WebAPI.Objects.Models
         public ICollection<TipoDespesa> TipoDespesas { get; set; }
 
 
+
+        [Column("excluido")]
+        public bool Excluido { get; set; }
+
+        [Column("dataexclusao")]
+        public DateTime? DataExclusao { get; set; }
+
         public TipoCodigo()
         {
             
@@ -35,3 +42,4 @@ namespace Civitas.WebAPI.Objects.Models
         }
     }
 }
+

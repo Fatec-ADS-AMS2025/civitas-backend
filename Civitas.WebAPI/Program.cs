@@ -123,8 +123,11 @@ if (app.Environment.IsDevelopment())
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var seeder = scope.ServiceProvider.GetRequiredService<AppDbSeeder>();
 
-    await dbContext.Database.MigrateAsync();
-    await seeder.SeedAsync();
+    if (dbContext.Database.ProviderName != "Microsoft.EntityFrameworkCore.Sqlite")
+    {
+        await dbContext.Database.MigrateAsync();
+        await seeder.SeedAsync();
+    }
 
     app.UseSwagger();
     app.UseSwaggerUI(opt =>

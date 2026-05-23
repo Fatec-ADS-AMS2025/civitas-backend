@@ -108,6 +108,8 @@ namespace Civitas.WebAPI.Services.Entities
             entity.Senha = string.IsNullOrWhiteSpace(entityDTO.Senha)
                 ? existingUsuario.Senha
                 : _passwordHashService.Hash(entityDTO.Senha);
+            entity.Excluido = existingUsuario.Excluido;
+            entity.DataExclusao = existingUsuario.DataExclusao;
 
             await _usuarioRepository.Update(entity);
 

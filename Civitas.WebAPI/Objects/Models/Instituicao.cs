@@ -12,7 +12,7 @@ namespace Civitas.WebAPI.Objects.Models
     /// e classificada por um <see cref="TipoInstituicao"/>.
     /// </remarks>
     [Table("instituicao")]
-    public class Instituicao
+    public class Instituicao : ISoftDeletable
     {
         /// <summary>
         /// Identificador único da instituição (Chave Primária).
@@ -139,6 +139,13 @@ namespace Civitas.WebAPI.Objects.Models
         /// <summary>
         /// Construtor padrão para o Entity Framework.
         /// </summary>
+
+        [Column("excluido")]
+        public bool Excluido { get; set; }
+
+        [Column("dataexclusao")]
+        public DateTime? DataExclusao { get; set; }
+
         public Instituicao()
         {
 
@@ -167,3 +174,4 @@ namespace Civitas.WebAPI.Objects.Models
         }
     }
 }
+

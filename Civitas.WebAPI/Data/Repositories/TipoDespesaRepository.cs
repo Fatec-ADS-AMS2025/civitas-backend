@@ -17,14 +17,14 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             return await _context.TiposDespesa
                 .AsNoTracking()
-                .AnyAsync(t => t.Id == idTipoDespesa && t.UnidadeMedida.Situacao == Situacao.ATIVO);
+                .AnyAsync(t => t.Id == idTipoDespesa && !t.Excluido && t.UnidadeMedida.Situacao == Situacao.ATIVO);
         }
 
         public async Task<bool> ExistsByDescricaoNormalized(string descricaoNormalizada, int? ignoreId = null)
         {
             var query = _context.TiposDespesa
                 .AsNoTracking()
-                .Where(t => t.Descricao.Trim().ToUpper() == descricaoNormalizada);
+                .Where(t => t.Descricao.Trim().ToUpper() == descricaoNormalizada && !t.Excluido);
 
             if (ignoreId.HasValue)
             {
@@ -38,7 +38,7 @@ namespace Civitas.WebAPI.Data.Repositories
         {
             return await _context.Despesas
                 .AsNoTracking()
-                .AnyAsync(d => d.UnidadeConsumidora.IdTipoDespesa == idTipoDespesa);
+                .AnyAsync(d => d.UnidadeConsumidora.IdTipoDespesa == idTipoDespesa && !d.Excluido);
         }
     }
 }

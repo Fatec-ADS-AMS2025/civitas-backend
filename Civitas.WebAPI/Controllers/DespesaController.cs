@@ -1,4 +1,4 @@
-using Civitas.WebAPI.Objects.Contracts;
+﻿using Civitas.WebAPI.Objects.Contracts;
 using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Civitas.WebAPI.Controllers
 {
     /// <summary>
-    /// Controller responsável pelo gerenciamento de despesas cadastradas no sistema.
+    /// Controller responsÃ¡vel pelo gerenciamento de despesas cadastradas no sistema.
     /// </summary>
     [Authorize]
     [Route("api/despesas")]
@@ -74,7 +74,7 @@ namespace Civitas.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Retorna despesas pelo número do documento.
+        /// Retorna despesas pelo nÃºmero do documento.
         /// </summary>
         [HttpGet("numero-documento/{numeroDocumento}")]
         public async Task<IActionResult> GetByNumeroDocumento(string numeroDocumento)
@@ -83,7 +83,7 @@ namespace Civitas.WebAPI.Controllers
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = despesas;
-            _response.Message = "Despesas listadas por número do documento com sucesso";
+            _response.Message = "Despesas listadas por nÃºmero do documento com sucesso";
 
             return Ok(_response);
         }
@@ -101,7 +101,7 @@ namespace Civitas.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Retorna despesas pelo código.
+        /// Retorna despesas pelo cÃ³digo.
         /// </summary>
         [HttpGet("codigo/{codigo}")]
         public async Task<IActionResult> GetByCodigo(string codigo)
@@ -110,7 +110,7 @@ namespace Civitas.WebAPI.Controllers
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = despesas;
-            _response.Message = "Despesas listadas por código com sucesso";
+            _response.Message = "Despesas listadas por cÃ³digo com sucesso";
 
             return Ok(_response);
         }
@@ -131,7 +131,7 @@ namespace Civitas.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Retorna despesas cadastradas por um usuário.
+        /// Retorna despesas cadastradas por um usuÃ¡rio.
         /// </summary>
         [HttpGet("usuario/{idUsuario}")]
         public async Task<IActionResult> GetByUsuario(int idUsuario)
@@ -140,7 +140,7 @@ namespace Civitas.WebAPI.Controllers
 
             _response.Code = ResponseEnum.SUCCESS;
             _response.Data = despesas;
-            _response.Message = "Despesas do usuário listadas com sucesso";
+            _response.Message = "Despesas do usuÃ¡rio listadas com sucesso";
 
             return Ok(_response);
         }
@@ -155,7 +155,7 @@ namespace Civitas.WebAPI.Controllers
             {
                 _response.Code = ResponseEnum.INVALID;
                 _response.Data = null;
-                _response.Message = "Status inválido";
+                _response.Message = "Status invÃ¡lido";
                 return BadRequest(_response);
             }
 
@@ -169,7 +169,7 @@ namespace Civitas.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Retorna uma despesa específica pelo seu ID.
+        /// Retorna uma despesa especÃ­fica pelo seu ID.
         /// </summary>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -179,7 +179,7 @@ namespace Civitas.WebAPI.Controllers
             {
                 _response.Code = ResponseEnum.NOT_FOUND;
                 _response.Data = null;
-                _response.Message = "Despesa não encontrada";
+                _response.Message = "Despesa nÃ£o encontrada";
                 return NotFound(_response);
             }
 
@@ -292,11 +292,11 @@ namespace Civitas.WebAPI.Controllers
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Não foi possível cadastrar a despesa";
+                _response.Message = "NÃ£o foi possÃ­vel cadastrar a despesa";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponÃ­vel"
                 };
 
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
@@ -351,7 +351,7 @@ namespace Civitas.WebAPI.Controllers
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponÃ­vel"
                 };
 
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
@@ -399,7 +399,7 @@ namespace Civitas.WebAPI.Controllers
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "Sem stack trace disponível"
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponÃ­vel"
                 };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
@@ -409,5 +409,48 @@ namespace Civitas.WebAPI.Controllers
         {
             return status is Status.A_PAGAR or Status.PAGA or Status.ATRASADO;
         }
+        [HttpGet("excluidos")]
+        public async Task<IActionResult> GetExcluidos()
+        {
+            var result = await _despesaService.GetExcluidos();
+
+            _response.Code = ResponseEnum.SUCCESS;
+            _response.Data = result;
+            _response.Message = "Despesas excluidos listados com sucesso";
+
+            return Ok(_response);
+        }
+        [HttpPatch("{id}/status-exclusao")]
+        public async Task<IActionResult> ToggleStatusExclusao(int id)
+        {
+            try
+            {
+                var dto = await _despesaService.ToggleStatusExclusaoAsync(id);
+
+                _response.Code = ResponseEnum.SUCCESS;
+                _response.Data = dto;
+                _response.Message = "Despesas com status de exclusao alterado com sucesso";
+                return Ok(_response);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _response.Code = ResponseEnum.NOT_FOUND;
+                _response.Data = null;
+                _response.Message = ex.Message;
+                return NotFound(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.Code = ResponseEnum.ERROR;
+                _response.Message = "Ocorreu um erro ao alterar o status de exclusao";
+                _response.Data = new
+                {
+                    ErrorMessage = ex.Message,
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponivel"
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, _response);
+            }
+        }
     }
 }
+

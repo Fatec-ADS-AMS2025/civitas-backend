@@ -1,6 +1,7 @@
 using AutoMapper;
 using Civitas.WebAPI.Data.Interfaces;
 using Civitas.WebAPI.Objects.Contracts;
+using Civitas.WebAPI.Objects.Models;
 using Civitas.WebAPI.Services.Interfaces;
 
 namespace Civitas.WebAPI.Services.Entities
@@ -45,6 +46,12 @@ namespace Civitas.WebAPI.Services.Entities
             return _mapper.Map<IEnumerable<TDto>>(entities);
         }
 
+        public virtual async Task<IEnumerable<TDto>> GetExcluidos()
+        {
+            var entities = await _repository.GetExcluidos();
+            return _mapper.Map<IEnumerable<TDto>>(entities);
+        }
+
         /// <summary>
         /// Obtém uma página de registros com metadados de paginação.
         /// </summary>
@@ -53,6 +60,21 @@ namespace Civitas.WebAPI.Services.Entities
         public virtual async Task<PaginatedResult<TDto>> GetPage(PaginationQuery paginationQuery)
         {
             var entities = await _repository.GetPage(paginationQuery);
+            var items = _mapper.Map<List<TDto>>(entities.Items);
+
+            return new PaginatedResult<TDto>
+            {
+                Items = items,
+                TotalRecords = entities.TotalRecords,
+                TotalPages = entities.TotalPages,
+                CurrentPage = entities.CurrentPage,
+                PageSize = entities.PageSize
+            };
+        }
+
+        public virtual async Task<PaginatedResult<TDto>> GetPageExcluidos(PaginationQuery paginationQuery)
+        {
+            var entities = await _repository.GetPageExcluidos(paginationQuery);
             var items = _mapper.Map<List<TDto>>(entities.Items);
 
             return new PaginatedResult<TDto>
@@ -122,6 +144,7 @@ namespace Civitas.WebAPI.Services.Entities
         public virtual async Task Create(TDto entityDTO)
         {
             var entity = _mapper.Map<T>(entityDTO);
+            ApplySoftDeleteState(entity, excluido: false);
             await _repository.Add(entity);
         }
 
@@ -141,6 +164,7 @@ namespace Civitas.WebAPI.Services.Entities
             }
 
             var entity = _mapper.Map<T>(entityDTO);
+            PreserveSoftDeleteState(existingEntity, entity);
             await _repository.Update(entity);
         }
 
@@ -158,6 +182,57 @@ namespace Civitas.WebAPI.Services.Entities
             }
 
             await _repository.Remove(entity);
+        }
+
+        public virtual async Task<TDto> ToggleStatusExclusaoAsync(int id)
+        {
+            var entity = await _repository.GetByIdIncludingDeleted(id);
+            if (entity is null)
+            {
+                throw new KeyNotFoundException($"Entidade com id {id} não encontrada.");
+            }
+
+            if (entity is not ISoftDeletable softDeletable)
+            {
+                throw new InvalidOperationException($"Entidade {typeof(T).Name} não suporta exclusão lógica.");
+            }
+
+            if (softDeletable.Excluido)
+            {
+                softDeletable.Excluido = false;
+                softDeletable.DataExclusao = null;
+            }
+            else
+            {
+                softDeletable.Excluido = true;
+                softDeletable.DataExclusao = DateTime.UtcNow;
+            }
+
+            await _repository.Update(entity);
+            return _mapper.Map<TDto>(entity);
+        }
+
+        private static void ApplySoftDeleteState(T entity, bool excluido)
+        {
+            if (entity is not ISoftDeletable softDeletable)
+            {
+                return;
+            }
+
+            softDeletable.Excluido = excluido;
+            softDeletable.DataExclusao = excluido ? DateTime.UtcNow : null;
+        }
+
+        private static void PreserveSoftDeleteState(T source, T target)
+        {
+            if (source is not ISoftDeletable sourceSoftDeletable ||
+                target is not ISoftDeletable targetSoftDeletable)
+            {
+                return;
+            }
+
+            targetSoftDeletable.Excluido = sourceSoftDeletable.Excluido;
+            targetSoftDeletable.DataExclusao = sourceSoftDeletable.DataExclusao;
         }
     }
 }

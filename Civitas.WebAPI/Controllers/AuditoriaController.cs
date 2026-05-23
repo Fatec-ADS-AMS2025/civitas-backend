@@ -1,4 +1,4 @@
-using Civitas.WebAPI.Objects.Contracts;
+﻿using Civitas.WebAPI.Objects.Contracts;
 using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Civitas.WebAPI.Controllers
 {
     /// <summary>
-    /// Controlador responsável pelo gerenciamento das auditorias do sistema.
+    /// Controlador responsÃ¡vel pelo gerenciamento das auditorias do sistema.
     /// </summary>
     [Authorize]
     [Route("api/auditorias")]
@@ -19,10 +19,10 @@ namespace Civitas.WebAPI.Controllers
         private readonly Response _response;
 
         /// <summary>
-        /// Construtor que inicializa o serviço de auditoria
-        /// e a estrutura padrão de resposta.
+        /// Construtor que inicializa o serviÃ§o de auditoria
+        /// e a estrutura padrÃ£o de resposta.
         /// </summary>
-        /// <param name="auditoriaService">Serviço de auditoria.</param>
+        /// <param name="auditoriaService">ServiÃ§o de auditoria.</param>
         public AuditoriaController(IAuditoriaService auditoriaService)
         {
             _auditoriaService = auditoriaService;
@@ -106,7 +106,7 @@ namespace Civitas.WebAPI.Controllers
                 if (auditoria == null)
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
-                    _response.Message = "Auditoria não encontrada";
+                    _response.Message = "Auditoria nÃ£o encontrada";
                     _response.Data = null;
                     return NotFound(_response);
                 }
@@ -132,10 +132,10 @@ namespace Civitas.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Busca auditorias pelo ID do usuário.
+        /// Busca auditorias pelo ID do usuÃ¡rio.
         /// </summary>
-        /// <param name="usuarioId">Identificador do usuário.</param>
-        /// <returns>Lista de auditorias associadas ao usuário.</returns>
+        /// <param name="usuarioId">Identificador do usuÃ¡rio.</param>
+        /// <returns>Lista de auditorias associadas ao usuÃ¡rio.</returns>
         [HttpGet("usuario/{usuarioId}")]
         public async Task<IActionResult> GetByUsuarioId(int usuarioId)
         {
@@ -146,13 +146,13 @@ namespace Civitas.WebAPI.Controllers
                 if (auditorias == null || !auditorias.Any())
                 {
                     _response.Code = ResponseEnum.SUCCESS;
-                    _response.Message = "Nenhuma auditoria encontrada para este usuário";
+                    _response.Message = "Nenhuma auditoria encontrada para este usuÃ¡rio";
                     _response.Data = null;
                     return NotFound(_response);
                 }
 
                 _response.Code = ResponseEnum.SUCCESS;
-                _response.Message = "Auditorias do usuário listadas com sucesso";
+                _response.Message = "Auditorias do usuÃ¡rio listadas com sucesso";
                 _response.Data = auditorias;
 
                 return Ok(_response);
@@ -160,7 +160,7 @@ namespace Civitas.WebAPI.Controllers
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao obter as auditorias do usuário";
+                _response.Message = "Ocorreu um erro ao obter as auditorias do usuÃ¡rio";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
@@ -212,10 +212,10 @@ namespace Civitas.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Busca auditorias pelo tipo de operação.
+        /// Busca auditorias pelo tipo de operaÃ§Ã£o.
         /// </summary>
-        /// <param name="operacao">Tipo de operação (CREATE, UPDATE, DELETE...).</param>
-        /// <returns>Lista de auditorias da operação informada.</returns>
+        /// <param name="operacao">Tipo de operaÃ§Ã£o (CREATE, UPDATE, DELETE...).</param>
+        /// <returns>Lista de auditorias da operaÃ§Ã£o informada.</returns>
         [HttpGet("operacao")]
         public async Task<IActionResult> GetByOperacao([FromQuery] string operacao)
         {
@@ -226,13 +226,13 @@ namespace Civitas.WebAPI.Controllers
                 if (auditorias == null || !auditorias.Any())
                 {
                     _response.Code = ResponseEnum.SUCCESS;
-                    _response.Message = "Nenhuma auditoria encontrada para esta operação";
+                    _response.Message = "Nenhuma auditoria encontrada para esta operaÃ§Ã£o";
                     _response.Data = null;
                     return NotFound(_response);
                 }
 
                 _response.Code = ResponseEnum.SUCCESS;
-                _response.Message = "Auditorias da operação listadas com sucesso";
+                _response.Message = "Auditorias da operaÃ§Ã£o listadas com sucesso";
                 _response.Data = auditorias;
 
                 return Ok(_response);
@@ -240,7 +240,7 @@ namespace Civitas.WebAPI.Controllers
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao obter as auditorias da operação";
+                _response.Message = "Ocorreu um erro ao obter as auditorias da operaÃ§Ã£o";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
@@ -254,7 +254,7 @@ namespace Civitas.WebAPI.Controllers
         /// <summary>
         /// Cadastra uma nova auditoria.
         /// </summary>
-        /// <param name="auditoriaDTO">Objeto contendo as informações da auditoria.</param>
+        /// <param name="auditoriaDTO">Objeto contendo as informaÃ§Ãµes da auditoria.</param>
         /// <returns>Auditoria registrada.</returns>
         [HttpPost]
         public async Task<IActionResult> Post(AuditoriaDTO auditoriaDTO)
@@ -262,14 +262,14 @@ namespace Civitas.WebAPI.Controllers
             if (auditoriaDTO is null)
             {
                 _response.Code = ResponseEnum.INVALID;
-                _response.Message = "Dados inválidos";
+                _response.Message = "Dados invÃ¡lidos";
                 _response.Data = null;
                 return BadRequest(_response);
             }
 
             try
             {
-                auditoriaDTO.Id = 0; // Garantia de criação
+                auditoriaDTO.Id = 0; // Garantia de criaÃ§Ã£o
                 await _auditoriaService.Create(auditoriaDTO);
 
                 _response.Code = ResponseEnum.SUCCESS;
@@ -281,7 +281,7 @@ namespace Civitas.WebAPI.Controllers
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Não foi possível cadastrar a auditoria";
+                _response.Message = "NÃ£o foi possÃ­vel cadastrar a auditoria";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
@@ -293,7 +293,7 @@ namespace Civitas.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Altera a situação da auditoria (ATIVO / INATIVO).
+        /// Altera a situaÃ§Ã£o da auditoria (ATIVO / INATIVO).
         /// </summary>
         /// <param name="id">Identificador da auditoria.</param>
         /// <returns>Status atualizado da auditoria.</returns>
@@ -307,7 +307,7 @@ namespace Civitas.WebAPI.Controllers
                 if (auditoria == null)
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
-                    _response.Message = "Auditoria não encontrada";
+                    _response.Message = "Auditoria nÃ£o encontrada";
                     _response.Data = null;
                     return NotFound(_response);
                 }
@@ -319,7 +319,7 @@ namespace Civitas.WebAPI.Controllers
                 await _auditoriaService.Update(auditoria, id);
 
                 _response.Code = ResponseEnum.SUCCESS;
-                _response.Message = $"Situação alterada para {auditoria.Situacao} com sucesso";
+                _response.Message = $"SituaÃ§Ã£o alterada para {auditoria.Situacao} com sucesso";
                 _response.Data = new
                 {
                     auditoria.Id,
@@ -331,7 +331,7 @@ namespace Civitas.WebAPI.Controllers
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao alterar a situação da auditoria";
+                _response.Message = "Ocorreu um erro ao alterar a situaÃ§Ã£o da auditoria";
                 _response.Data = new
                 {
                     ErrorMessage = ex.Message,
@@ -341,5 +341,48 @@ namespace Civitas.WebAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
         }
+        [HttpGet("excluidos")]
+        public async Task<IActionResult> GetExcluidos([FromQuery] PaginationQuery paginationQuery)
+        {
+            var result = await _auditoriaService.GetPageExcluidos(paginationQuery);
+
+            _response.Code = ResponseEnum.SUCCESS;
+            _response.Data = result;
+            _response.Message = "Auditorias excluidos listados com sucesso";
+
+            return Ok(_response);
+        }
+        [HttpPatch("{id}/status-exclusao")]
+        public async Task<IActionResult> ToggleStatusExclusao(int id)
+        {
+            try
+            {
+                var dto = await _auditoriaService.ToggleStatusExclusaoAsync(id);
+
+                _response.Code = ResponseEnum.SUCCESS;
+                _response.Data = dto;
+                _response.Message = "Auditorias com status de exclusao alterado com sucesso";
+                return Ok(_response);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _response.Code = ResponseEnum.NOT_FOUND;
+                _response.Data = null;
+                _response.Message = ex.Message;
+                return NotFound(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.Code = ResponseEnum.ERROR;
+                _response.Message = "Ocorreu um erro ao alterar o status de exclusao";
+                _response.Data = new
+                {
+                    ErrorMessage = ex.Message,
+                    StackTrace = ex.StackTrace ?? "Sem stack trace disponivel"
+                };
+                return StatusCode(StatusCodes.Status500InternalServerError, _response);
+            }
+        }
     }
 }
+

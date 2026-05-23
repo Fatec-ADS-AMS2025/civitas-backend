@@ -1,78 +1,78 @@
-using Civitas.WebAPI.Objects.Enums;
+﻿using Civitas.WebAPI.Objects.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace Civitas.WebAPI.Objects.Dtos.Entities
 {
     /// <summary>
-    /// Objeto de transferência de dados para visualização e relatórios de Auditoria (Logs).
+    /// Objeto de transferÃªncia de dados para visualizaÃ§Ã£o e relatÃ³rios de Auditoria (Logs).
     /// </summary>
     /// <remarks>
     /// Finalidade:
-    /// - Output: Alimentar telas de histórico de alterações, permitindo rastrear quem fez o que e quando.
-    /// - Input: Geralmente gerado automaticamente pelo backend, mas validado aqui caso haja inserção via API.
+    /// - Output: Alimentar telas de histÃ³rico de alteraÃ§Ãµes, permitindo rastrear quem fez o que e quando.
+    /// - Input: Geralmente gerado automaticamente pelo backend, mas validado aqui caso haja inserÃ§Ã£o via API.
     /// </remarks>
     public class AuditoriaDTO
     {
         /// <summary>
-        /// Identificador único do registro de log.
+        /// Identificador Ãºnico do registro de log.
         /// </summary>
         public int Id { get; set; }
 
         /// <summary>
-        /// Data da ocorrência do evento.
+        /// Data da ocorrÃªncia do evento.
         /// </summary>
         /// <remarks>
-        /// Campo Obrigatório.
+        /// Campo ObrigatÃ³rio.
         /// </remarks>
-        [Required(ErrorMessage = "A data é obrigatória")]
+        [Required(ErrorMessage = "A data Ã© obrigatÃ³ria")]
         public string Data { get; set; } = string.Empty;
 
         /// <summary>
-        /// Horário exato da ocorrência.
+        /// HorÃ¡rio exato da ocorrÃªncia.
         /// </summary>
         /// <remarks>
-        /// Campo Obrigatório.
+        /// Campo ObrigatÃ³rio.
         /// </remarks>
-        [Required(ErrorMessage = "A hora é obrigatória")]
+        [Required(ErrorMessage = "A hora Ã© obrigatÃ³ria")]
         public string Hora { get; set; } = string.Empty;
 
         /// <summary>
-        /// Tipo de ação executada.
+        /// Tipo de aÃ§Ã£o executada.
         /// </summary>
         /// <remarks>
         /// Exemplos: INSERT, UPDATE, DELETE, LOGIN.
-        /// Validação: Máximo de 100 caracteres.
+        /// ValidaÃ§Ã£o: MÃ¡ximo de 100 caracteres.
         /// </remarks>
-        [Required(ErrorMessage = "A operação é obrigatória")]
-        [StringLength(100, ErrorMessage = "A operação deve ter no máximo 100 caracteres")]
+        [Required(ErrorMessage = "A operaÃ§Ã£o Ã© obrigatÃ³ria")]
+        [StringLength(100, ErrorMessage = "A operaÃ§Ã£o deve ter no mÃ¡ximo 100 caracteres")]
         public string Operacao { get; set; } = string.Empty;
 
         /// <summary>
         /// Nome da tabela ou objeto afetado.
         /// </summary>
         /// <remarks>
-        /// Validação: Máximo de 100 caracteres.
+        /// ValidaÃ§Ã£o: MÃ¡ximo de 100 caracteres.
         /// </remarks>
-        [Required(ErrorMessage = "O nome da entidade é obrigatório")]
-        [StringLength(100, ErrorMessage = "O nome da entidade deve ter no máximo 100 caracteres")]
+        [Required(ErrorMessage = "O nome da entidade Ã© obrigatÃ³rio")]
+        [StringLength(100, ErrorMessage = "O nome da entidade deve ter no mÃ¡ximo 100 caracteres")]
         public string NomeEntidade { get; set; } = string.Empty;
 
         /// <summary>
-        /// Snapshot dos dados ANTES da alteração (Valor Antigo).
+        /// Snapshot dos dados ANTES da alteraÃ§Ã£o (Valor Antigo).
         /// </summary>
         /// <remarks>
-        /// Validação: Limite de 500 caracteres. Se o JSON do objeto for maior, deve ser truncado ou tratado.
+        /// ValidaÃ§Ã£o: Limite de 500 caracteres. Se o JSON do objeto for maior, deve ser truncado ou tratado.
         /// </remarks>
-        [StringLength(500, ErrorMessage = "Os valores atingidos devem ter no máximo 500 caracteres")]
+        [StringLength(500, ErrorMessage = "Os valores atingidos devem ter no mÃ¡ximo 500 caracteres")]
         public string ValoresAtingidos { get; set; } = string.Empty;
 
         /// <summary>
-        /// Snapshot dos dados DEPOIS da alteração (Novo Valor).
+        /// Snapshot dos dados DEPOIS da alteraÃ§Ã£o (Novo Valor).
         /// </summary>
         /// <remarks>
-        /// Validação: Limite de 500 caracteres.
+        /// ValidaÃ§Ã£o: Limite de 500 caracteres.
         /// </remarks>
-        [StringLength(500, ErrorMessage = "Os novos valores devem ter no máximo 500 caracteres")]
+        [StringLength(500, ErrorMessage = "Os novos valores devem ter no mÃ¡ximo 500 caracteres")]
         public string NovosValores { get; set; } = string.Empty;
 
         /// <summary>
@@ -81,24 +81,28 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// <remarks>
         /// Valores: <see cref="Situacao"/>.
         /// </remarks>
-        [Required(ErrorMessage = "A situação é obrigatória")]
+        [Required(ErrorMessage = "A situaÃ§Ã£o Ã© obrigatÃ³ria")]
         public Situacao Situacao { get; set; }
 
         /// <summary>
-        /// Identificador do Usuário que realizou a operação.
+        /// Identificador do UsuÃ¡rio que realizou a operaÃ§Ã£o.
         /// </summary>
         /// <remarks>
-        /// Campo Obrigatório. Garante a rastreabilidade do autor.
+        /// Campo ObrigatÃ³rio. Garante a rastreabilidade do autor.
         /// </remarks>
-        [Required(ErrorMessage = "O ID do usuário é obrigatório")]
+        [Required(ErrorMessage = "O ID do usuÃ¡rio Ã© obrigatÃ³rio")]
         public int UsuarioId { get; set; }
 
         /// <summary>
-        /// Objeto aninhado com os dados detalhados do Usuário.
+        /// Objeto aninhado com os dados detalhados do UsuÃ¡rio.
         /// </summary>
         /// <remarks>
-        /// Output: Preenchido em consultas para exibir o nome/login do responsável sem necessidade de nova requisição.
+        /// Output: Preenchido em consultas para exibir o nome/login do responsÃ¡vel sem necessidade de nova requisiÃ§Ã£o.
         /// </remarks>
         public UsuarioDTO? Usuario { get; set; }
+        public bool Excluido { get; set; }
+
+        public DateTime? DataExclusao { get; set; }
+
     }
 }

@@ -41,6 +41,19 @@ namespace Civitas.WebAPI.Data
             UnidadeConsumidoraBuilder.Build(modelBuilder);
             DespesaBuilder.Build(modelBuilder);
             UnidadeConsumidoraBuilder.Build(modelBuilder);
+
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes()
+                         .Where(entityType => typeof(ISoftDeletable).IsAssignableFrom(entityType.ClrType)))
+            {
+                modelBuilder.Entity(entityType.ClrType)
+                    .Property(nameof(ISoftDeletable.Excluido))
+                    .HasColumnName("excluido")
+                    .HasDefaultValue(false);
+
+                modelBuilder.Entity(entityType.ClrType)
+                    .Property(nameof(ISoftDeletable.DataExclusao))
+                    .HasColumnName("dataexclusao");
+            }
         }
     }
 }

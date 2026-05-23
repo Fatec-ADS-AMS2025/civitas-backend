@@ -1,39 +1,39 @@
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Civitas.WebAPI.Objects.Models
 {
     /// <summary>
-    /// Entidade que define a previs�o or�ament�ria (Teto de Gastos) dispon�vel para uma institui��o.
+    /// Entidade que define a previsï¿½o orï¿½amentï¿½ria (Teto de Gastos) disponï¿½vel para uma instituiï¿½ï¿½o.
     /// Mapeia a tabela 'orcamento' do banco de dados.
     /// </summary>
     /// <remarks>
-    /// O or�amento � segmentado por Ano, Institui��o e Tipo de Despesa.
-    /// Regra de Neg�cio: O sistema deve validar se a soma das despesas lan�adas ultrapassa este ValorOrcamento.
+    /// O orï¿½amento ï¿½ segmentado por Ano, Instituiï¿½ï¿½o e Tipo de Despesa.
+    /// Regra de Negï¿½cio: O sistema deve validar se a soma das despesas lanï¿½adas ultrapassa este ValorOrcamento.
     /// </remarks>
     [Table("orcamento")]
-    public class Orcamento
+    public class Orcamento : ISoftDeletable
     {
         /// <summary>
-        /// Identificador �nico do registro de or�amento (Chave Prim�ria).
+        /// Identificador ï¿½nico do registro de orï¿½amento (Chave Primï¿½ria).
         /// </summary>
         [Column("idorcamento")]
         public int IdOrcamento { get; set; }
 
         /// <summary>
-        /// Ano de exerc�cio fiscal ao qual este or�amento pertence.
+        /// Ano de exercï¿½cio fiscal ao qual este orï¿½amento pertence.
         /// </summary>
         /// <example>2024, 2025</example>
         /// <remarks>
-        /// Regra: Deve ser um ano v�lido com 4 d�gitos.
+        /// Regra: Deve ser um ano vï¿½lido com 4 dï¿½gitos.
         /// </remarks>
         [Column("anoorcamento")]
         public int AnoOrcamento { get; set; }
 
         /// <summary>
-        /// Valor monet�rio total disponibilizado para gastos.
+        /// Valor monetï¿½rio total disponibilizado para gastos.
         /// </summary>
         /// <remarks>
-        /// Este valor serve como limite superior para as valida��es de despesas.
+        /// Este valor serve como limite superior para as validaï¿½ï¿½es de despesas.
         /// </remarks>
         [Column("valororcamento")]
         public decimal? ValorOrcamento { get; set; }
@@ -112,13 +112,13 @@ namespace Civitas.WebAPI.Objects.Models
         public decimal? DezembroValorConsumo { get; set; }
 
         /// <summary>
-        /// Chave estrangeira da Institui��o detentora deste or�amento.
+        /// Chave estrangeira da Instituiï¿½ï¿½o detentora deste orï¿½amento.
         /// </summary>
         [Column("idinstituicao")]
         public int IdInstituicao { get; set; }
 
         /// <summary>
-        /// Objeto de navega��o para a Institui��o vinculada.
+        /// Objeto de navegaï¿½ï¿½o para a Instituiï¿½ï¿½o vinculada.
         /// </summary>
         public Instituicao? Instituicao { get; set; }
 
@@ -135,13 +135,20 @@ namespace Civitas.WebAPI.Objects.Models
         /// <summary>
         /// Construtor vazio para uso do Entity Framework.
         /// </summary>
+
+        [Column("excluido")]
+        public bool Excluido { get; set; }
+
+        [Column("dataexclusao")]
+        public DateTime? DataExclusao { get; set; }
+
         public Orcamento()
         {
 
         }
 
         /// <summary>
-        /// Construtor para inicializa��o b�sica da entidade Orcamento.
+        /// Construtor para inicializaï¿½ï¿½o bï¿½sica da entidade Orcamento.
         /// </summary>
         public Orcamento(int idOrcamento, int anoOrcamento, decimal valorOrcamento, int idInstituicao, int idTipoDespesa, decimal? janeiroQuantidadeConsumo,
                 decimal? janeiroValorConsumo, decimal? fevereiroQuantidadeConsumo, decimal? fevereiroValorConsumo, decimal? marcoQuantidadeConsumo, decimal? marcoValorConsumo,
@@ -195,3 +202,4 @@ namespace Civitas.WebAPI.Objects.Models
         }
     }
 }
+
