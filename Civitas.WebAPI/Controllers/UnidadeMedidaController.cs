@@ -3,6 +3,7 @@ using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Objects.Models;
 using Civitas.WebAPI.Services.Interfaces;
+using Civitas.WebAPI.Services.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -114,6 +115,13 @@ namespace Civitas.WebAPI.Controllers
 
                 return Ok(_response);
             }
+            catch (UnidadeMedidaValidationException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = ex.Errors;
+                _response.Message = "Os dados informados para a unidade de medida são inválidos";
+                return BadRequest(_response);
+            }
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
@@ -164,6 +172,13 @@ namespace Civitas.WebAPI.Controllers
 
                 return Ok(_response);
             }
+            catch (UnidadeMedidaValidationException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = ex.Errors;
+                _response.Message = "Os dados informados para a unidade de medida são inválidos";
+                return BadRequest(_response);
+            }
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
@@ -212,6 +227,13 @@ namespace Civitas.WebAPI.Controllers
                 _response.Message = $"Situação alterada para {unidadeMedida.Situacao} com sucesso";
 
                 return Ok(_response);
+            }
+            catch (UnidadeMedidaValidationException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = ex.Errors;
+                _response.Message = "Os dados informados para a unidade de medida são inválidos";
+                return BadRequest(_response);
             }
             catch (Exception ex)
             {
