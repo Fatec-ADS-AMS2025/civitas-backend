@@ -8,7 +8,7 @@ namespace Civitas.WebAPI.Data.Builders
         public static void Build(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UnidadeMedida>().HasKey(u => u.Id);
-            modelBuilder.Entity<UnidadeMedida>().Property(d => d.Descricao).IsRequired().HasMaxLength(500);
+            modelBuilder.Entity<UnidadeMedida>().Property(d => d.Descricao).IsRequired().HasMaxLength(150);
             modelBuilder.Entity<UnidadeMedida>().Property(d => d.Abreviatura).IsRequired().HasMaxLength(45);
             modelBuilder.Entity<UnidadeMedida>().Property(d => d.Situacao).IsRequired();
             modelBuilder.Entity<UnidadeMedida>()
