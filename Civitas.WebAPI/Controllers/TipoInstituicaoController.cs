@@ -4,6 +4,7 @@ using Civitas.WebAPI.Objects.Dtos.Entities;
 using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Entities;
 using Civitas.WebAPI.Services.Interfaces;
+using Civitas.WebAPI.Services.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -115,6 +116,13 @@ namespace Civitas.WebAPI.Controllers
 
                 return Ok(_response);
             }
+            catch (TipoInstituicaoValidationException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = ex.Errors;
+                _response.Message = "Os dados informados para o tipo de instituição são inválidos";
+                return BadRequest(_response);
+            }
             catch (Exception ex)
             {
                 _response.Code = ResponseEnum.ERROR;
@@ -148,15 +156,6 @@ namespace Civitas.WebAPI.Controllers
 
             try
             {
-                var existingTipoInstituicaoDTO = await _tipoInstituicaoService.GetById(id);
-                if (existingTipoInstituicaoDTO is null)
-                {
-                    _response.Code = ResponseEnum.NOT_FOUND;
-                    _response.Data = null;
-                    _response.Message = "O tipo da instituição informado não existe";
-                    return NotFound(_response);
-                }
-
                 await _tipoInstituicaoService.Update(tipoInstituicaoDTO, id);
 
                 _response.Code = ResponseEnum.SUCCESS;
@@ -164,6 +163,20 @@ namespace Civitas.WebAPI.Controllers
                 _response.Message = "O tipo da instituição foi atualizado com sucesso";
 
                 return Ok(_response);
+            }
+            catch (TipoInstituicaoValidationException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = ex.Errors;
+                _response.Message = "Os dados informados para o tipo de instituição são inválidos";
+                return BadRequest(_response);
+            }
+            catch (KeyNotFoundException)
+            {
+                _response.Code = ResponseEnum.NOT_FOUND;
+                _response.Data = null;
+                _response.Message = "O tipo da instituição informado não existe";
+                return NotFound(_response);
             }
             catch (Exception ex)
             {
@@ -197,23 +210,9 @@ namespace Civitas.WebAPI.Controllers
                     return NotFound(_response);
                 }
 
-                if (tipoInstituicao.Situacao == Situacao.ATIVO)
-                {
-                    var possuiAtivas = await _tipoInstituicaoService.ExisteInstituicoesAtivas(id);
-                    if (possuiAtivas)
-                    {
-                        _response.Code = ResponseEnum.INVALID;
-                        _response.Data = null;
-                        _response.Message = "Não é possível desativar este tipo de instituição, pois existem instituições ativas vinculadas.";
-                        return BadRequest(_response);
-                    }
-
-                    tipoInstituicao.Situacao = Situacao.INATIVO;
-                }
-                else
-                {
-                    tipoInstituicao.Situacao = Situacao.ATIVO;
-                }
+                tipoInstituicao.Situacao = tipoInstituicao.Situacao == Situacao.ATIVO
+                    ? Situacao.INATIVO
+                    : Situacao.ATIVO;
 
                 await _tipoInstituicaoService.Update(tipoInstituicao, id);
 
@@ -226,6 +225,20 @@ namespace Civitas.WebAPI.Controllers
                 _response.Message = $"Situação alterada para {tipoInstituicao.Situacao} com sucesso.";
 
                 return Ok(_response);
+            }
+            catch (TipoInstituicaoValidationException ex)
+            {
+                _response.Code = ResponseEnum.INVALID;
+                _response.Data = ex.Errors;
+                _response.Message = "Os dados informados para o tipo de instituição são inválidos";
+                return BadRequest(_response);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _response.Code = ResponseEnum.NOT_FOUND;
+                _response.Data = null;
+                _response.Message = ex.Message;
+                return NotFound(_response);
             }
             catch (Exception ex)
             {

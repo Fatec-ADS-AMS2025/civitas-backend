@@ -8,7 +8,7 @@ namespace Civitas.WebAPI.Data.Builders
         public static void Build(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TipoInstituicao>().HasKey(i => i.Id);
-            modelBuilder.Entity<TipoInstituicao>().Property(i => i.Descricao).IsRequired().HasMaxLength(500);
+            modelBuilder.Entity<TipoInstituicao>().Property(i => i.Descricao).IsRequired().HasMaxLength(150);
             modelBuilder.Entity<TipoInstituicao>()
                 .HasMany<Instituicao>(i => i.Instituicoes)
                 .WithOne(ti => ti.TipoInstituicao)

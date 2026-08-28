@@ -20,5 +20,19 @@ namespace Civitas.WebAPI.Data.Repositories
                 .AnyAsync(i => i.IdTipoInstituicao == idTipoInstituicao && i.Situacao == Situacao.ATIVO);
         }
 
+        public async Task<bool> ExistsByDescricaoNormalized(string descricaoNormalizada, int? ignoreId = null)
+        {
+            var query = _appDbContext.TipoInstituicoes
+                .AsNoTracking()
+                .Where(t => !t.Excluido && t.Descricao.Trim().ToUpper() == descricaoNormalizada);
+
+            if (ignoreId.HasValue)
+            {
+                query = query.Where(t => t.Id != ignoreId.Value);
+            }
+
+            return await query.AnyAsync();
+        }
+
     }
 }
