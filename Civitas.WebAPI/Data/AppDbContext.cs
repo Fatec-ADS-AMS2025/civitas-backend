@@ -23,6 +23,7 @@ namespace Civitas.WebAPI.Data
         public DbSet<Despesa> Despesas { get; set; }
         public DbSet<TipoCodigo> TipoCodigos { get; set; }
         public DbSet<UnidadeConsumidora> UnidadesConsumidoras { get; set; }
+        public DbSet<EmailEnviado> EmailsEnviados { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -41,6 +42,7 @@ namespace Civitas.WebAPI.Data
             UnidadeConsumidoraBuilder.Build(modelBuilder);
             DespesaBuilder.Build(modelBuilder);
             UnidadeConsumidoraBuilder.Build(modelBuilder);
+            EmailEnviadoBuilder.Build(modelBuilder);
 
             foreach (var entityType in modelBuilder.Model.GetEntityTypes()
                          .Where(entityType => typeof(ISoftDeletable).IsAssignableFrom(entityType.ClrType)))

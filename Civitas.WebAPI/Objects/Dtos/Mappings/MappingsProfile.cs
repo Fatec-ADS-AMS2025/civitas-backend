@@ -31,6 +31,7 @@ namespace Civitas.WebAPI.Objects.Dtos.Mappings
 
             CreateMap<TipoCodigo, TipoCodigoDTO>().ReverseMap();
             CreateMap<UnidadeConsumidora, UnidadeConsumidoraDTO>().ReverseMap();
+            CreateMap<EmailEnviado, EmailResponseDto>();
         }
 
         private static IList<string>? ParseCamposSafely(string? json)
