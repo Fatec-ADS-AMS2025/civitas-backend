@@ -24,6 +24,7 @@ namespace Civitas.WebAPI.Data
         public DbSet<TipoCodigo> TipoCodigos { get; set; }
         public DbSet<UnidadeConsumidora> UnidadesConsumidoras { get; set; }
         public DbSet<EmailEnviado> EmailsEnviados { get; set; }
+        public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -43,6 +44,7 @@ namespace Civitas.WebAPI.Data
             DespesaBuilder.Build(modelBuilder);
             UnidadeConsumidoraBuilder.Build(modelBuilder);
             EmailEnviadoBuilder.Build(modelBuilder);
+            PasswordResetTokenBuilder.Build(modelBuilder);
 
             foreach (var entityType in modelBuilder.Model.GetEntityTypes()
                          .Where(entityType => typeof(ISoftDeletable).IsAssignableFrom(entityType.ClrType)))

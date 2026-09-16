@@ -293,6 +293,16 @@ namespace Civitas.WebAPI.Services.Entities
                 errors.Add("O número deve ter no máximo 10 caracteres.");
             }
 
+            if (usuarioDto.Bairro.Length > 100)
+            {
+                errors.Add("O bairro deve ter no máximo 100 caracteres.");
+            }
+
+            if (usuarioDto.Cidade.Length > 100)
+            {
+                errors.Add("A cidade deve ter no máximo 100 caracteres.");
+            }
+
             if (usuarioDto.Cep.Length != 8)
             {
                 errors.Add("O CEP deve conter 8 dígitos.");
@@ -301,6 +311,11 @@ namespace Civitas.WebAPI.Services.Entities
             if (usuarioDto.Estado.Length != 2 || !ValidUfs.Contains(usuarioDto.Estado))
             {
                 errors.Add("O estado deve conter uma UF válida.");
+            }
+
+            if (usuarioDto.Matricula.Length > 100)
+            {
+                errors.Add("A matrícula deve ter no máximo 100 caracteres.");
             }
         }
 
