@@ -36,19 +36,31 @@ services:
       Jwt__ExpirationMinutes: ${JWT_EXPIRATION_MINUTES:-60}
       ViaCep__BaseUrl: ${VIACEP_BASE_URL:-https://viacep.com.br/}
       ViaCep__TimeoutSeconds: ${VIACEP_TIMEOUT_SECONDS:-10}
-      Email__Host: ${EMAIL_HOST:-}
-      Email__Port: ${EMAIL_PORT:-587}
-      Email__EnableSsl: ${EMAIL_ENABLE_SSL:-true}
+      Email__Host: mailpit
+      Email__Port: 1025
+      Email__EnableSsl: "false"
       Email__Username: ${EMAIL_USERNAME:-}
       Email__Password: ${EMAIL_PASSWORD:-}
       Email__FromAddress: ${EMAIL_FROM_ADDRESS:-noreply@civitas.local}
       Email__FromName: ${EMAIL_FROM_NAME:-Civitas}
       Email__TimeoutSeconds: ${EMAIL_TIMEOUT_SECONDS:-15}
+      PasswordRecovery__FrontendBaseUrl: ${PASSWORD_RECOVERY_FRONTEND_BASE_URL:-http://localhost:${FRONTEND_PORT:-3000}}
+      PasswordRecovery__TokenExpirationMinutes: ${PASSWORD_RECOVERY_TOKEN_EXPIRATION_MINUTES:-60}
     ports:
       - "${BACKEND_PORT:-8080}:8080"
     depends_on:
       db:
         condition: service_healthy
+      mailpit:
+        condition: service_started
+    networks:
+      - civitas-network
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
     networks:
       - civitas-network
 
