@@ -7,7 +7,7 @@ namespace Civitas.WebAPI.Data
 {
     /// <summary>
     /// Comandos de banco no estilo do Artisan do Laravel, executados com
-    /// <c>dotnet run -- &lt;comando&gt;</c> (ou <c>dotnet Civitas.WebAPI.dll &lt;comando&gt;</c> no container).
+    /// <c>dotnet run -- &lt;comando&gt;</c> (ou <c>docker compose run --rm --no-deps backend &lt;comando&gt;</c> no container).
     /// </summary>
     /// <remarks>
     /// <list type="bullet">
@@ -82,7 +82,7 @@ namespace Civitas.WebAPI.Data
             {
                 throw new InvalidOperationException(
                     "O banco ja tem tabelas mas nenhuma migration registrada (foi criado com EnsureCreated ou scripts SQL). " +
-                    "Recrie com 'dotnet run -- migrate:fresh --seed' ou 'docker compose down -v'.");
+                    "Recrie com 'docker compose run --rm --no-deps backend migrate:fresh --seed' (docker) ou 'dotnet run -- migrate:fresh --seed' (local).");
             }
 
             var pending = historyExists

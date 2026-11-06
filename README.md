@@ -174,7 +174,7 @@ O backend roda em `Development` no compose para manter o Swagger. Migrations e s
 Bancos criados antes das migrations (via `EnsureCreated`/scripts SQL) nao tem historico de migrations; a API recusa subir e pede para recriar. Recrie com `docker compose down -v` ou:
 
 ```bash
-docker compose run --rm backend dotnet Civitas.WebAPI.dll migrate:fresh --seed
+docker compose run --rm --no-deps backend migrate:fresh --seed
 ``` Em ambientes fora de desenvolvimento, altere as variaveis de ambiente e use uma chave JWT propria.
 
 ---
