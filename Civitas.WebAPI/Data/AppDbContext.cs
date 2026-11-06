@@ -42,7 +42,6 @@ namespace Civitas.WebAPI.Data
             OrcamentoBuilder.Build(modelBuilder);
             UnidadeConsumidoraBuilder.Build(modelBuilder);
             DespesaBuilder.Build(modelBuilder);
-            UnidadeConsumidoraBuilder.Build(modelBuilder);
             EmailEnviadoBuilder.Build(modelBuilder);
             PasswordResetTokenBuilder.Build(modelBuilder);
 

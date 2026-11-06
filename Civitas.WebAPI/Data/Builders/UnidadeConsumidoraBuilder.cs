@@ -35,13 +35,13 @@ namespace Civitas.WebAPI.Data.Builders
 
             modelBuilder.Entity<UnidadeConsumidora>()
                 .HasOne(uc => uc.Instituicao)
-                .WithMany()
+                .WithMany(x => x.UnidadesConsumidoras)
                 .HasForeignKey(uc => uc.IdInstituicao)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<UnidadeConsumidora>()
                 .HasOne(uc => uc.TipoDespesa)
-                .WithMany()
+                .WithMany(x => x.UnidadesConsumidoras)
                 .HasForeignKey(uc => uc.IdTipoDespesa)
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -53,13 +53,13 @@ namespace Civitas.WebAPI.Data.Builders
 
             modelBuilder.Entity<UnidadeConsumidora>()
                 .HasOne(uc => uc.Orcamento)
-                .WithMany()
+                .WithMany(x => x.UnidadesConsumidoras)
                 .HasForeignKey(uc => uc.IdOrcamento)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<UnidadeConsumidora>()
                 .HasOne(uc => uc.Fornecedor)
-                .WithMany()
+                .WithMany(x => x.UnidadesConsumidoras)
                 .HasForeignKey(uc => uc.IdFornecedor)
                 .OnDelete(DeleteBehavior.Restrict);
         }

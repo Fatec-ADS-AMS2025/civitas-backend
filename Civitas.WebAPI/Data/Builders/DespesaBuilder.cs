@@ -61,6 +61,7 @@ namespace Civitas.WebAPI.Data.Builders
 
             modelBuilder.Entity<Despesa>().Property(d => d.ValoresOpcionais)
                 .HasColumnName("valoresopcionais")
+                .HasColumnType("jsonb")
                 .IsRequired(false);
 
             modelBuilder.Entity<Despesa>()
