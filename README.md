@@ -119,9 +119,11 @@ CREATE DATABASE civitas;
 cd Civitas.WebAPI
 
 dotnet restore
-dotnet ef database update
+dotnet run -- migrate:fresh --seed   # cria as tabelas e popula com dados de desenvolvimento
 dotnet run
 ```
+
+Toda vez que a API sobe (inclusive no container), ela aplica as migrations pendentes e, se nenhuma tabela tiver dados, roda o seed. Se houver qualquer dado, o seed e ignorado.
 
 ---
 
@@ -167,7 +169,13 @@ Servicos expostos:
 - Healthcheck da API: `http://localhost:8080/health`
 - PostgreSQL: `localhost:5432`
 
-O backend roda em `Development` no compose para manter Swagger, criacao do schema e seed local. Em ambientes fora de desenvolvimento, altere as variaveis de ambiente e use uma chave JWT propria.
+O backend roda em `Development` no compose para manter o Swagger. Migrations e seed rodam automaticamente a cada boot do container.
+
+Bancos criados antes das migrations (via `EnsureCreated`/scripts SQL) nao tem historico de migrations; a API recusa subir e pede para recriar. Recrie com `docker compose down -v` ou:
+
+```bash
+docker compose run --rm backend dotnet Civitas.WebAPI.dll migrate:fresh --seed
+``` Em ambientes fora de desenvolvimento, altere as variaveis de ambiente e use uma chave JWT propria.
 
 ---
 
@@ -324,10 +332,13 @@ civitas-backend/
 |   |   `-- UsuarioController.cs
 |   |-- Data/
 |   |   |-- AppDbContext.cs
+|   |   |-- DatabaseCommands.cs
 |   |   |-- Builders/
+|   |   |-- Factories/
 |   |   |-- Interfaces/
-|   |   `-- Repositories/
-|   |-- Migrations/
+|   |   |-- Migrations/
+|   |   |-- Repositories/
+|   |   `-- Seeders/
 |   |-- Objects/
 |   |   |-- Contracts/
 |   |   |-- Dtos/
@@ -336,7 +347,6 @@ civitas-backend/
 |   |-- Services/
 |   |   |-- Entities/
 |   |   `-- Interfaces/
-|   |-- sql/
 |   |-- appsettings.json
 |   |-- Program.cs
 |   `-- Civitas.WebAPI.csproj
@@ -373,13 +383,40 @@ dotnet watch run
 dotnet run
 ```
 
-### Aplicando Migrations
+### Migrations, Seeders e Factories
+
+O banco segue o padrao do Laravel: uma migration por tabela em `Data/Migrations`, um seeder por entidade em `Data/Seeders` e uma factory por entidade em `Data/Factories`.
+
+Comandos (equivalentes ao `php artisan`), executados dentro de `Civitas.WebAPI`:
+
+| Comando | Laravel | O que faz |
+|---------|---------|-----------|
+| `dotnet run -- migrate` | `migrate` | Aplica as migrations pendentes |
+| `dotnet run -- migrate:status` | `migrate:status` | Lista migrations aplicadas `[x]` e pendentes `[ ]` |
+| `dotnet run -- migrate:rollback --step=1` | `migrate:rollback` | Desfaz as ultimas N migrations |
+| `dotnet run -- migrate:fresh --seed` | `migrate:fresh --seed` | Apaga todas as tabelas, migra do zero e popula |
+| `dotnet run -- db:seed` | `db:seed` | Roda o `DatabaseSeeder` (ignorado se ja houver usuarios) |
+| `dotnet run -- db:seed --class=FornecedorSeeder` | `db:seed --class=` | Roda um seeder especifico |
+
+Usuarios de desenvolvimento: `admin@civitas.dev` e `funcionario@civitas.dev`, senha `password`.
+
+**Nova migration** — altere o model/builder e gere a migration na pasta certa (`create_x_table` para tabela nova, `add_x_to_y_table` para alteracao):
 
 ```bash
-dotnet ef migrations add NomeDaMigration
-dotnet ef database update
-dotnet ef migrations remove
+dotnet ef migrations add CreateNomeTabelaTable -o Data/Migrations
+dotnet ef migrations add AddCampoToTabelaTable -o Data/Migrations
+dotnet ef migrations has-pending-model-changes   # garante que o snapshot esta em dia
 ```
+
+**Factories** — geram entidades com dados falsos (Bogus, pt_BR) e criam os relacionamentos obrigatorios automaticamente:
+
+```csharp
+var admin = await UsuarioFactory.New().Administrador().CreateAsync(context);
+var fornecedores = await FornecedorFactory.New().ParaTipoDespesa(tipo).CreateAsync(context, 5);
+var despesa = DespesaFactory.New().Atrasada().Make();   // so instancia, nao salva
+```
+
+**Novo seeder** — herde de `Seeder`, implemente `RunAsync` e chame-o no `DatabaseSeeder` respeitando a ordem das FKs.
 
 ---
 
