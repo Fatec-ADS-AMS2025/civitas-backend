@@ -1,7 +1,7 @@
 using Civitas.WebAPI.Data;
 using Civitas.WebAPI.Data.Interfaces;
 using Civitas.WebAPI.Data.Repositories;
-using Civitas.WebAPI.Data.Seeding;
+using Civitas.WebAPI.Data.Seeders;
 using Civitas.WebAPI.Services.Entities;
 using Civitas.WebAPI.Services.Interfaces;
 using Civitas.WebAPI.Services.Security;
@@ -115,35 +115,44 @@ builder.Services.AddHttpClient<ICepService, CepService>((serviceProvider, client
 });
 builder.Services.AddScoped<ITipoCodigoRepository, TipoCodigoRepository>();
 builder.Services.AddScoped<ITipoCodigoService, TipoCodigoService>();
-builder.Services.AddScoped<AppDbSeeder>();
 builder.Services.AddScoped<IUnidadeConsumidoraRepository, UnidadeConsumidoraRepository>();
 builder.Services.AddScoped<IUnidadeConsumidoraService, UnidadeConsumidoraService>();
 builder.Services.AddScoped<IEmailRepository, EmailRepository>();
 builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
+if (DatabaseCommands.IsCommand(args))
+{
+    // No modo comando o EF loga como "fail" a consulta ao histórico de migrations antes dele existir;
+    // os erros reais são reportados pelo próprio comando.
+    builder.Logging.AddFilter("Microsoft.EntityFrameworkCore", LogLevel.Warning);
+    builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.None);
+}
+
 var app = builder.Build();
+
+// Comandos de banco estilo Artisan: dotnet run -- migrate | migrate:fresh --seed | db:seed ...
+if (DatabaseCommands.IsCommand(args))
+{
+    Environment.ExitCode = await DatabaseCommands.RunAsync(app.Services, args);
+    return;
+}
+
+// Todo boot: aplica migrations pendentes e, se o banco estiver vazio (nenhuma tabela com dados), roda o seed.
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // Testes usam SQLite em memória com EnsureCreated; migrations são exclusivas do PostgreSQL.
+    if (dbContext.Database.ProviderName != "Microsoft.EntityFrameworkCore.Sqlite")
+    {
+        await DatabaseCommands.MigrateAsync(dbContext);
+        await Seeder.RunSeederAsync(scope.ServiceProvider, typeof(DatabaseSeeder));
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {
-    using var scope = app.Services.CreateScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    var seeder = scope.ServiceProvider.GetRequiredService<AppDbSeeder>();
-
-    if (dbContext.Database.ProviderName != "Microsoft.EntityFrameworkCore.Sqlite")
-    {
-        if (dbContext.Database.GetMigrations().Any())
-        {
-            await dbContext.Database.MigrateAsync();
-        }
-        else
-        {
-            await dbContext.Database.EnsureCreatedAsync();
-        }
-
-        await seeder.SeedAsync();
-    }
-
     app.UseSwagger();
     app.UseSwaggerUI(opt =>
     {

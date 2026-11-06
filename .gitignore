@@ -52,11 +52,6 @@ appsettings.Local.json
 *.class
 
 # =========================
-# Entity Framework Migrations
-# =========================
-**/Migrations/
-
-# =========================
 # NuGet
 # =========================
 *.nupkg
