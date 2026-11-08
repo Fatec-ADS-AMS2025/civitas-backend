@@ -60,36 +60,6 @@ namespace Civitas.WebAPI.Controllers
             }
         }
 
-        /// <summary>
-        /// Lista todas as auditorias inativas.
-        /// </summary>
-        /// <returns>Lista paginada das auditorias inativas.</returns>
-        [HttpGet("inativos")]
-        public async Task<IActionResult> GetInactive([FromQuery] PaginationQuery paginationQuery)
-        {
-            try
-            {
-                var auditorias = await _auditoriaService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.INATIVO);
-
-                _response.Code = ResponseEnum.SUCCESS;
-                _response.Message = "Lista de auditorias inativas obtida com sucesso";
-                _response.Data = auditorias;
-
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao obter as auditorias inativas";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace
-                };
-
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
-            }
-        }
 
         /// <summary>
         /// Busca auditoria pelo identificador.
@@ -288,98 +258,6 @@ namespace Civitas.WebAPI.Controllers
                     StackTrace = ex.StackTrace
                 };
 
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
-            }
-        }
-
-        /// <summary>
-        /// Altera a situaÃ§Ã£o da auditoria (ATIVO / INATIVO).
-        /// </summary>
-        /// <param name="id">Identificador da auditoria.</param>
-        /// <returns>Status atualizado da auditoria.</returns>
-        [HttpPatch("situacao/{id}")]
-        public async Task<IActionResult> AlterarSituacao(int id)
-        {
-            try
-            {
-                var auditoria = await _auditoriaService.GetById(id);
-
-                if (auditoria == null)
-                {
-                    _response.Code = ResponseEnum.NOT_FOUND;
-                    _response.Message = "Auditoria nÃ£o encontrada";
-                    _response.Data = null;
-                    return NotFound(_response);
-                }
-
-                auditoria.Situacao = auditoria.Situacao == Situacao.ATIVO
-                    ? Situacao.INATIVO
-                    : Situacao.ATIVO;
-
-                await _auditoriaService.Update(auditoria, id);
-
-                _response.Code = ResponseEnum.SUCCESS;
-                _response.Message = $"SituaÃ§Ã£o alterada para {auditoria.Situacao} com sucesso";
-                _response.Data = new
-                {
-                    auditoria.Id,
-                    Situacao = auditoria.Situacao.ToString()
-                };
-
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao alterar a situaÃ§Ã£o da auditoria";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace
-                };
-
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
-            }
-        }
-        [HttpGet("excluidos")]
-        public async Task<IActionResult> GetExcluidos([FromQuery] PaginationQuery paginationQuery)
-        {
-            var result = await _auditoriaService.GetPageExcluidos(paginationQuery);
-
-            _response.Code = ResponseEnum.SUCCESS;
-            _response.Data = result;
-            _response.Message = "Auditorias excluidos listados com sucesso";
-
-            return Ok(_response);
-        }
-        [HttpPatch("{id}/status-exclusao")]
-        public async Task<IActionResult> ToggleStatusExclusao(int id)
-        {
-            try
-            {
-                var dto = await _auditoriaService.ToggleStatusExclusaoAsync(id);
-
-                _response.Code = ResponseEnum.SUCCESS;
-                _response.Data = dto;
-                _response.Message = "Auditorias com status de exclusao alterado com sucesso";
-                return Ok(_response);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                _response.Code = ResponseEnum.NOT_FOUND;
-                _response.Data = null;
-                _response.Message = ex.Message;
-                return NotFound(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao alterar o status de exclusao";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace ?? "Sem stack trace disponivel"
-                };
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
         }
