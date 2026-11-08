@@ -23,7 +23,12 @@ namespace Civitas.WebAPI.Services.Security
             if (_devMode)
             {
                 foreach (var requirement in context.PendingRequirements.ToList())
-                    context.Succeed(requirement);
+                {
+                    if (requirement is not AuditoriaReadRequirement)
+                    {
+                        context.Succeed(requirement);
+                    }
+                }
             }
 
             return Task.CompletedTask;
