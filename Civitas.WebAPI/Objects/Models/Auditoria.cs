@@ -12,7 +12,7 @@ namespace Civitas.WebAPI.Objects.Models
     /// Ele captura quem realizou a ação, qual entidade foi afetada e o estado dos dados antes e depois da operação.
     /// </remarks>
     [Table("auditoria")]
-    public class Auditoria : ISoftDeletable
+    public class Auditoria
     {
         /// <summary>
         /// Identificador único do registro de log (Chave Primária).
@@ -69,16 +69,6 @@ namespace Civitas.WebAPI.Objects.Models
         public string NovosValores { get; set; } = string.Empty;
 
         /// <summary>
-        /// Estado do registro de auditoria.
-        /// </summary>
-        /// <remarks>
-        /// Controlado pelo Enum <see cref="Situacao"/>. 
-        /// Geralmente registros de auditoria são sempre criados como ATIVOS e nunca devem ser inativados para garantir a integridade histórica.
-        /// </remarks>
-        [Column("situacao")]
-        public Situacao Situacao { get; set; }
-
-        /// <summary>
         /// Chave estrangeira do Usuário que executou a ação.
         /// </summary>
         /// <remarks>
@@ -97,12 +87,6 @@ namespace Civitas.WebAPI.Objects.Models
         /// Construtor vazio para o Entity Framework.
         /// </summary>
 
-        [Column("excluido")]
-        public bool Excluido { get; set; }
-
-        [Column("dataexclusao")]
-        public DateTime? DataExclusao { get; set; }
-
         public Auditoria()
         {
         }
@@ -111,7 +95,7 @@ namespace Civitas.WebAPI.Objects.Models
         /// Construtor completo para criação de um log de auditoria.
         /// </summary>
         public Auditoria(int id, string data, string hora, string operacao, string nomeEntidade,
-            string valoresAtingidos, string novosValores, Situacao situacao, int usuarioId)
+            string valoresAtingidos, string novosValores, int usuarioId)
         {
             Id = id;
             Data = data;
@@ -120,7 +104,6 @@ namespace Civitas.WebAPI.Objects.Models
             NomeEntidade = nomeEntidade;
             ValoresAtingidos = valoresAtingidos;
             NovosValores = novosValores;
-            Situacao = situacao;
             UsuarioId = usuarioId;
         }
     }

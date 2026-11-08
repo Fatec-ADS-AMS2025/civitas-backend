@@ -76,15 +76,6 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         public string NovosValores { get; set; } = string.Empty;
 
         /// <summary>
-        /// Estado do registro de auditoria.
-        /// </summary>
-        /// <remarks>
-        /// Valores: <see cref="Situacao"/>.
-        /// </remarks>
-        [Required(ErrorMessage = "A situaÃ§Ã£o Ã© obrigatÃ³ria")]
-        public Situacao Situacao { get; set; }
-
-        /// <summary>
         /// Identificador do UsuÃ¡rio que realizou a operaÃ§Ã£o.
         /// </summary>
         /// <remarks>
@@ -92,17 +83,6 @@ namespace Civitas.WebAPI.Objects.Dtos.Entities
         /// </remarks>
         [Required(ErrorMessage = "O ID do usuÃ¡rio Ã© obrigatÃ³rio")]
         public int UsuarioId { get; set; }
-
-        /// <summary>
-        /// Objeto aninhado com os dados detalhados do UsuÃ¡rio.
-        /// </summary>
-        /// <remarks>
-        /// Output: Preenchido em consultas para exibir o nome/login do responsÃ¡vel sem necessidade de nova requisiÃ§Ã£o.
-        /// </remarks>
-        public UsuarioDTO? Usuario { get; set; }
-        public bool Excluido { get; set; }
-
-        public DateTime? DataExclusao { get; set; }
 
     }
 }

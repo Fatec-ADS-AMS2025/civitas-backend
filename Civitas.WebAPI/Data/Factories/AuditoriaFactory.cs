@@ -21,7 +21,6 @@ namespace Civitas.WebAPI.Data.Factories
                 NomeEntidade = Faker.PickRandom(Entidades),
                 ValoresAtingidos = "{}",
                 NovosValores = JsonSerializer.Serialize(new { id = Faker.Random.Int(1, 1000) }),
-                Situacao = Situacao.ATIVO,
                 Usuario = UsuarioFactory.New().Make()
             };
         }

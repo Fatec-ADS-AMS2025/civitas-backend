@@ -38,10 +38,6 @@ namespace Civitas.WebAPI.Data.Builders
                 .HasMaxLength(500);
 
             modelBuilder.Entity<Auditoria>()
-                .Property(a => a.Situacao)
-                .IsRequired();
-
-            modelBuilder.Entity<Auditoria>()
                 .Property(a => a.UsuarioId)
                 .IsRequired();
 
