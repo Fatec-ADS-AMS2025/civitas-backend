@@ -22,17 +22,36 @@ namespace Civitas.WebAPI.Services.Entities
     {
         private readonly IAuditoriaRepository _auditoriaRepository;
         private readonly IMapper _mapper;
+        private readonly IAuditoriaNotificacaoService _notificacaoService;
 
-        /// <summary>
-        /// Inicializa o serviço de Auditoria.
-        /// </summary>
-        /// <param name="auditoriaRepository">Repositório de auditoria injetado.</param>
-        /// <param name="mapper">Mapeador de objetos.</param>
-        public AuditoriaService(IAuditoriaRepository auditoriaRepository, IMapper mapper)
+        public AuditoriaService(
+            IAuditoriaRepository auditoriaRepository,
+            IMapper mapper,
+            IAuditoriaNotificacaoService notificacaoService)
             : base(auditoriaRepository, mapper)
         {
             _auditoriaRepository = auditoriaRepository;
             _mapper = mapper;
+            _notificacaoService = notificacaoService;
+        }
+
+        /// <summary>
+        /// Persiste uma auditoria e publica o aviso somente depois do commit do repositório.
+        /// </summary>
+        public override async Task Create(AuditoriaDTO entityDTO)
+        {
+            var auditoria = _mapper.Map<Auditoria>(entityDTO);
+            await _auditoriaRepository.Add(auditoria);
+
+            await _notificacaoService.PublicarCriadaAsync(new AuditoriaNotificacaoDTO
+            {
+                Id = auditoria.Id,
+                Operacao = auditoria.Operacao,
+                NomeEntidade = auditoria.NomeEntidade,
+                Data = auditoria.Data,
+                Hora = auditoria.Hora,
+                NotificadoEmUtc = DateTimeOffset.UtcNow
+            });
         }
 
         /// <summary>
