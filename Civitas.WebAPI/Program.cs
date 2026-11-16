@@ -2,6 +2,7 @@ using Civitas.WebAPI.Data;
 using Civitas.WebAPI.Data.Interfaces;
 using Civitas.WebAPI.Data.Repositories;
 using Civitas.WebAPI.Data.Seeders;
+using Civitas.WebAPI.Hubs;
 using Civitas.WebAPI.Services.Entities;
 using Civitas.WebAPI.Services.Interfaces;
 using Civitas.WebAPI.Services.Security;
@@ -43,10 +44,53 @@ builder.Services
             IssuerSigningKey = new SymmetricSecurityKey(jwtKey),
             ClockSkew = TimeSpan.Zero
         };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    context.HttpContext.Request.Path.StartsWithSegments("/hubs/auditoria"))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            }
+        };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(AuditoriaAuthorization.PolicyName, policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.AddRequirements(new AuditoriaReadRequirement());
+    });
+});
 builder.Services.AddSingleton<IAuthorizationHandler, DevBypassAuthorizationHandler>();
+builder.Services.AddSingleton<IAuthorizationHandler, AuditoriaReadHandler>();
+builder.Services.AddSignalR();
+
+var auditoriaAllowedOrigins = builder.Configuration
+    .GetSection("SignalR:AllowedOrigins")
+    .Get<string[]>()
+    ?.Where(origin => !string.IsNullOrWhiteSpace(origin))
+    .ToArray();
+if (auditoriaAllowedOrigins is not { Length: > 0 })
+{
+    auditoriaAllowedOrigins =
+    [
+        builder.Configuration["PasswordRecovery:FrontendBaseUrl"] ?? "http://localhost:3000"
+    ];
+}
+
+builder.Services.AddCors(options => options.AddPolicy("AuditoriaSignalR", policy =>
+    policy
+        .WithOrigins(auditoriaAllowedOrigins)
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials()));
 builder.Services.AddSwaggerGen(options =>
 {
     var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -91,6 +135,7 @@ builder.Services.AddScoped<ISecretariaRepository, SecretariaRepository>();
 builder.Services.AddScoped<ISecretariaService, SecretariaService>();
 builder.Services.AddScoped<IAuditoriaRepository, AuditoriaRepository>();
 builder.Services.AddScoped<IAuditoriaService, AuditoriaService>();
+builder.Services.AddScoped<IAuditoriaNotificacaoService, AuditoriaNotificacaoService>();
 builder.Services.AddScoped<IInstituicaoRepository, InstituicaoRepository>();
 builder.Services.AddScoped<IInstituicaoService, InstituicaoService>();
 builder.Services.AddScoped<ITipoInstituicaoRepository, TipoInstituicaoRepository>();
@@ -178,5 +223,8 @@ app.UseAuthorization();
 
 app.MapHealthChecks("/health").AllowAnonymous();
 app.MapControllers();
+app.MapHub<AuditoriaHub>("/hubs/auditoria", options =>
+    options.CloseOnAuthenticationExpiration = true)
+    .RequireCors("AuditoriaSignalR");
 
 app.Run();
