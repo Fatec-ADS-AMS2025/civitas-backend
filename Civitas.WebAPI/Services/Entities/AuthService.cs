@@ -28,12 +28,15 @@ namespace Civitas.WebAPI.Services.Entities
         private readonly AppDbContext _context;
         private readonly PasswordRecoveryOptions _passwordRecoveryOptions;
         private readonly ILogger<AuthService> _logger;
+        private readonly IAuditoriaService _auditoriaService;
 
         public AuthService(IUsuarioRepository usuarioRepository, IUsuarioService usuarioService,
             IPasswordResetTokenRepository passwordResetTokenRepository, IPasswordHashService passwordHashService,
             IJwtTokenService jwtTokenService, IEmailSender emailSender, AppDbContext context,
-            IOptions<PasswordRecoveryOptions> passwordRecoveryOptions, ILogger<AuthService> logger)
+            IOptions<PasswordRecoveryOptions> passwordRecoveryOptions, ILogger<AuthService> logger,
+            IAuditoriaService auditoriaService)
         {
+            _auditoriaService = auditoriaService;
             _usuarioRepository = usuarioRepository;
             _usuarioService = usuarioService;
             _passwordResetTokenRepository = passwordResetTokenRepository;
@@ -55,7 +58,10 @@ namespace Civitas.WebAPI.Services.Entities
             {
                 throw new AuthUnauthorizedException("Credenciais inválidas.");
             }
-            return _jwtTokenService.GenerateToken(usuario);
+
+            var token = _jwtTokenService.GenerateToken(usuario);
+            await _auditoriaService.RegistrarLoginAsync(usuario.Id);
+            return token;
         }
 
         public async Task<RegisterResponseDTO> Register(RegisterRequestDTO registerRequest)

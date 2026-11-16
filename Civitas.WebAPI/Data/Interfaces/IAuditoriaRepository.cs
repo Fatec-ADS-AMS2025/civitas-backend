@@ -7,5 +7,6 @@ namespace Civitas.WebAPI.Data.Interfaces
         Task<IEnumerable<Auditoria>> GetByUsuarioId(int usuarioId);
         Task<IEnumerable<Auditoria>> GetByEntidade(string nomeEntidade);
         Task<IEnumerable<Auditoria>> GetByOperacao(string operacao);
+        Task<Auditoria?> GetByIdSemRastreamento(int id);
     }
 }

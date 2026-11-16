@@ -14,7 +14,8 @@ namespace Civitas.WebAPI.Objects.Dtos.Mappings
             CreateMap<UsuarioDTO, Usuario>();
             CreateMap<Fornecedor, FornecedorDTO>().ReverseMap();
             CreateMap<Secretaria, SecretariaDTO>().ReverseMap();
-            CreateMap<Auditoria, AuditoriaDTO>().ReverseMap();
+            // Somente saída: auditorias são geradas pelo backend, nunca a partir de um DTO.
+            CreateMap<Auditoria, AuditoriaDTO>();
             CreateMap<TipoInstituicao, TipoInstituicaoDTO>().ReverseMap();
             CreateMap<Instituicao, InstituicaoDTO>().ReverseMap();
             CreateMap<UnidadeMedida, UnidadeMedidaDTO>().ReverseMap();

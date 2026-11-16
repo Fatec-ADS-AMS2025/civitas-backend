@@ -28,7 +28,7 @@ public sealed class TipoInstituicaoValidationEndpointsTests : IClassFixture<Test
     [Fact]
     public async Task Post_WithEmptyDescriptionAndInvalidSituacao_ReturnsAllErrorsWithoutInternalDetails()
     {
-        await _factory.ResetDatabaseAsync(_ => Task.CompletedTask);
+        await _factory.ResetDatabaseWithAuthenticatedUserAsync(_ => Task.CompletedTask);
 
         using var client = CreateAuthenticatedClient();
         var response = await client.PostAsJsonAsync(
@@ -57,7 +57,7 @@ public sealed class TipoInstituicaoValidationEndpointsTests : IClassFixture<Test
     [InlineData(151, "máximo 150")]
     public async Task Post_WithDescriptionOutsideLimits_ReturnsBadRequest(int length, string expectedMessage)
     {
-        await _factory.ResetDatabaseAsync(_ => Task.CompletedTask);
+        await _factory.ResetDatabaseWithAuthenticatedUserAsync(_ => Task.CompletedTask);
 
         using var client = CreateAuthenticatedClient();
         var response = await client.PostAsJsonAsync(
@@ -73,7 +73,7 @@ public sealed class TipoInstituicaoValidationEndpointsTests : IClassFixture<Test
     [InlineData(150)]
     public async Task Post_WithDescriptionAtValidLimits_PersistsValue(int length)
     {
-        await _factory.ResetDatabaseAsync(_ => Task.CompletedTask);
+        await _factory.ResetDatabaseWithAuthenticatedUserAsync(_ => Task.CompletedTask);
 
         using var client = CreateAuthenticatedClient();
         var response = await client.PostAsJsonAsync(
@@ -90,7 +90,7 @@ public sealed class TipoInstituicaoValidationEndpointsTests : IClassFixture<Test
     [Fact]
     public async Task Post_NormalizesDescriptionBeforePersisting()
     {
-        await _factory.ResetDatabaseAsync(_ => Task.CompletedTask);
+        await _factory.ResetDatabaseWithAuthenticatedUserAsync(_ => Task.CompletedTask);
 
         using var client = CreateAuthenticatedClient();
         var response = await client.PostAsJsonAsync(
@@ -110,7 +110,7 @@ public sealed class TipoInstituicaoValidationEndpointsTests : IClassFixture<Test
     [InlineData("  escola    municipal  ")]
     public async Task Post_WithEquivalentDescription_ReturnsBadRequest(string descricao)
     {
-        await _factory.ResetDatabaseAsync(context =>
+        await _factory.ResetDatabaseWithAuthenticatedUserAsync(context =>
         {
             context.TipoInstituicoes.Add(new TipoInstituicao(1, "Escola Municipal", Situacao.ATIVO));
             return Task.CompletedTask;
@@ -131,7 +131,7 @@ public sealed class TipoInstituicaoValidationEndpointsTests : IClassFixture<Test
     [Fact]
     public async Task Post_WithDescriptionUsedOnlyByDeletedRecord_IsAllowed()
     {
-        await _factory.ResetDatabaseAsync(context =>
+        await _factory.ResetDatabaseWithAuthenticatedUserAsync(context =>
         {
             context.TipoInstituicoes.Add(new TipoInstituicao(1, "Escola", Situacao.ATIVO)
             {
@@ -156,7 +156,7 @@ public sealed class TipoInstituicaoValidationEndpointsTests : IClassFixture<Test
     [Fact]
     public async Task Put_WithOwnEquivalentDescription_IsAllowedAndPreservesSoftDeleteState()
     {
-        await _factory.ResetDatabaseAsync(context =>
+        await _factory.ResetDatabaseWithAuthenticatedUserAsync(context =>
         {
             context.TipoInstituicoes.Add(new TipoInstituicao(1, "Escola Municipal", Situacao.ATIVO));
             return Task.CompletedTask;
@@ -189,7 +189,7 @@ public sealed class TipoInstituicaoValidationEndpointsTests : IClassFixture<Test
     [InlineData(true, -1)]
     public async Task PostAndPut_WithInvalidSituacao_ReturnBadRequest(bool usePut, int situacao)
     {
-        await _factory.ResetDatabaseAsync(context =>
+        await _factory.ResetDatabaseWithAuthenticatedUserAsync(context =>
         {
             if (usePut)
             {
@@ -214,7 +214,7 @@ public sealed class TipoInstituicaoValidationEndpointsTests : IClassFixture<Test
     [InlineData(true)]
     public async Task PutAndPatch_WithActiveLinkedInstitution_BlockInactivation(bool usePatch)
     {
-        await _factory.ResetDatabaseAsync(context =>
+        await _factory.ResetDatabaseWithAuthenticatedUserAsync(context =>
         {
             SeedLinkedInstitution(context, Situacao.ATIVO, Situacao.ATIVO);
             return Task.CompletedTask;
@@ -243,7 +243,7 @@ public sealed class TipoInstituicaoValidationEndpointsTests : IClassFixture<Test
     [Fact]
     public async Task Patch_WithoutActiveLinkedInstitution_AllowsInactivation()
     {
-        await _factory.ResetDatabaseAsync(context =>
+        await _factory.ResetDatabaseWithAuthenticatedUserAsync(context =>
         {
             context.TipoInstituicoes.Add(new TipoInstituicao(1, "Escola", Situacao.ATIVO));
             return Task.CompletedTask;
@@ -262,7 +262,7 @@ public sealed class TipoInstituicaoValidationEndpointsTests : IClassFixture<Test
     [Fact]
     public async Task Patch_FromInactiveToActive_IsAllowedEvenWithActiveLinkedInstitution()
     {
-        await _factory.ResetDatabaseAsync(context =>
+        await _factory.ResetDatabaseWithAuthenticatedUserAsync(context =>
         {
             SeedLinkedInstitution(context, Situacao.INATIVO, Situacao.ATIVO);
             return Task.CompletedTask;
@@ -281,7 +281,7 @@ public sealed class TipoInstituicaoValidationEndpointsTests : IClassFixture<Test
     [Fact]
     public async Task GetAll_ReturnsOnlyActiveTipoInstituicao()
     {
-        await _factory.ResetDatabaseAsync(context =>
+        await _factory.ResetDatabaseWithAuthenticatedUserAsync(context =>
         {
             context.TipoInstituicoes.AddRange(
                 new TipoInstituicao(1, "Escola", Situacao.ATIVO),
@@ -303,7 +303,7 @@ public sealed class TipoInstituicaoValidationEndpointsTests : IClassFixture<Test
     [Fact]
     public async Task Put_WithMissingId_ReturnsNotFound()
     {
-        await _factory.ResetDatabaseAsync(_ => Task.CompletedTask);
+        await _factory.ResetDatabaseWithAuthenticatedUserAsync(_ => Task.CompletedTask);
 
         using var client = CreateAuthenticatedClient();
         var response = await client.PutAsJsonAsync(

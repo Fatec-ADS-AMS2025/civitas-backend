@@ -1,105 +1,141 @@
 using AutoMapper;
 using Civitas.WebAPI.Data.Interfaces;
+using Civitas.WebAPI.Objects.Contracts;
 using Civitas.WebAPI.Objects.Dtos.Entities;
-using Civitas.WebAPI.Objects.Models;
 using Civitas.WebAPI.Services.Interfaces;
+using Civitas.WebAPI.Services.Validation;
 
 namespace Civitas.WebAPI.Services.Entities
 {
     /// <summary>
-    /// ServiÁo especializado na recuperaÁ„o e an·lise de logs de auditoria do sistema.
+    /// Servi√ßo especializado na consulta dos logs de auditoria e no registro dos eventos de autentica√ß√£o.
     /// </summary>
     /// <remarks>
     /// Finalidade:
-    /// - Centralizar a busca de histÛricos de alteraÁıes (Audit Trail).
-    /// - Fornecer filtros especÌficos (por usu·rio, entidade ou operaÁ„o) para relatÛrios de conformidade e seguranÁa.
-    /// 
-    /// DependÍncias:
-    /// - <see cref="IAuditoriaRepository"/>: Acesso otimizado aos dados de log.
-    /// - <see cref="IMapper"/>: TransformaÁ„o de objetos Entity para DTO.
+    /// - Centralizar a busca de hist√≥ricos de altera√ß√µes (Audit Trail).
+    /// - Validar os filtros recebidos (Id, usu√°rio, entidade e opera√ß√£o) com o <see cref="AuditoriaValidator"/>.
+    /// - Registrar o LOGIN, j√° que a autentica√ß√£o n√£o altera nenhuma entidade.
+    ///
+    /// As auditorias de INSERT, UPDATE e DELETE s√£o geradas pelo AppDbContext na mesma transa√ß√£o
+    /// da opera√ß√£o; este servi√ßo n√£o oferece cria√ß√£o gen√©rica, altera√ß√£o nem exclus√£o.
     /// </remarks>
-    public class AuditoriaService : GenericService<Auditoria, AuditoriaDTO>, IAuditoriaService
+    public class AuditoriaService : IAuditoriaService
     {
         private readonly IAuditoriaRepository _auditoriaRepository;
+        private readonly IAuditoriaCapturaService _auditoriaCaptura;
         private readonly IMapper _mapper;
-        private readonly IAuditoriaNotificacaoService _notificacaoService;
 
         public AuditoriaService(
             IAuditoriaRepository auditoriaRepository,
-            IMapper mapper,
-            IAuditoriaNotificacaoService notificacaoService)
-            : base(auditoriaRepository, mapper)
+            IAuditoriaCapturaService auditoriaCaptura,
+            IMapper mapper)
         {
             _auditoriaRepository = auditoriaRepository;
+            _auditoriaCaptura = auditoriaCaptura;
             _mapper = mapper;
-            _notificacaoService = notificacaoService;
         }
 
-        /// <summary>
-        /// Persiste uma auditoria e publica o aviso somente depois do commit do repositÛrio.
-        /// </summary>
-        public override async Task Create(AuditoriaDTO entityDTO)
+        /// <inheritdoc />
+        public async Task<PaginatedResult<AuditoriaDTO>> GetPage(PaginationQuery paginationQuery)
         {
-            var auditoria = _mapper.Map<Auditoria>(entityDTO);
-            await _auditoriaRepository.Add(auditoria);
+            var page = await _auditoriaRepository.GetPage(paginationQuery);
 
-            await _notificacaoService.PublicarCriadaAsync(new AuditoriaNotificacaoDTO
+            return new PaginatedResult<AuditoriaDTO>
             {
-                Id = auditoria.Id,
-                Operacao = auditoria.Operacao,
-                NomeEntidade = auditoria.NomeEntidade,
-                Data = auditoria.Data,
-                Hora = auditoria.Hora,
-                NotificadoEmUtc = DateTimeOffset.UtcNow
-            });
+                Items = _mapper.Map<List<AuditoriaDTO>>(page.Items),
+                TotalRecords = page.TotalRecords,
+                TotalPages = page.TotalPages,
+                CurrentPage = page.CurrentPage,
+                PageSize = page.PageSize
+            };
+        }
+
+        /// <inheritdoc />
+        public async Task<AuditoriaDTO?> GetById(int id)
+        {
+            ValidarId(id, "O Id da auditoria deve ser maior que zero.");
+
+            var auditoria = await _auditoriaRepository.GetByIdSemRastreamento(id);
+            return auditoria is null ? null : _mapper.Map<AuditoriaDTO>(auditoria);
         }
 
         /// <summary>
-        /// Busca todo o histÛrico de atividades realizadas por um usu·rio especÌfico.
+        /// Busca todo o hist√≥rico de atividades realizadas por um usu√°rio espec√≠fico.
         /// </summary>
-        /// <param name="usuarioId">O identificador ˙nico do usu·rio a ser auditado.</param>
-        /// <returns>Uma coleÁ„o de registros de auditoria vinculados a este usu·rio.</returns>
         /// <remarks>
         /// Utilidade:
-        /// - Rastrear aÁıes de um funcion·rio especÌfico.
+        /// - Rastrear a√ß√µes de um funcion√°rio espec√≠fico.
         /// - Investigar comportamentos suspeitos ou erros operacionais atrelados a um login.
         /// </remarks>
         public async Task<IEnumerable<AuditoriaDTO>> GetByUsuarioId(int usuarioId)
         {
+            ValidarId(usuarioId, "O Id do usu√°rio deve ser maior que zero.");
+
             var auditorias = await _auditoriaRepository.GetByUsuarioId(usuarioId);
             return _mapper.Map<IEnumerable<AuditoriaDTO>>(auditorias);
         }
 
         /// <summary>
-        /// Busca o histÛrico de alteraÁıes sofridas por uma entidade (tabela) especÌfica.
+        /// Busca o hist√≥rico de altera√ß√µes sofridas por uma entidade espec√≠fica.
         /// </summary>
-        /// <param name="nomeEntidade">O nome da entidade alvo (ex: "Despesa", "Fornecedor").</param>
-        /// <returns>Uma coleÁ„o de logs filtrados pela entidade solicitada.</returns>
         /// <remarks>
         /// Utilidade:
-        /// - Visualizar a "linha do tempo" de modificaÁıes de um mÛdulo.
-        /// - Identificar quando um registro especÌfico foi alterado.
+        /// - Visualizar a "linha do tempo" de modifica√ß√µes de um m√≥dulo.
+        /// - Identificar quando um registro espec√≠fico foi alterado.
         /// </remarks>
-        public async Task<IEnumerable<AuditoriaDTO>> GetByEntidade(string nomeEntidade)
+        public async Task<IEnumerable<AuditoriaDTO>> GetByEntidade(string? nomeEntidade)
         {
-            var auditorias = await _auditoriaRepository.GetByEntidade(nomeEntidade);
+            if (string.IsNullOrWhiteSpace(nomeEntidade))
+            {
+                throw new AuditoriaValidationException(["O nome da entidade √© obrigat√≥rio."]);
+            }
+
+            var entidade = AuditoriaValidator.NormalizarNomeEntidade(nomeEntidade)
+                ?? throw new AuditoriaValidationException([AuditoriaValidator.MensagemEntidadeInvalida(nomeEntidade)]);
+
+            var auditorias = await _auditoriaRepository.GetByEntidade(entidade);
             return _mapper.Map<IEnumerable<AuditoriaDTO>>(auditorias);
         }
 
         /// <summary>
-        /// Busca logs filtrados pelo tipo de operaÁ„o executada no banco de dados.
+        /// Busca logs filtrados pelo tipo de opera√ß√£o executada.
         /// </summary>
-        /// <param name="operacao">O tipo de comando executado (ex: "INSERT", "UPDATE", "DELETE").</param>
-        /// <returns>Uma coleÁ„o de logs correspondentes ao tipo de operaÁ„o.</returns>
         /// <remarks>
         /// Utilidade:
-        /// - Auditoria de seguranÁa (ex: listar tudo que foi DELETADO recentemente).
-        /// - An·lise de volume de inserÁıes ou atualizaÁıes no sistema.
+        /// - Auditoria de seguran√ßa (ex: listar tudo que foi DELETADO recentemente).
+        /// - An√°lise de volume de inser√ß√µes ou atualiza√ß√µes no sistema.
         /// </remarks>
-        public async Task<IEnumerable<AuditoriaDTO>> GetByOperacao(string operacao)
+        public async Task<IEnumerable<AuditoriaDTO>> GetByOperacao(string? operacao)
         {
-            var auditorias = await _auditoriaRepository.GetByOperacao(operacao);
+            if (string.IsNullOrWhiteSpace(operacao))
+            {
+                throw new AuditoriaValidationException(["A opera√ß√£o √© obrigat√≥ria."]);
+            }
+
+            var operacaoNormalizada = AuditoriaValidator.NormalizarOperacao(operacao)
+                ?? throw new AuditoriaValidationException([AuditoriaValidator.MensagemOperacaoInvalida(operacao)]);
+
+            var auditorias = await _auditoriaRepository.GetByOperacao(operacaoNormalizada);
             return _mapper.Map<IEnumerable<AuditoriaDTO>>(auditorias);
+        }
+
+        /// <inheritdoc />
+        public async Task RegistrarLoginAsync(int usuarioId)
+        {
+            var auditoria = _auditoriaCaptura.CriarRegistro(
+                AuditoriaOperacao.LOGIN,
+                AuditoriaValidator.EntidadeAutenticacao,
+                valoresAtingidos: string.Empty,
+                novosValores: string.Empty,
+                usuarioId);
+
+            // Valida√ß√£o e notifica√ß√£o acontecem no AppDbContext, depois do commit.
+            await _auditoriaRepository.Add(auditoria);
+        }
+
+        private static void ValidarId(int id, string mensagem)
+        {
+            if (id <= 0) throw new AuditoriaValidationException([mensagem]);
         }
     }
 }

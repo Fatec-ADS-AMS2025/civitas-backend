@@ -1,48 +1,48 @@
+using Civitas.WebAPI.Objects.Contracts;
 using Civitas.WebAPI.Objects.Dtos.Entities;
-using Civitas.WebAPI.Objects.Models;
 
 namespace Civitas.WebAPI.Services.Interfaces
 {
     /// <summary>
-    /// Interface que define o contrato para o serviço de Auditoria (Logs do Sistema).
+    /// Interface que define o contrato para o serviÃ§o de Auditoria (Logs do Sistema).
     /// </summary>
     /// <remarks>
     /// Finalidade:
-    /// - Prover métodos especializados de busca para rastreabilidade de eventos.
-    /// - Permitir filtrar o histórico de alterações por Autor, Alvo ou Tipo de Ação.
+    /// - Prover mÃ©todos de consulta para rastreabilidade de eventos.
+    /// - Registrar eventos de autenticaÃ§Ã£o.
+    /// NÃ£o expÃµe criaÃ§Ã£o genÃ©rica, alteraÃ§Ã£o, exclusÃ£o nem ativaÃ§Ã£o/inativaÃ§Ã£o: os registros
+    /// de auditoria sÃ£o gerados pelo backend e sÃ£o imutÃ¡veis.
+    /// Entradas invÃ¡lidas geram <c>AuditoriaValidationException</c>.
     /// </remarks>
-    public interface IAuditoriaService : IGenericService<Auditoria, AuditoriaDTO>
+    public interface IAuditoriaService
     {
+        /// <summary>Lista paginada de auditorias.</summary>
+        Task<PaginatedResult<AuditoriaDTO>> GetPage(PaginationQuery paginationQuery);
+
+        /// <summary>Busca uma auditoria pelo identificador (maior que zero). Retorna nulo se nÃ£o existir.</summary>
+        Task<AuditoriaDTO?> GetById(int id);
+
         /// <summary>
-        /// Recupera o histórico de ações realizadas por um usuário específico.
+        /// Recupera o histÃ³rico de aÃ§Ãµes realizadas por um usuÃ¡rio especÃ­fico.
         /// </summary>
-        /// <param name="usuarioId">O identificador único do usuário (autor da ação).</param>
-        /// <returns>Uma coleção de logs de auditoria vinculados a este usuário.</returns>
-        /// <remarks>
-        /// Utilidade: Investigar o comportamento de um funcionário ou rastrear erros operacionais cometidos por um login específico.
-        /// </remarks>
+        /// <param name="usuarioId">O identificador do usuÃ¡rio (autor da aÃ§Ã£o), maior que zero.</param>
         Task<IEnumerable<AuditoriaDTO>> GetByUsuarioId(int usuarioId);
 
         /// <summary>
-        /// Recupera o histórico de alterações sofridas por uma entidade específica (Tabela).
+        /// Recupera o histÃ³rico de alteraÃ§Ãµes de uma entidade auditÃ¡vel.
         /// </summary>
-        /// <param name="nomeEntidade">O nome da entidade/tabela (ex: "Despesa", "Fornecedor").</param>
-        /// <returns>Uma coleção de logs referentes à entidade solicitada.</returns>
-        /// <remarks>
-        /// Utilidade: Visualizar a "linha do tempo" de alterações de um módulo. 
-        /// Ex: "Quero ver todas as modificações feitas em Orçamentos".
-        /// </remarks>
-        Task<IEnumerable<AuditoriaDTO>> GetByEntidade(string nomeEntidade);
+        /// <param name="nomeEntidade">Nome da entidade (ex: "Despesa", "Fornecedor"), sem diferenciar maiÃºsculas.</param>
+        Task<IEnumerable<AuditoriaDTO>> GetByEntidade(string? nomeEntidade);
 
         /// <summary>
-        /// Recupera o histórico filtrado pelo tipo de operação executada no banco de dados.
+        /// Recupera o histÃ³rico filtrado pelo tipo de operaÃ§Ã£o.
         /// </summary>
-        /// <param name="operacao">O tipo de operação (ex: "INSERT", "UPDATE", "DELETE").</param>
-        /// <returns>Uma coleção de logs que correspondem à operação.</returns>
-        /// <remarks>
-        /// Utilidade: Auditoria de segurança.
-        /// Ex: Filtrar apenas por "DELETE" para verificar o que foi excluído do sistema recentemente.
-        /// </remarks>
-        Task<IEnumerable<AuditoriaDTO>> GetByOperacao(string operacao);
+        /// <param name="operacao">INSERT, UPDATE, DELETE ou LOGIN, sem diferenciar maiÃºsculas.</param>
+        Task<IEnumerable<AuditoriaDTO>> GetByOperacao(string? operacao);
+
+        /// <summary>
+        /// Registra o LOGIN bem-sucedido de um usuÃ¡rio, com data e hora geradas pelo backend.
+        /// </summary>
+        Task RegistrarLoginAsync(int usuarioId);
     }
 }

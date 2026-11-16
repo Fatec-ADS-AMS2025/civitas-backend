@@ -57,6 +57,7 @@ public sealed class AuditoriaSignalRTests : IClassFixture<AuditoriaSignalRTests.
     [Fact]
     public async Task CreatingAudit_PublishesMinimalEventAfterPersistence()
     {
+        // A auditoria nasce de uma operação real (cadastro de unidade de medida), não de POST em /api/auditorias.
         _factory.LifetimeManager.Reset();
         await _factory.ResetDatabaseAsync(context =>
         {
@@ -65,15 +66,11 @@ public sealed class AuditoriaSignalRTests : IClassFixture<AuditoriaSignalRTests.
         });
 
         using var client = _factory.CreateClient();
-        var response = await client.PostAsJsonAsync("/api/auditorias", new
+        var response = await client.PostAsJsonAsync("/api/unidade-medida", new
         {
-            data = "2026-11-08",
-            hora = "10:15:30",
-            operacao = "UPDATE",
-            nomeEntidade = "Fornecedor",
-            valoresAtingidos = "snapshot antigo sensível",
-            novosValores = "snapshot novo sensível",
-            usuarioId = 1
+            descricao = "Snapshot Sensivel",
+            abreviatura = "SNP",
+            situacao = 1
         });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -81,10 +78,10 @@ public sealed class AuditoriaSignalRTests : IClassFixture<AuditoriaSignalRTests.
         Assert.Equal(AuditoriaHub.EventoCriada, sent.Method);
         var notification = Assert.IsType<AuditoriaNotificacaoDTO>(Assert.Single(sent.Arguments));
         Assert.True(notification.Id > 0);
-        Assert.Equal("UPDATE", notification.Operacao);
-        Assert.Equal("Fornecedor", notification.NomeEntidade);
-        Assert.Equal("2026-11-08", notification.Data);
-        Assert.Equal("10:15:30", notification.Hora);
+        Assert.Equal("INSERT", notification.Operacao);
+        Assert.Equal("UnidadeMedida", notification.NomeEntidade);
+        Assert.Matches(@"^\d{4}-\d{2}-\d{2}$", notification.Data);
+        Assert.Matches(@"^\d{2}:\d{2}:\d{2}$", notification.Hora);
         Assert.Equal(TimeSpan.Zero, notification.NotificadoEmUtc.Offset);
 
         var payload = System.Text.Json.JsonSerializer.Serialize(notification,
@@ -110,15 +107,11 @@ public sealed class AuditoriaSignalRTests : IClassFixture<AuditoriaSignalRTests.
         });
 
         using var client = _factory.CreateClient();
-        var response = await client.PostAsJsonAsync("/api/auditorias", new
+        var response = await client.PostAsJsonAsync("/api/unidade-medida", new
         {
-            data = "2026-11-08",
-            hora = "10:15:30",
-            operacao = "INSERT",
-            nomeEntidade = "Fornecedor",
-            valoresAtingidos = "{}",
-            novosValores = "{}",
-            usuarioId = 1
+            descricao = "Litro",
+            abreviatura = "L",
+            situacao = 1
         });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -126,31 +119,35 @@ public sealed class AuditoriaSignalRTests : IClassFixture<AuditoriaSignalRTests.
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         Assert.Equal(1, await db.Auditorias.CountAsync());
+        Assert.Equal(1, await db.UnidadesMedida.CountAsync());
     }
 
     [Fact]
     public async Task InvalidAudit_IsNotPublished()
     {
+        // Token de um usuário inexistente: a auditoria é rejeitada, a operação é desfeita e nada é publicado.
         _factory.LifetimeManager.Reset();
         await _factory.ResetDatabaseAsync(_ => Task.CompletedTask);
 
         using var client = _factory.CreateClient();
-        var response = await client.PostAsJsonAsync("/api/auditorias", new
+        client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", BuildToken("ADMINISTRADOR", usuarioId: 999));
+        var response = await client.PostAsJsonAsync("/api/unidade-medida", new
         {
-            data = "2026-11-08",
-            hora = "10:15:30",
-            operacao = "INSERT",
-            nomeEntidade = "Fornecedor",
-            valoresAtingidos = "{}",
-            novosValores = "{}",
-            usuarioId = 999
+            descricao = "Litro",
+            abreviatura = "L",
+            situacao = 1
         });
 
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         Assert.Equal(0, _factory.LifetimeManager.SendAttempts);
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        Assert.Equal(0, await db.Auditorias.CountAsync());
+        Assert.Equal(0, await db.UnidadesMedida.CountAsync());
     }
 
-    private static string BuildToken(string tipoUsuario)
+    private static string BuildToken(string tipoUsuario, int usuarioId = 1)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtSecret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -159,7 +156,7 @@ public sealed class AuditoriaSignalRTests : IClassFixture<AuditoriaSignalRTests.
             audience: JwtAudience,
             claims:
             [
-                new Claim(JwtRegisteredClaimNames.Sub, "1"),
+                new Claim(JwtRegisteredClaimNames.Sub, usuarioId.ToString()),
                 new Claim("name", "Teste"),
                 new Claim("tipousuario", tipoUsuario)
             ],
