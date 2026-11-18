@@ -24,7 +24,7 @@ public sealed class UnidadeMedidaValidationEndpointsTests : IClassFixture<TestWe
     [Fact]
     public async Task PostUnidadeMedida_WithMultipleInvalidFields_ReturnsAllValidationErrors()
     {
-        await _factory.ResetDatabaseAsync(_ => Task.CompletedTask);
+        await _factory.ResetDatabaseWithAuthenticatedUserAsync(_ => Task.CompletedTask);
         using var client = CreateAuthenticatedClient();
 
         var response = await client.PostAsJsonAsync("/api/unidade-medida", new
@@ -45,7 +45,7 @@ public sealed class UnidadeMedidaValidationEndpointsTests : IClassFixture<TestWe
     [Fact]
     public async Task PostUnidadeMedida_NormalizesValuesAndRejectsCaseInsensitiveDuplicates()
     {
-        await _factory.ResetDatabaseAsync(_ => Task.CompletedTask);
+        await _factory.ResetDatabaseWithAuthenticatedUserAsync(_ => Task.CompletedTask);
         using var client = CreateAuthenticatedClient();
 
         var created = await client.PostAsJsonAsync("/api/unidade-medida", Payload("  metro   cúbico  ", " m3 "));
@@ -92,7 +92,7 @@ public sealed class UnidadeMedidaValidationEndpointsTests : IClassFixture<TestWe
 
     private async Task SeedUnidadeWithActiveTipoDespesaAsync()
     {
-        await _factory.ResetDatabaseAsync(context =>
+        await _factory.ResetDatabaseWithAuthenticatedUserAsync(context =>
         {
             context.UnidadesMedida.Add(new UnidadeMedida(1, "Quilowatt-hora", "KWH", Situacao.ATIVO));
             context.TipoCodigos.Add(new TipoCodigo(1, "Consumo", "Código de consumo"));

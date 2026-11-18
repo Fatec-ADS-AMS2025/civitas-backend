@@ -1,28 +1,34 @@
 ﻿using Civitas.WebAPI.Objects.Contracts;
-using Civitas.WebAPI.Objects.Dtos.Entities;
-using Civitas.WebAPI.Objects.Enums;
 using Civitas.WebAPI.Services.Interfaces;
+using Civitas.WebAPI.Services.Security;
+using Civitas.WebAPI.Services.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Civitas.WebAPI.Controllers
 {
     /// <summary>
-    /// Controlador responsÃ¡vel pelo gerenciamento das auditorias do sistema.
+    /// Controlador responsável pela consulta das auditorias do sistema.
     /// </summary>
-    [Authorize]
+    /// <remarks>
+    /// Somente leitura. Os registros são gerados pelo backend a partir das operações efetivamente
+    /// persistidas e não podem ser criados, alterados ou excluídos pela API.
+    /// O acesso exige usuário autenticado com perfil ADMINISTRADOR, mesmo com o modo DEV ativo
+    /// (mesma política do Hub de auditoria).
+    /// </remarks>
+    [Authorize(Policy = AuditoriaAuthorization.PolicyName)]
     [Route("api/auditorias")]
     [ApiController]
-    public class AuditoriaController : Controller
+    public class AuditoriaController : ControllerBase
     {
         private readonly IAuditoriaService _auditoriaService;
         private readonly Response _response;
 
         /// <summary>
-        /// Construtor que inicializa o serviÃ§o de auditoria
-        /// e a estrutura padrÃ£o de resposta.
+        /// Construtor que inicializa o serviço de auditoria
+        /// e a estrutura padrão de resposta.
         /// </summary>
-        /// <param name="auditoriaService">ServiÃ§o de auditoria.</param>
+        /// <param name="auditoriaService">Serviço de auditoria.</param>
         public AuditoriaController(IAuditoriaService auditoriaService)
         {
             _auditoriaService = auditoriaService;
@@ -30,41 +36,33 @@ namespace Civitas.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Lista todas as auditorias.
+        /// Lista as auditorias de forma paginada.
         /// </summary>
-        /// <returns>Lista completa das auditorias.</returns>
+        /// <param name="paginationQuery">Página, tamanho e ordenação.</param>
+        /// <returns>Página de auditorias.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] PaginationQuery paginationQuery)
         {
             try
             {
-                var auditorias = await _auditoriaService.GetPageByEnumValue(paginationQuery, "Situacao", Situacao.ATIVO);
+                var auditorias = await _auditoriaService.GetPage(paginationQuery);
 
                 _response.Code = ResponseEnum.SUCCESS;
-                _response.Message = "Lista de auditorias ativas obtida com sucesso";
+                _response.Message = "Lista de auditorias obtida com sucesso";
                 _response.Data = auditorias;
 
                 return Ok(_response);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao obter as auditorias";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace
-                };
-
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
+                return ErroInterno("Ocorreu um erro ao obter as auditorias");
             }
         }
-
 
         /// <summary>
         /// Busca auditoria pelo identificador.
         /// </summary>
-        /// <param name="id">ID da auditoria.</param>
+        /// <param name="id">ID da auditoria (maior que zero).</param>
         /// <returns>Auditoria correspondente ao ID informado.</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -76,7 +74,7 @@ namespace Civitas.WebAPI.Controllers
                 if (auditoria == null)
                 {
                     _response.Code = ResponseEnum.NOT_FOUND;
-                    _response.Message = "Auditoria nÃ£o encontrada";
+                    _response.Message = "Auditoria não encontrada";
                     _response.Data = null;
                     return NotFound(_response);
                 }
@@ -87,180 +85,123 @@ namespace Civitas.WebAPI.Controllers
 
                 return Ok(_response);
             }
-            catch (Exception ex)
+            catch (AuditoriaValidationException ex)
             {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao obter a auditoria";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace
-                };
-
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
+                return Invalido(ex);
+            }
+            catch (Exception)
+            {
+                return ErroInterno("Ocorreu um erro ao obter a auditoria");
             }
         }
 
         /// <summary>
-        /// Busca auditorias pelo ID do usuÃ¡rio.
+        /// Busca auditorias pelo ID do usuário autor.
         /// </summary>
-        /// <param name="usuarioId">Identificador do usuÃ¡rio.</param>
-        /// <returns>Lista de auditorias associadas ao usuÃ¡rio.</returns>
+        /// <param name="usuarioId">Identificador do usuário (maior que zero).</param>
+        /// <returns>Lista de auditorias associadas ao usuário.</returns>
         [HttpGet("usuario/{usuarioId}")]
         public async Task<IActionResult> GetByUsuarioId(int usuarioId)
         {
             try
             {
                 var auditorias = await _auditoriaService.GetByUsuarioId(usuarioId);
-
-                if (auditorias == null || !auditorias.Any())
-                {
-                    _response.Code = ResponseEnum.SUCCESS;
-                    _response.Message = "Nenhuma auditoria encontrada para este usuÃ¡rio";
-                    _response.Data = null;
-                    return NotFound(_response);
-                }
-
-                _response.Code = ResponseEnum.SUCCESS;
-                _response.Message = "Auditorias do usuÃ¡rio listadas com sucesso";
-                _response.Data = auditorias;
-
-                return Ok(_response);
+                return ListaOuNaoEncontrado(auditorias,
+                    "Auditorias do usuário listadas com sucesso",
+                    "Nenhuma auditoria encontrada para este usuário");
             }
-            catch (Exception ex)
+            catch (AuditoriaValidationException ex)
             {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao obter as auditorias do usuÃ¡rio";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace
-                };
-
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
+                return Invalido(ex);
+            }
+            catch (Exception)
+            {
+                return ErroInterno("Ocorreu um erro ao obter as auditorias do usuário");
             }
         }
 
         /// <summary>
         /// Busca auditorias pelo nome da entidade.
         /// </summary>
-        /// <param name="nomeEntidade">Nome da entidade auditada.</param>
+        /// <param name="nomeEntidade">Nome da entidade auditada (ex: Despesa, Fornecedor, Autenticacao).</param>
         /// <returns>Lista de auditorias da entidade.</returns>
         [HttpGet("entidade")]
-        public async Task<IActionResult> GetByEntidade([FromQuery] string nomeEntidade)
+        public async Task<IActionResult> GetByEntidade([FromQuery] string? nomeEntidade)
         {
             try
             {
                 var auditorias = await _auditoriaService.GetByEntidade(nomeEntidade);
-
-                if (auditorias == null || !auditorias.Any())
-                {
-                    _response.Code = ResponseEnum.SUCCESS;
-                    _response.Message = "Nenhuma auditoria encontrada para esta entidade";
-                    _response.Data = null;
-                    return NotFound(_response);
-                }
-
-                _response.Code = ResponseEnum.SUCCESS;
-                _response.Message = "Auditorias da entidade listadas com sucesso";
-                _response.Data = auditorias;
-
-                return Ok(_response);
+                return ListaOuNaoEncontrado(auditorias,
+                    "Auditorias da entidade listadas com sucesso",
+                    "Nenhuma auditoria encontrada para esta entidade");
             }
-            catch (Exception ex)
+            catch (AuditoriaValidationException ex)
             {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao obter as auditorias da entidade";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace
-                };
-
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
+                return Invalido(ex);
+            }
+            catch (Exception)
+            {
+                return ErroInterno("Ocorreu um erro ao obter as auditorias da entidade");
             }
         }
 
         /// <summary>
-        /// Busca auditorias pelo tipo de operaÃ§Ã£o.
+        /// Busca auditorias pelo tipo de operação.
         /// </summary>
-        /// <param name="operacao">Tipo de operaÃ§Ã£o (CREATE, UPDATE, DELETE...).</param>
-        /// <returns>Lista de auditorias da operaÃ§Ã£o informada.</returns>
+        /// <param name="operacao">Tipo de operação: INSERT, UPDATE, DELETE ou LOGIN.</param>
+        /// <returns>Lista de auditorias da operação informada.</returns>
         [HttpGet("operacao")]
-        public async Task<IActionResult> GetByOperacao([FromQuery] string operacao)
+        public async Task<IActionResult> GetByOperacao([FromQuery] string? operacao)
         {
             try
             {
                 var auditorias = await _auditoriaService.GetByOperacao(operacao);
-
-                if (auditorias == null || !auditorias.Any())
-                {
-                    _response.Code = ResponseEnum.SUCCESS;
-                    _response.Message = "Nenhuma auditoria encontrada para esta operaÃ§Ã£o";
-                    _response.Data = null;
-                    return NotFound(_response);
-                }
-
-                _response.Code = ResponseEnum.SUCCESS;
-                _response.Message = "Auditorias da operaÃ§Ã£o listadas com sucesso";
-                _response.Data = auditorias;
-
-                return Ok(_response);
+                return ListaOuNaoEncontrado(auditorias,
+                    "Auditorias da operação listadas com sucesso",
+                    "Nenhuma auditoria encontrada para esta operação");
             }
-            catch (Exception ex)
+            catch (AuditoriaValidationException ex)
             {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "Ocorreu um erro ao obter as auditorias da operaÃ§Ã£o";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace
-                };
-
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
+                return Invalido(ex);
+            }
+            catch (Exception)
+            {
+                return ErroInterno("Ocorreu um erro ao obter as auditorias da operação");
             }
         }
 
-        /// <summary>
-        /// Cadastra uma nova auditoria.
-        /// </summary>
-        /// <param name="auditoriaDTO">Objeto contendo as informaÃ§Ãµes da auditoria.</param>
-        /// <returns>Auditoria registrada.</returns>
-        [HttpPost]
-        public async Task<IActionResult> Post(AuditoriaDTO auditoriaDTO)
+        private IActionResult ListaOuNaoEncontrado<T>(IEnumerable<T> itens, string mensagemSucesso, string mensagemVazia)
         {
-            if (auditoriaDTO is null)
+            var lista = itens.ToList();
+            if (lista.Count == 0)
             {
-                _response.Code = ResponseEnum.INVALID;
-                _response.Message = "Dados invÃ¡lidos";
+                _response.Code = ResponseEnum.NOT_FOUND;
+                _response.Message = mensagemVazia;
                 _response.Data = null;
-                return BadRequest(_response);
+                return NotFound(_response);
             }
 
-            try
-            {
-                auditoriaDTO.Id = 0; // Garantia de criaÃ§Ã£o
-                await _auditoriaService.Create(auditoriaDTO);
+            _response.Code = ResponseEnum.SUCCESS;
+            _response.Message = mensagemSucesso;
+            _response.Data = lista;
+            return Ok(_response);
+        }
 
-                _response.Code = ResponseEnum.SUCCESS;
-                _response.Message = "Auditoria cadastrada com sucesso";
-                _response.Data = auditoriaDTO;
+        private IActionResult Invalido(AuditoriaValidationException ex)
+        {
+            _response.Code = ResponseEnum.INVALID;
+            _response.Message = ex.Message;
+            _response.Data = ex.Errors;
+            return BadRequest(_response);
+        }
 
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.Code = ResponseEnum.ERROR;
-                _response.Message = "NÃ£o foi possÃ­vel cadastrar a auditoria";
-                _response.Data = new
-                {
-                    ErrorMessage = ex.Message,
-                    StackTrace = ex.StackTrace
-                };
-
-                return StatusCode(StatusCodes.Status500InternalServerError, _response);
-            }
+        /// <summary>Erro interno sem stack trace nem detalhes técnicos.</summary>
+        private IActionResult ErroInterno(string mensagem)
+        {
+            _response.Code = ResponseEnum.ERROR;
+            _response.Message = mensagem;
+            _response.Data = null;
+            return StatusCode(StatusCodes.Status500InternalServerError, _response);
         }
     }
 }
-

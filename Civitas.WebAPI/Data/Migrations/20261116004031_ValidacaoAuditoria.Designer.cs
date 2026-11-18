@@ -9,11 +9,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Civitas.WebAPI.Migrations
+namespace Civitas.WebAPI.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260501005618_DespesaUnidadeConsumidora")]
-    partial class DespesaUnidadeConsumidora
+    [Migration("20261116004031_ValidacaoAuditoria")]
+    partial class ValidacaoAuditoria
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,8 +54,8 @@ namespace Civitas.WebAPI.Migrations
 
                     b.Property<string>("NovosValores")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(10000)
+                        .HasColumnType("character varying(10000)")
                         .HasColumnName("novos_valores");
 
                     b.Property<string>("Operacao")
@@ -64,18 +64,14 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("operacao");
 
-                    b.Property<int>("Situacao")
-                        .HasColumnType("integer")
-                        .HasColumnName("situacao");
-
-                    b.Property<int>("UsuarioId")
+                    b.Property<int?>("UsuarioId")
                         .HasColumnType("integer")
                         .HasColumnName("usuario_id");
 
                     b.Property<string>("ValoresAtingidos")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(10000)
+                        .HasColumnType("character varying(10000)")
                         .HasColumnName("valores_atingidos");
 
                     b.HasKey("Id");
@@ -114,9 +110,31 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnType("date")
                         .HasColumnName("dataemissao");
 
+                    b.Property<DateTime?>("DataExclusao")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("dataexclusao");
+
+                    b.Property<DateOnly?>("DataPagamento")
+                        .HasColumnType("date")
+                        .HasColumnName("datapagamento");
+
                     b.Property<DateOnly>("DataVencimento")
                         .HasColumnType("date")
                         .HasColumnName("datavencimento");
+
+                    b.Property<decimal>("Desconto")
+                        .HasColumnType("numeric")
+                        .HasColumnName("desconto");
+
+                    b.Property<bool>("Excluido")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("excluido");
+
+                    b.Property<string>("HashDocumento")
+                        .HasColumnType("text")
+                        .HasColumnName("hashdocumento");
 
                     b.Property<int>("IdUnidadeConsumidora")
                         .HasColumnType("integer")
@@ -125,6 +143,19 @@ namespace Civitas.WebAPI.Migrations
                     b.Property<int>("IdUsuario")
                         .HasColumnType("integer")
                         .HasColumnName("idusuario");
+
+                    b.Property<decimal>("Juros")
+                        .HasColumnType("numeric")
+                        .HasColumnName("juros");
+
+                    b.Property<decimal>("Multa")
+                        .HasColumnType("numeric")
+                        .HasColumnName("multa");
+
+                    b.Property<string>("NomeDocumento")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("nomedocumento");
 
                     b.Property<string>("NumeroDocumento")
                         .IsRequired()
@@ -146,6 +177,10 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnType("numeric(18,2)")
                         .HasColumnName("valorprevisto");
 
+                    b.Property<string>("ValoresOpcionais")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("valoresopcionais");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdUnidadeConsumidora");
@@ -155,67 +190,57 @@ namespace Civitas.WebAPI.Migrations
                     b.ToTable("despesa");
                 });
 
-            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Documento", b =>
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.EmailEnviado", b =>
                 {
-                    b.Property<int>("IdDocumento")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("iddocumento");
+                        .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdDocumento"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<byte[]>("Digitalizacao")
+                    b.Property<string>("Assunto")
                         .IsRequired()
-                        .HasColumnType("bytea")
-                        .HasColumnName("digitalizacao");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("assunto");
 
-                    b.Property<int>("IdFluxo")
-                        .HasColumnType("integer")
-                        .HasColumnName("idfluxo");
+                    b.Property<string>("Conteudo")
+                        .IsRequired()
+                        .HasMaxLength(10000)
+                        .HasColumnType("character varying(10000)")
+                        .HasColumnName("conteudo");
 
-                    b.Property<int>("IdFornecedor")
-                        .HasColumnType("integer")
-                        .HasColumnName("idfornecedor");
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("datacriacao");
 
-                    b.Property<int>("NumeroDocumento")
-                        .HasColumnType("integer")
-                        .HasColumnName("numerodocumento");
+                    b.Property<DateTime?>("DataEnvio")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("dataenvio");
 
-                    b.HasKey("IdDocumento");
+                    b.Property<string>("EmailDestinatario")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("emaildestinatario");
 
-                    b.HasIndex("IdFluxo");
-
-                    b.HasIndex("IdFornecedor");
-
-                    b.ToTable("documento");
-                });
-
-            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fluxo", b =>
-                {
-                    b.Property<int>("IdFluxo")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("idfluxo");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdFluxo"));
-
-                    b.Property<int>("Consumo")
-                        .HasMaxLength(100)
-                        .HasColumnType("integer")
-                        .HasColumnName("consumo");
+                    b.Property<string>("MensagemErro")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("mensagemerro");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer")
                         .HasColumnName("status");
 
-                    b.Property<float>("ValorPago")
-                        .HasMaxLength(100)
-                        .HasColumnType("real")
-                        .HasColumnName("valorpago");
+                    b.HasKey("Id");
 
-                    b.HasKey("IdFluxo");
+                    b.HasIndex("EmailDestinatario");
 
-                    b.ToTable("fluxo");
+                    b.HasIndex("Status");
+
+                    b.ToTable("emailenviado");
                 });
 
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fornecedor", b =>
@@ -251,6 +276,10 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnType("character varying(14)")
                         .HasColumnName("cnpj");
 
+                    b.Property<DateTime?>("DataExclusao")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("dataexclusao");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -262,6 +291,16 @@ namespace Civitas.WebAPI.Migrations
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
                         .HasColumnName("estado");
+
+                    b.Property<bool>("Excluido")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("excluido");
+
+                    b.Property<int>("IdTipoDespesa")
+                        .HasColumnType("integer")
+                        .HasColumnName("idtipodespesa");
 
                     b.Property<string>("Logradouro")
                         .IsRequired()
@@ -302,6 +341,8 @@ namespace Civitas.WebAPI.Migrations
                     b.HasIndex("Cnpj")
                         .IsUnique();
 
+                    b.HasIndex("IdTipoDespesa");
+
                     b.ToTable("fornecedor");
                 });
 
@@ -338,6 +379,10 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("cidade");
 
+                    b.Property<DateTime?>("DataExclusao")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("dataexclusao");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -349,6 +394,12 @@ namespace Civitas.WebAPI.Migrations
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
                         .HasColumnName("estado");
+
+                    b.Property<bool>("Excluido")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("excluido");
 
                     b.Property<int>("IdSecretaria")
                         .HasColumnType("integer")
@@ -410,13 +461,147 @@ namespace Civitas.WebAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdOrcamento"));
 
+                    b.Property<decimal?>("AbrilQuantidadeConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("abrilquantidadeconsumo");
+
+                    b.Property<decimal?>("AbrilValorConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("abrilvalorconsumo");
+
+                    b.Property<decimal?>("AgostoQuantidadeConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("agostoquantidadeconsumo");
+
+                    b.Property<decimal?>("AgostoValorConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("agostovalorconsumo");
+
                     b.Property<int>("AnoOrcamento")
                         .HasColumnType("integer")
                         .HasColumnName("anoorcamento");
 
+                    b.Property<DateTime?>("DataExclusao")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("dataexclusao");
+
+                    b.Property<decimal?>("DezembroQuantidadeConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("dezembroquantidadeconsumo");
+
+                    b.Property<decimal?>("DezembroValorConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("dezembrovalorconsumo");
+
+                    b.Property<bool>("Excluido")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("excluido");
+
+                    b.Property<decimal?>("FevereiroQuantidadeConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("fevereiroquantidadeconsumo");
+
+                    b.Property<decimal?>("FevereiroValorConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("fevereirovalorconsumo");
+
                     b.Property<int>("IdInstituicao")
                         .HasColumnType("integer")
                         .HasColumnName("idinstituicao");
+
+                    b.Property<int>("IdTipoDespesa")
+                        .HasColumnType("integer")
+                        .HasColumnName("idtipodespesa");
+
+                    b.Property<decimal?>("JaneiroQuantidadeConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("janeiroquantidadeconsumo");
+
+                    b.Property<decimal?>("JaneiroValorConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("janeirovalorconsumo");
+
+                    b.Property<decimal?>("JulhoQuantidadeConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("julhoquantidadeconsumo");
+
+                    b.Property<decimal?>("JulhoValorConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("julhovalorconsumo");
+
+                    b.Property<decimal?>("JunhoQuantidadeConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("junhoquantidadeconsumo");
+
+                    b.Property<decimal?>("JunhoValorConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("junhovalorconsumo");
+
+                    b.Property<decimal?>("MaioQuantidadeConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("maioquantidadeconsumo");
+
+                    b.Property<decimal?>("MaioValorConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("maiovalorconsumo");
+
+                    b.Property<decimal?>("MarcoQuantidadeConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("marcoquantidadeconsumo");
+
+                    b.Property<decimal?>("MarcoValorConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("marcovalorconsumo");
+
+                    b.Property<decimal?>("NovembroQuantidadeConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("novembroquantidadeconsumo");
+
+                    b.Property<decimal?>("NovembroValorConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("novembrovalorconsumo");
+
+                    b.Property<decimal?>("OutubroQuantidadeConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("outubroquantidadeconsumo");
+
+                    b.Property<decimal?>("OutubroValorConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("outubrovalorconsumo");
+
+                    b.Property<decimal?>("SetembroQuantidadeConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("setembroquantidadeconsumo");
+
+                    b.Property<decimal?>("SetembroValorConsumo")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("setembrovalorconsumo");
 
                     b.Property<decimal>("ValorOrcamento")
                         .HasPrecision(18, 2)
@@ -427,7 +612,52 @@ namespace Civitas.WebAPI.Migrations
 
                     b.HasIndex("IdInstituicao");
 
+                    b.HasIndex("IdTipoDespesa");
+
                     b.ToTable("orcamento");
+                });
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.PasswordResetToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("criado_em");
+
+                    b.Property<DateTime>("ExpiraEm")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expira_em");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("token_hash");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("integer")
+                        .HasColumnName("usuario_id");
+
+                    b.Property<DateTime?>("UtilizadoEm")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("utilizado_em");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UsuarioId")
+                        .IsUnique()
+                        .HasFilter("utilizado_em IS NULL");
+
+                    b.ToTable("token_recuperacao_senha");
                 });
 
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Secretaria", b =>
@@ -463,6 +693,10 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnType("character varying(14)")
                         .HasColumnName("cnpj");
 
+                    b.Property<DateTime?>("DataExclusao")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("dataexclusao");
+
                     b.Property<string>("Descricao")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -480,6 +714,12 @@ namespace Civitas.WebAPI.Migrations
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
                         .HasColumnName("estado");
+
+                    b.Property<bool>("Excluido")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("excluido");
 
                     b.Property<string>("Logradouro")
                         .IsRequired()
@@ -529,10 +769,20 @@ namespace Civitas.WebAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("DataExclusao")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("dataexclusao");
+
                     b.Property<string>("Descricao")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("descricao");
+
+                    b.Property<bool>("Excluido")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("excluido");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -553,11 +803,25 @@ namespace Civitas.WebAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CamposOpcionais")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("camposopcionais");
+
+                    b.Property<DateTime?>("DataExclusao")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("dataexclusao");
+
                     b.Property<string>("Descricao")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasColumnName("descricao");
+
+                    b.Property<bool>("Excluido")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("excluido");
 
                     b.Property<int>("IdTipoCodigo")
                         .HasColumnType("integer")
@@ -593,11 +857,21 @@ namespace Civitas.WebAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("DataExclusao")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("dataexclusao");
+
                     b.Property<string>("Descricao")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)")
                         .HasColumnName("descricao");
+
+                    b.Property<bool>("Excluido")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("excluido");
 
                     b.Property<int>("Situacao")
                         .HasColumnType("integer")
@@ -617,11 +891,15 @@ namespace Civitas.WebAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Codigo")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("codigo");
+                    b.Property<DateTime?>("DataExclusao")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("dataexclusao");
+
+                    b.Property<bool>("Excluido")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("excluido");
 
                     b.Property<int>("IdFornecedor")
                         .HasColumnType("integer")
@@ -635,13 +913,19 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("idorcamento");
 
+                    b.Property<int>("IdSecretaria")
+                        .HasColumnType("integer")
+                        .HasColumnName("idsecretaria");
+
                     b.Property<int>("IdTipoDespesa")
                         .HasColumnType("integer")
                         .HasColumnName("idtipodespesa");
 
-                    b.Property<int>("Situacao")
-                        .HasColumnType("integer")
-                        .HasColumnName("situacao");
+                    b.Property<string>("Identificador")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("identificador");
 
                     b.HasKey("Id");
 
@@ -651,7 +935,12 @@ namespace Civitas.WebAPI.Migrations
 
                     b.HasIndex("IdOrcamento");
 
+                    b.HasIndex("IdSecretaria");
+
                     b.HasIndex("IdTipoDespesa");
+
+                    b.HasIndex("Identificador")
+                        .IsUnique();
 
                     b.ToTable("unidadeconsumidora");
                 });
@@ -671,11 +960,21 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnType("character varying(45)")
                         .HasColumnName("abreviatura");
 
+                    b.Property<DateTime?>("DataExclusao")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("dataexclusao");
+
                     b.Property<string>("Descricao")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)")
                         .HasColumnName("descricao");
+
+                    b.Property<bool>("Excluido")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("excluido");
 
                     b.Property<int>("Situacao")
                         .HasColumnType("integer")
@@ -719,6 +1018,10 @@ namespace Civitas.WebAPI.Migrations
                         .HasColumnType("character varying(11)")
                         .HasColumnName("cpf");
 
+                    b.Property<DateTime?>("DataExclusao")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("dataexclusao");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -730,6 +1033,12 @@ namespace Civitas.WebAPI.Migrations
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
                         .HasColumnName("estado");
+
+                    b.Property<bool>("Excluido")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("excluido");
 
                     b.Property<string>("Logradouro")
                         .IsRequired()
@@ -794,8 +1103,7 @@ namespace Civitas.WebAPI.Migrations
                     b.HasOne("Civitas.WebAPI.Objects.Models.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Usuario");
                 });
@@ -819,23 +1127,15 @@ namespace Civitas.WebAPI.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Documento", b =>
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fornecedor", b =>
                 {
-                    b.HasOne("Civitas.WebAPI.Objects.Models.Fluxo", "Fluxo")
-                        .WithMany("Documentos")
-                        .HasForeignKey("IdFluxo")
+                    b.HasOne("Civitas.WebAPI.Objects.Models.TipoDespesa", "TipoDespesa")
+                        .WithMany("Fornecedor")
+                        .HasForeignKey("IdTipoDespesa")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Civitas.WebAPI.Objects.Models.Fornecedor", "Fornecedor")
-                        .WithMany("Documentos")
-                        .HasForeignKey("IdFornecedor")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Fluxo");
-
-                    b.Navigation("Fornecedor");
+                    b.Navigation("TipoDespesa");
                 });
 
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Instituicao", b =>
@@ -865,7 +1165,26 @@ namespace Civitas.WebAPI.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Civitas.WebAPI.Objects.Models.TipoDespesa", "TipoDespesa")
+                        .WithMany("Orcamento")
+                        .HasForeignKey("IdTipoDespesa")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Instituicao");
+
+                    b.Navigation("TipoDespesa");
+                });
+
+            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.PasswordResetToken", b =>
+                {
+                    b.HasOne("Civitas.WebAPI.Objects.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.TipoDespesa", b =>
@@ -907,6 +1226,12 @@ namespace Civitas.WebAPI.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Civitas.WebAPI.Objects.Models.Secretaria", "Secretaria")
+                        .WithMany()
+                        .HasForeignKey("IdSecretaria")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Civitas.WebAPI.Objects.Models.TipoDespesa", "TipoDespesa")
                         .WithMany("UnidadesConsumidoras")
                         .HasForeignKey("IdTipoDespesa")
@@ -919,18 +1244,13 @@ namespace Civitas.WebAPI.Migrations
 
                     b.Navigation("Orcamento");
 
-                    b.Navigation("TipoDespesa");
-                });
+                    b.Navigation("Secretaria");
 
-            modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fluxo", b =>
-                {
-                    b.Navigation("Documentos");
+                    b.Navigation("TipoDespesa");
                 });
 
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.Fornecedor", b =>
                 {
-                    b.Navigation("Documentos");
-
                     b.Navigation("UnidadesConsumidoras");
                 });
 
@@ -958,6 +1278,10 @@ namespace Civitas.WebAPI.Migrations
 
             modelBuilder.Entity("Civitas.WebAPI.Objects.Models.TipoDespesa", b =>
                 {
+                    b.Navigation("Fornecedor");
+
+                    b.Navigation("Orcamento");
+
                     b.Navigation("UnidadesConsumidoras");
                 });
 

@@ -1,5 +1,7 @@
 using Civitas.WebAPI.Controllers;
 using Civitas.WebAPI.Data;
+using Civitas.WebAPI.Objects.Enums;
+using Civitas.WebAPI.Objects.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
@@ -50,4 +52,18 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Fornecedor
         await seedAsync(context);
         await context.SaveChangesAsync();
     }
+
+    /// <summary>
+    /// Recria o banco já com o usuário 1, dono do token usado pelos testes autenticados.
+    /// Toda escrita gera auditoria com o autor do token, e a auditoria exige um usuário existente.
+    /// </summary>
+    public Task ResetDatabaseWithAuthenticatedUserAsync(Func<AppDbContext, Task> seedAsync) =>
+        ResetDatabaseAsync(async context =>
+        {
+            context.Usuarios.Add(new Usuario(
+                1, "11144477735", "Usuario Autenticado", "123456789", "Rua Teste", "1",
+                "Maringa", "PR", "87000000", "autenticado@example.com", "hash", Situacao.ATIVO,
+                "MAT-AUTH", TipoUsuario.ADMINISTRADOR, "Centro"));
+            await seedAsync(context);
+        });
 }

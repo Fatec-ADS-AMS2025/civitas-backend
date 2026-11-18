@@ -1,10 +1,18 @@
+using System.Globalization;
 using System.Text.Json;
-using Civitas.WebAPI.Objects.Enums;
+using Civitas.WebAPI.Objects.Contracts;
 using Civitas.WebAPI.Objects.Models;
+using Civitas.WebAPI.Services.Validation;
 
 namespace Civitas.WebAPI.Data.Factories
 {
-    /// <summary>Factory de <see cref="Auditoria"/>. Cria o <see cref="Usuario"/> quando não informado.</summary>
+    /// <summary>
+    /// Factory de <see cref="Auditoria"/>. Cria o <see cref="Usuario"/> quando não informado.
+    /// </summary>
+    /// <remarks>
+    /// Segue a convenção validada pelo <see cref="AuditoriaValidator"/>: snapshot vazio é string vazia,
+    /// INSERT só tem NovosValores, DELETE só tem ValoresAtingidos.
+    /// </remarks>
     public class AuditoriaFactory : Factory<Auditoria, AuditoriaFactory>
     {
         private static readonly string[] Entidades = ["Despesa", "Fornecedor", "Instituicao", "Orcamento", "Secretaria", "Usuario"];
@@ -15,11 +23,11 @@ namespace Civitas.WebAPI.Data.Factories
 
             return new Auditoria
             {
-                Data = momento.ToString("yyyy-MM-dd"),
-                Hora = momento.ToString("HH:mm:ss"),
-                Operacao = "INSERT",
+                Data = momento.ToString(AuditoriaValidator.FormatoData, CultureInfo.InvariantCulture),
+                Hora = momento.ToString(AuditoriaValidator.FormatoHora, CultureInfo.InvariantCulture),
+                Operacao = AuditoriaOperacao.INSERT,
                 NomeEntidade = Faker.PickRandom(Entidades),
-                ValoresAtingidos = "{}",
+                ValoresAtingidos = string.Empty,
                 NovosValores = JsonSerializer.Serialize(new { id = Faker.Random.Int(1, 1000) }),
                 Usuario = UsuarioFactory.New().Make()
             };
@@ -33,15 +41,15 @@ namespace Civitas.WebAPI.Data.Factories
 
         public AuditoriaFactory Insercao(string entidade, object novosValores) => State(a =>
         {
-            a.Operacao = "INSERT";
+            a.Operacao = AuditoriaOperacao.INSERT;
             a.NomeEntidade = entidade;
-            a.ValoresAtingidos = "{}";
+            a.ValoresAtingidos = string.Empty;
             a.NovosValores = JsonSerializer.Serialize(novosValores);
         });
 
         public AuditoriaFactory Atualizacao(string entidade, object valoresAntigos, object novosValores) => State(a =>
         {
-            a.Operacao = "UPDATE";
+            a.Operacao = AuditoriaOperacao.UPDATE;
             a.NomeEntidade = entidade;
             a.ValoresAtingidos = JsonSerializer.Serialize(valoresAntigos);
             a.NovosValores = JsonSerializer.Serialize(novosValores);
@@ -49,10 +57,10 @@ namespace Civitas.WebAPI.Data.Factories
 
         public AuditoriaFactory Exclusao(string entidade, object valoresAntigos) => State(a =>
         {
-            a.Operacao = "DELETE";
+            a.Operacao = AuditoriaOperacao.DELETE;
             a.NomeEntidade = entidade;
             a.ValoresAtingidos = JsonSerializer.Serialize(valoresAntigos);
-            a.NovosValores = "{}";
+            a.NovosValores = string.Empty;
         });
     }
 }

@@ -51,8 +51,8 @@ namespace Civitas.WebAPI.Data.Migrations
 
                     b.Property<string>("NovosValores")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(10000)
+                        .HasColumnType("character varying(10000)")
                         .HasColumnName("novos_valores");
 
                     b.Property<string>("Operacao")
@@ -61,14 +61,14 @@ namespace Civitas.WebAPI.Data.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("operacao");
 
-                    b.Property<int>("UsuarioId")
+                    b.Property<int?>("UsuarioId")
                         .HasColumnType("integer")
                         .HasColumnName("usuario_id");
 
                     b.Property<string>("ValoresAtingidos")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(10000)
+                        .HasColumnType("character varying(10000)")
                         .HasColumnName("valores_atingidos");
 
                     b.HasKey("Id");
@@ -1100,8 +1100,7 @@ namespace Civitas.WebAPI.Data.Migrations
                     b.HasOne("Civitas.WebAPI.Objects.Models.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Usuario");
                 });
